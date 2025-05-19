@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atomic Orbitals Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #333333; /* Dark gray background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f0f0f0;
+        }
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #gui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(40, 40, 40, 0.85);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #gui-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        #gui-container select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #444;
+            color: #f0f0f0;
+            font-size: 14px;
+        }
+        #gui-container select:focus {
+            outline: none;
+            border-color: #00aaff;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="gui-container">
+        <label for="orbitalSelector">Select Orbital:</label>
+        <select id="orbitalSelector">
+            <option value="1s_H">1s H (1,0,0)</option>
+            <option value="2s_H">2s H (2,0,0)</option>
+            <option value="2p_H_z">2pz H (2,1,0)</option>
+            <option value="3p_H_z">3pz H (3,1,0)</option>
+            <option value="3d_Fe_z2">3dz² Fe (3,2,0)</option>
+        </select>
+        
+        <div style="margin-top: 15px;">
+            <label for="crossSectionSlider">Cross-Section (X-axis):</label>
+            <input type="range" id="crossSectionSlider" min="-10" max="10" value="10" step="0.1" style="width: 100%; margin-top: 5px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>-10</span>
+                <span>0</span>
+                <span>10</span>
+            </div>
+        </div>
+        
+            
+        <!-- Wave Controls Section -->
+        <div style="margin-top: 15px; border-top: 1px solid #555; padding-top: 10px;">
+            <h3 style="margin-top: 0; font-size: 16px;">Photon Wave Controls</h3>
+            
+            <div style="margin-top: 10px;">
+                <label for="wavelengthSlider">Wavelength: <span id="currentWavelength">0.5 nm</span></label>
+                <input type="range" id="wavelengthSlider" min="0.1" max="2.0" value="0.5" step="0.1" style="width: 100%; margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                    <span>0.1 nm (X-ray)</span>
+                    <span>2.0 nm (UV)</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <label for="waveSpeedSlider">Wave Speed:</label>
+                <input type="range" id="waveSpeedSlider" min="0.1" max="2.0" value="1.0" step="0.1" style="width: 100%; margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                    <span>Slow</span>
+                    <span>Fast</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <label for="waveHeightSlider">Amplitude:</label>
+                <input type="range" id="waveHeightSlider" min="0.5" max="3.0" value="1.5" step="0.1" style="width: 100%; margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                    <span>Low</span>
+                    <span>High</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add this after the Wave Controls Section -->
+        <div style="margin-top: 15px; border-top: 1px solid #555; padding-top: 10px;">
+            <h3 style="margin-top: 0; font-size: 16px;">Photon Properties</h3>
+            <div id="photonEnergyDisplay" style="margin-top: 5px; font-size: 14px;">
+                Photon Energy: 0.00 eV
+            </div>
+        </div>
+        
+
+        <!-- Add Emit Wave Button -->
+        <div style="margin-top: 15px;">
+            <button id="emitWaveBtn" style="width: 100%; padding: 8px; background-color: #4682B4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Emit Photon Wave
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. REMOVE the old global Three.js script -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
+    
+    <!-- 2. ADD the import map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+        }
+    }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <!-- The commented-out OrbitControls script can remain as is or be removed if not needed -->
+    <!-- <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script> -->
+
+    <script type="module">
+        // 3. IMPORT THREE as a module
+        import * as THREE from 'three'; 
+        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+
+        let scene, camera, renderer, controls;
+        const orbitalGroups = {}; 
+        let currentOrbital = '1s_H'; // Default orbital
+        const particleData = {}; 
+
+        const particleCount = 45000; 
+        const particleSize = 0.06;  
+
+        let photons = []; // Array to store multiple photons
+        let photonWavelength = 0.5; // Default wavelength in nm
+        let photonSpeed = 2.0; // Speed of photon travel
+        let isPhotonActive = false;
+        
+        // Add variables for wave animation
+        let time = 0;
+        let waveSpeed = 1.0;
+        let waveHeight = 0.8;
+        let waveFrequency = 0.3;
+        let photonWave = null;
+
+        // Shader definitions
+        // Shader definitions
+        const vertexShader = `
+            // Attributes from THREE.SphereGeometry
+            // attribute vec3 position; // REMOVE/COMMENT OUT - Provided by Three.js
+            // attribute vec3 normal;   // REMOVE/COMMENT OUT - Provided by Three.js
+            // attribute vec2 uv; // You can declare this if you plan to use UVs
+
+            // Attributes from THREE.InstancedMesh
+            // attribute mat4 instanceMatrix; // REMOVE/COMMENT OUT - Provided by Three.js if USE_INSTANCING is defined
+
+            // Custom attributes per instance
+            attribute float a_initialPhase;    // Per-instance initial rotation phase - KEEP THIS
+
+            // Uniforms
+            // uniform mat4 projectionMatrix; // REMOVE/COMMENT OUT - Provided by Three.js
+            // uniform mat4 viewMatrix;       // REMOVE/COMMENT OUT - Provided by Three.js
+            // uniform mat4 modelMatrix;      // REMOVE/COMMENT OUT - Provided by Three.js
+
+            uniform float orbitalScale;             // KEEP THIS
+            uniform float u_time;                   // KEEP THIS
+            uniform float u_maxSpeedAtCenter;       // KEEP THIS
+            uniform float u_minSpeedAtEdge;         // KEEP THIS
+            uniform float u_exponentialFalloffRate; // KEEP THIS
+
+            // Add new uniform for cross-section plane
+            uniform float u_crossSectionX;
+            
+            varying vec3 vWorldPosition;
+            varying vec3 vNormalWorld;
+            varying float vDepthFactor; // 0 (close, bright) to 1 (far, dark)
+            varying float vCrossSectionVisibility; // New varying from vertex shader
+            
+            void main() {
+                // Extract the original position from the instanceMatrix (translation part)
+                // instanceMatrix is set once with the particle's initial static position.
+                vec3 original_pos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+
+                // Calculate dynamic rotation for this instance based on its original_pos
+                float distanceToYAxis = length(original_pos.xz); // Distance from Y-axis in the XZ plane
+                float angularSpeed = (u_maxSpeedAtCenter - u_minSpeedAtEdge) * exp(-distanceToYAxis * u_exponentialFalloffRate) + u_minSpeedAtEdge;
+                float currentRotationY = a_initialPhase + angularSpeed * u_time;
+
+                // Create rotation matrix around Y axis for the particle's position
+                float s = sin(currentRotationY);
+                float c = cos(currentRotationY);
+                mat4 rotationAnimMatrix = mat4(
+                    c, 0, s, 0,
+                    0, 1, 0, 0,
+                    -s, 0, c, 0,
+                    0, 0, 0, 1
+                );
+
+                // Calculate the new animated center of the instance in the InstancedMesh's local space
+                vec3 animated_instance_center_object_space = (rotationAnimMatrix * vec4(original_pos, 1.0)).xyz;
+                
+                // Create a translation matrix to this new animated center
+                mat4 translationToAnimatedCenter = mat4(
+                    1.0, 0.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0, 0.0,
+                    0.0, 0.0, 1.0, 0.0,
+                    animated_instance_center_object_space.x, animated_instance_center_object_space.y, animated_instance_center_object_space.z, 1.0
+                );
+
+                // Transform the local vertex of the sphere ('position') to its animated spot, then to world, then to view/projection
+                vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(position, 1.0);
+                vWorldPosition = worldPosition.xyz;
+                
+                // Calculate cross-section visibility (1 = visible, 0 = hidden)
+                // Hide particles if their x position is greater than the cross-section plane
+                vCrossSectionVisibility = worldPosition.x <= u_crossSectionX ? 1.0 : 0.0;
+                
+                // Normals are transformed by the model matrix (overall orbital rotation)
+                // The individual particle spin doesn't reorient the sphere's normals in this simplified model
+                vNormalWorld = normalize(mat3(modelMatrix) * normal);
+
+                vec4 viewPosition = viewMatrix * worldPosition; 
+                float rawDepth = -viewPosition.z; 
+                
+                vDepthFactor = smoothstep(orbitalScale * 0.45, orbitalScale * 2.8, rawDepth); 
+
+                gl_Position = projectionMatrix * viewPosition;
+            }
+        `;
+
+        const fragmentShader = `
+            uniform vec3 baseColor;
+            uniform vec3 lowDensityColor;
+            uniform vec3 midDensityColor;
+            uniform vec3 highDensityColor;
+            uniform vec3 ambientLightColor;
+            uniform vec3 directionalLightColor1;
+            uniform vec3 directionalLightDirection1; // Should be normalized
+            uniform vec3 directionalLightColor2;
+            uniform vec3 directionalLightDirection2; // Should be normalized
+            uniform float u_crossSectionX; // We'll use this to adjust lighting
+
+            varying vec3 vWorldPosition;
+            varying vec3 vNormalWorld;
+            varying float vDepthFactor; // 0 (close, bright) to 1 (far, dark)
+            varying float vCrossSectionVisibility; // New varying from vertex shader
+            
+            // Define min/max brightness values
+            const float minOverallBrightness = 0.12; // Increased minimum brightness
+            const float maxOverallBrightness = 0.98; // Increased maximum brightness
+            const float minRawLight = 0.08;         // Increased minimum raw light
+            const float maxRawLight = 1.9;          // Increased maximum raw light
+
+            void main() {
+                // Discard fragment if it should be hidden by cross-section
+                if (vCrossSectionVisibility < 0.5) {
+                    discard;
+                }
+                
+                vec3 N = normalize(vNormalWorld);
+
+                // Lighting Calc for Light 1
+                vec3 L1 = normalize(directionalLightDirection1);
+                float lambertian1 = max(dot(N, L1), 0.0);
+                vec3 diffuse1 = directionalLightColor1 * lambertian1;
+
+                // Lighting Calc for Light 2
+                vec3 L2 = normalize(directionalLightDirection2);
+                float lambertian2 = max(dot(N, L2), 0.0);
+                vec3 diffuse2 = directionalLightColor2 * lambertian2;
+
+                vec3 rawLighting = ambientLightColor + diffuse1 + diffuse2;
+                
+                // Check if we're in cross-section mode (u_crossSectionX < 10.0)
+                // and boost lighting for better visibility of internal structure
+                float crossSectionFactor = 10.0 - min(u_crossSectionX, 10.0);
+                float lightBoost = 1.0 + (crossSectionFactor * 0.05); // Reduced from 0.1 to 0.05 (max 1.5x boost)
+                
+                // Apply the boost to the raw lighting
+                rawLighting *= lightBoost;
+                
+                // Clamp the raw lighting contribution
+                rawLighting = clamp(rawLighting, vec3(minRawLight), vec3(maxRawLight));
+                
+                // Calculate density-based color
+                // Use distance from center as a proxy for electron density
+                float distFromCenter = length(vWorldPosition);
+                float maxDist = 10.0; // Maximum expected distance
+                float normalizedDist = clamp(distFromCenter / maxDist, 0.0, 1.0);
+                
+                // Invert the distance to get density (closer to center = higher density)
+                float density = 1.0 - normalizedDist;
+                
+                // Apply a curve to make the density transition more pronounced
+                density = pow(density, 2.0);
+                
+                // Choose color based on density
+                vec3 densityColor;
+                if (density > 0.7) {
+                    // High density
+                    float t = (density - 0.7) / 0.3;
+                    densityColor = mix(midDensityColor, highDensityColor, t);
+                } else if (density > 0.3) {
+                    // Medium density
+                    float t = (density - 0.3) / 0.4;
+                    densityColor = mix(lowDensityColor, midDensityColor, t);
+                } else {
+                    // Low density
+                    float t = density / 0.3;
+                    densityColor = mix(lowDensityColor, lowDensityColor, t); // Fade to low density color
+                }
+                
+                vec3 litColor = densityColor * rawLighting;
+
+                // Apply less depth darkening when in cross-section mode
+                float adjustedDepthFactor = vDepthFactor * (1.0 - (crossSectionFactor * 0.02)); // Reduced from 0.05 to 0.03
+                vec3 darkColorMultiplier = vec3(0.25, 0.25, 0.25); 
+                vec3 finalColor = mix(litColor, litColor * darkColorMultiplier, adjustedDepthFactor);
+
+                // Clamp the final color to ensure it's within overall brightness limits
+                finalColor = clamp(finalColor, vec3(minOverallBrightness), vec3(maxOverallBrightness));
+
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+
+        const orbitalParams = {
+            '1s_H': {
+                name: "1s H (1,0,0) - Simple sphere",
+                color: 0x4682B4, // Steel Blue
+                lowDensityColor: 0xB0C4DE, // Light Steel Blue
+                midDensityColor: 0x4682B4, // Steel Blue
+                highDensityColor: 0x27496D, // Deep Steel Blue
+                scale: 4.0, 
+                generatePoints: generate1sPoints,
+                cameraPosition: new THREE.Vector3(5, 5, 8) // Current position works well for 1s
+            },
+            '2s_H': {
+                name: "2s H (2,0,0) - Sphere with radial node",
+                color: 0x87CEEB, // Sky Blue
+                lowDensityColor: 0xD6F3FF, // Pale Sky Blue
+                midDensityColor: 0x87CEEB, // Sky Blue
+                highDensityColor: 0x468DAF, // Desaturated Sky Blue
+                scale: 5.0, // 2s is generally larger than 1s
+                generatePoints: generate2sPoints,
+                cameraPosition: new THREE.Vector3(7, 7, 11) // Further away for 2s
+            },
+            '2p_H_z': {
+                name: "2pz H (2,1,0) - Dumbbell",
+                color: 0xFFC0CB, // Pink
+                lowDensityColor: 0xFFE4EC, // Very light pink
+                midDensityColor: 0xFFC0CB, // Standard pink
+                highDensityColor: 0xC08090, // Muted rose/mauve
+                scale: 5.0, 
+                generatePoints: generate2pzPoints,
+                cameraPosition: new THREE.Vector3(7, 7, 11) // Further away for 2p
+            },
+            '3p_H_z': {
+                name: "3pz H (3,1,0) - Larger dumbbell with radial node",
+                color: 0xFFDAB9, // Peach (updated from FF9966)
+                lowDensityColor: 0xFFF2E5, // Cream
+                midDensityColor: 0xFFDAB9, // Peach
+                highDensityColor: 0xCC9C75, // Burnt peach
+                scale: 6.0,
+                generatePoints: generate3pzPoints,
+                cameraPosition: new THREE.Vector3(9, 9, 14) // Even further for 3p
+            },
+            '3d_Fe_z2': {
+                name: "3dz² Fe (3,2,0) - Larger dumbbell with radial node",
+                color: 0xFFFF00, // Yellow
+                lowDensityColor: 0xFFFFE0, // Light yellow
+                midDensityColor: 0xFFFF00, // Bright yellow
+                highDensityColor: 0xBFBF00, // Golden ochre
+                scale: 6.5, // d-orbitals are generally larger
+                generatePoints: generate3dz2Points,
+                cameraPosition: new THREE.Vector3(10, 10, 15) // Furthest for 3d
+            }
+        };
+
+        // ---- PHOTON WAVE IMPLEMENTATION ----
+        function setupPhotonWave(scene) {
+            // Configuration for the wave - adjusted for better visualization
+            const waveConfig = {
+                waveSpeed: 1.0,       
+                waveHeight: 1.5,      // Increased from 0.8 for larger wave
+                waveFrequency: 0.3,   
+                wavelength: photonWavelength,
+                movementType: 'linear',
+                waveMode: 'partial'
+            };
+        
+            // Create a grid of particles for the wave - increased size
+            const gridSize = 80;      // Increased from 60 for wider coverage
+            const gridSpacing = 0.3;  
+            const totalParticles = gridSize * gridSize;
+            
+            // Create geometry for wave particles - increased size
+            const waveParticleGeometry = new THREE.SphereGeometry(0.15, 8, 6);
+            const waveParticleMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x00ffff,
+                emissive: 0x003333,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            // Create instanced mesh for wave particles
+            const waveParticles = new THREE.InstancedMesh(
+                waveParticleGeometry,
+                waveParticleMaterial,
+                totalParticles
+            );
+            waveParticles.visible = false;
+            scene.add(waveParticles);
+            
+            // Initialize instance colors
+            waveParticles.instanceColor = new THREE.InstancedBufferAttribute(
+                new Float32Array(totalParticles * 3), 3
+            );
+            
+            // Create dummy for positioning
+            const dummy = new THREE.Object3D();
+            
+            // Initialize particle positions in a grid - in X-Z plane
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const index = i * gridSize + j;
+                    
+                    // Position in a grid on the x-z plane
+                    const x = (i - gridSize/2) * gridSpacing;
+                    const z = (j - gridSize/2) * gridSpacing;
+                    const y = 0; // Y position at center level
+                    
+                    dummy.position.set(x, y, z + 5); // Start position (to the right of the atom)
+                    dummy.updateMatrix();
+                    waveParticles.setMatrixAt(index, dummy.matrix);
+                }
+            }
+            waveParticles.instanceMatrix.needsUpdate = true;
+            waveParticles.instanceColor.needsUpdate = true;
+            
+            // Wave animation variables
+            let waveActive = false;
+            let waveTime = 0;
+            let wavePosition = 5; // Starting z position (to the right)
+            
+            // Function to calculate wave height at a specific point
+            function calculateWaveHeight(x, y, z, currentTime, config) {
+                if (!waveActive) return 0;
+                
+                // Distance from center of wave - use X and Z coordinates
+                const dx = x;
+                const dz = z - wavePosition; // Distance from current wave position
+                const distance = Math.sqrt(dx * dx + dz * dz);
+                
+                // Create a wave that doesn't affect the entire grid
+                // Use a Gaussian envelope to limit wave effect
+                const maxDistance = gridSize * gridSpacing / 2;
+                const envelope = Math.exp(-distance * distance / (2 * (maxDistance/2) * (maxDistance/2)));
+                
+                // Wave height calculation
+                const wave = Math.sin(distance * config.waveFrequency - currentTime) * 
+                             config.waveHeight * envelope;
+                
+                return wave;
+            }
+            
+            // Function to emit a photon wave
+            function emitWave() {
+                if (waveActive) return; // Don't emit if a wave is already active
+                
+                // Make wave visible immediately
+                waveParticles.visible = true;
+                
+                // Set wave active state immediately
+                waveActive = true;
+                waveTime = 0;
+                
+                // Start position closer to the atom for faster appearance
+                wavePosition = 10; // Reduced from 20 to make it appear faster
+                
+                // Calculate and update photon energy based on current wavelength
+                const energy = calculatePhotonEnergy(photonWavelength);
+                document.getElementById('photonEnergyDisplay').textContent = 
+                    `Photon Energy: ${energy.eV.toFixed(2)} eV`;
+                
+                // Update wave color based on photon wavelength
+                // Simple mapping: lower wavelength (higher energy) = blue, higher wavelength = red
+                const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 2)));
+                const color = new THREE.Color().setHSL(hue/360, 1, 0.5);
+                waveParticleMaterial.color.copy(color);
+                waveParticleMaterial.emissive.copy(color).multiplyScalar(0.3);
+            }
+                
+    // Function to update wave animation
+    function updateWave(deltaTime) {
+        if (!waveActive) return;
+        
+        // Get current values from sliders if they exist
+        if (document.getElementById('waveSpeedSlider')) {
+            waveConfig.waveSpeed = parseFloat(document.getElementById('waveSpeedSlider').value);
+        }
+        if (document.getElementById('wavelengthSlider')) {
+            photonWavelength = parseFloat(document.getElementById('wavelengthSlider').value);
+            waveConfig.wavelength = photonWavelength;
+            
+            // Update energy display when wavelength changes
+            const energy = calculatePhotonEnergy(photonWavelength);
+            document.getElementById('photonEnergyDisplay').textContent = 
+                `Photon Energy: ${energy.eV.toFixed(2)} eV`;
+        }
+        if (document.getElementById('waveHeightSlider')) {
+            waveConfig.waveHeight = parseFloat(document.getElementById('waveHeightSlider').value);
+        }
+        
+        // Update time and position - moving left (negative direction)
+        // Increase speed for faster initial appearance
+        waveTime += deltaTime * waveConfig.waveSpeed * 0.5; // Increased from 0.3
+        wavePosition -= deltaTime * waveConfig.waveSpeed * 1.2; // Increased from 0.8
+        
+        // If wave has moved past the atom, hide it
+        if (wavePosition < -10) { // Reduced distance for faster reset
+            waveActive = false;
+            waveParticles.visible = false;
+            return;
+        }
+        
+        // Update particle positions based on wave function
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const index = i * gridSize + j;
+                
+                // Base position in grid (x-z plane)
+                const x = (i - gridSize/2) * gridSpacing;
+                const z = (j - gridSize/2) * gridSpacing;
+                
+                // Calculate distance from wave center in X-Z plane (circular wave)
+                const dx = x;
+                const dz = z - wavePosition;
+                const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
+                
+                // Define the active wave radius and larger visible radius
+                // Scale based on photon wavelength for realistic proportions
+                const waveRadius = 6.0 * photonWavelength;
+                const visibleRadius = 12.0 * photonWavelength; // Wider visible area
+                
+                // Calculate wave effect
+                let height = 0;
+                let opacity = 0;
+                
+                if (distanceFromCenter < visibleRadius) {
+                    // Calculate fade factor based on distance from wave center
+                    // This creates a gradual fade in/out effect
+                    const fadeFactor = 1.0 - (distanceFromCenter / visibleRadius);
+                    
+                    // Apply a smoother curve to the fade factor (quintic)
+                    const smoothFade = Math.pow(fadeFactor, 5); // Increased power for smoother transition
+                    opacity = smoothFade * 0.1; // Lower base opacity for stationary particles
+                    
+                    if (distanceFromCenter < waveRadius) {
+                        // Calculate wave height using a smooth bell curve
+                        const normalizedDist = distanceFromCenter / waveRadius;
+                        
+                        // Bell curve formula: e^(-x²)
+                        height = waveConfig.waveHeight * photonWavelength * Math.exp(-normalizedDist * normalizedDist * 1.2);
+                        
+                        // Calculate opacity based on height (higher = more visible)
+                        // Use a smoother transition function
+                        const heightFactor = height / (waveConfig.waveHeight * photonWavelength);
+                        opacity = Math.min(0.1 + heightFactor * 0.9, 1.0);
+                        
+                        // Apply additional smoothing to opacity
+                        opacity = Math.pow(opacity, 0.6);
+                        
+                        // Apply color gradient based on height/amplitude
+                        // Get the base color for the current photon wavelength
+                        const baseHue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 2)));
+                        
+                        // Adjust saturation and lightness based on height
+                        // Higher amplitude = more saturated and brighter
+                        const saturation = 0.5 + heightFactor * 0.5; // 0.5 to 1.0
+                        const lightness = 0.3 + heightFactor * 0.4;  // 0.3 to 0.7
+                        
+                        // Create a color for this specific particle
+                        const particleColor = new THREE.Color().setHSL(baseHue/360, saturation, lightness);
+                        
+                        // Set the color for this instance
+                        waveParticles.setColorAt(index, particleColor);
+                    }
+                }
+                
+                // Apply height to Y position - particles only move up and down
+                dummy.position.set(x, height, z);
+                
+                // Set scale based on opacity (smaller when fading)
+                const scale = opacity;
+                dummy.scale.set(scale, scale, scale);
+                
+                dummy.updateMatrix();
+                waveParticles.setMatrixAt(index, dummy.matrix);
+            }
+        }
+        
+        waveParticles.instanceMatrix.needsUpdate = true;
+        waveParticles.instanceColor.needsUpdate = true;
+    }
+            
+            // Function to calculate photon energy
+            function calculatePhotonEnergy(wavelength) {
+                // E = hc/λ where h is Planck's constant, c is speed of light, λ is wavelength
+                const h = 6.62607015e-34; // Planck's constant in J·s
+                const c = 299792458; // Speed of light in m/s
+                
+                // Convert wavelength from nm to m
+                const wavelengthInMeters = wavelength * 1e-9;
+                
+                // Calculate energy in Joules
+                const energyInJoules = (h * c) / wavelengthInMeters;
+                
+                // Convert to electron volts (more common unit for photon energy)
+                const energyInEV = energyInJoules / 1.602176634e-19;
+                
+                return {
+                    joules: energyInJoules,
+                    eV: energyInEV
+                };
+            }
+            
+            // Connect sliders to update the wave config
+            const waveSpeedSlider = document.getElementById('waveSpeedSlider');
+            const waveHeightSlider = document.getElementById('waveHeightSlider');
+            const wavelengthSlider = document.getElementById('wavelengthSlider');
+            
+            // Set default values (increased speed)
+            waveSpeed = 1.5; // Increased from 1.0
+            waveHeight = 0.8;
+            waveFrequency = 0.3;
+            
+            // Initialize with default values
+            if (waveSpeedSlider) waveSpeedSlider.value = waveConfig.waveSpeed;
+            if (waveHeightSlider) waveHeightSlider.value = waveConfig.waveHeight;
+            if (wavelengthSlider) wavelengthSlider.value = photonWavelength;
+            
+            // Initialize energy display with default wavelength
+            const initialEnergy = calculatePhotonEnergy(photonWavelength);
+            document.getElementById('photonEnergyDisplay').textContent = 
+                `Photon Energy: ${initialEnergy.eV.toFixed(1)} eV`;
+            
+            // Pre-initialize wave positions for faster first appearance
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const index = i * gridSize + j;
+                    
+                    // Position in a grid on the x-z plane
+                    const x = (i - gridSize/2) * gridSpacing;
+                    const z = (j - gridSize/2) * gridSpacing;
+                    const y = 0; // Y position at center level
+                    
+                    dummy.position.set(x, y, z + 10); // Pre-position closer to atom
+                    dummy.updateMatrix();
+                    waveParticles.setMatrixAt(index, dummy.matrix);
+                }
+            }
+            waveParticles.instanceMatrix.needsUpdate = true;
+            
+            // Add event listeners for wave controls
+            waveSpeedSlider.addEventListener('input', (event) => {
+                waveSpeed = parseFloat(event.target.value);
+            });
+            
+            waveHeightSlider.addEventListener('input', (event) => {
+                waveHeight = parseFloat(event.target.value);
+            });
+            
+            wavelengthSlider.addEventListener('input', (event) => {
+                photonWavelength = parseFloat(event.target.value);
+                waveConfig.wavelength = photonWavelength;
+                
+                // Update wavelength display
+                document.getElementById('currentWavelength').textContent = photonWavelength.toFixed(1) + ' nm';
+                
+                // Update energy display when wavelength changes
+                const energy = calculatePhotonEnergy(photonWavelength);
+                document.getElementById('photonEnergyDisplay').textContent = 
+                    `Photon Energy: ${energy.eV.toFixed(1)} eV`;
+            });
+
+            // Connect to the emit button
+            const emitButton = document.getElementById('emitWaveBtn');
+            if (emitButton) {
+                emitButton.addEventListener('click', emitWave);
+            } else {
+                // Add event listener once DOM is loaded
+                window.addEventListener('DOMContentLoaded', () => {
+                    const btn = document.getElementById('emitWaveBtn');
+                    if (btn) btn.addEventListener('click', emitWave);
+                });
+            }
+            
+            // Add event listener for the emit wave button
+            const emitWaveBtn = document.getElementById('emitWaveBtn');
+            if (emitWaveBtn) {
+                emitWaveBtn.addEventListener('click', () => {
+                    // Remove existing photon wave if any
+                    if (photonWave) {
+                        scene.remove(photonWave);
+                    }
+                    
+                    // Create new photon wave with current settings
+                    photonWave = createPhotonWave(waveHeight, waveFrequency);
+                    scene.add(photonWave);
+                });
+            }
+            
+            // Return the update function to be called in the animation loop
+            return updateWave;
+        }
+
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+
+            // Camera - adjust position to be further away
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(5, 5, 8); // Moved further away (was 2, 2, 3)
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x333333); // Dark gray background
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); 
+            scene.add(ambientLight);
+            
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5); 
+            directionalLight1.position.set(5, 10, 7.5);
+            scene.add(directionalLight1);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3); 
+            directionalLight2.position.set(-5, -5, -7.5); 
+            scene.add(directionalLight2);
+
+            // Store light info for shaders
+            scene.userData.ambientLightColor = ambientLight.color.clone();
+            scene.userData.directionalLight1 = { 
+                color: directionalLight1.color.clone(), 
+                direction: directionalLight1.position.clone().normalize() // Direction from origin to light
+            };
+            scene.userData.directionalLight2 = {
+                color: directionalLight2.color.clone(),
+                direction: directionalLight2.position.clone().normalize()
+            };
+
+
+            // Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Nucleus
+            const nucleusGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+            const nucleusMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFE0, emissive: 0x333300 });
+            const nucleus = new THREE.Mesh(nucleusGeometry, nucleusMaterial);
+            nucleus.visible = false; 
+            scene.add(nucleus);
+
+            // Create orbital particle systems
+            for (const type in orbitalParams) {
+                orbitalGroups[type] = createOrbital(type); // This will now return an InstancedMesh
+                scene.add(orbitalGroups[type]);
+            }
+
+            // UI
+            const orbitalSelector = document.getElementById('orbitalSelector');
+            orbitalSelector.addEventListener('change', (event) => {
+                switchOrbital(event.target.value);
+            });
+            orbitalSelector.value = currentOrbital; // Ensure dropdown matches initial state
+            switchOrbital(currentOrbital); // Initialize with the default orbital
+            
+            // Cross-section slider
+            const crossSectionSlider = document.getElementById('crossSectionSlider');
+            crossSectionSlider.addEventListener('input', (event) => {
+                const value = parseFloat(event.target.value);
+                // Update the cross-section value for all orbitals
+                for (const type in orbitalGroups) {
+                    if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+                        orbitalGroups[type].material.uniforms.u_crossSectionX.value = value;
+                    }
+                }
+            });
+
+            // Initialize the photon wave system
+            const updatePhotonWave = setupPhotonWave(scene);
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+
+            // Define the animate function before calling it
+            let animate = function() {
+                requestAnimationFrame(animate);
+                
+                const deltaTime = 1/60;
+                // Update photon position
+                updatePhoton(deltaTime);
+
+                // Update photon wave
+                if (typeof updatePhotonWave === 'function') {
+                    updatePhotonWave(deltaTime);
+                }
+
+                // Update time for wave animation
+                time += 0.01 * waveSpeed;
+                
+                // Update uniforms for all orbital materials
+                for (const type in orbitalGroups) {
+                    if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+                        orbitalGroups[type].material.uniforms.u_time.value = time;
+                        orbitalGroups[type].material.uniforms.viewMatrix.value = camera.matrixWorldInverse;
+                        
+                        // Add wave height and frequency parameters
+                        if (orbitalGroups[type].material.uniforms.u_waveHeight) {
+                            orbitalGroups[type].material.uniforms.u_waveHeight.value = waveHeight;
+                        }
+                        if (orbitalGroups[type].material.uniforms.u_waveFrequency) {
+                            orbitalGroups[type].material.uniforms.u_waveFrequency.value = waveFrequency;
+                        }
+                    }
+                }
+                
+                // Update photon wave if it exists
+                if (photonWave && photonWave.material.uniforms) {
+                    photonWave.material.uniforms.time.value = time;
+                    photonWave.material.uniforms.waveHeight.value = waveHeight;
+                    photonWave.material.uniforms.waveFrequency.value = waveFrequency;
+                }
+                
+                controls.update();
+                renderer.render(scene, camera);
+            };
+            
+            animate();
+        }
+
+        function switchOrbital(orbitalType) {
+            // Hide all orbitals first
+            for (const type in orbitalGroups) {
+                orbitalGroups[type].visible = false;
+            }
+            
+            // Show only the selected orbital
+            if (orbitalGroups[orbitalType]) {
+                orbitalGroups[orbitalType].visible = true;
+                currentOrbital = orbitalType;
+                
+                // Update camera position based on the selected orbital
+                if (orbitalParams[orbitalType].cameraPosition) {
+                    const targetPos = orbitalParams[orbitalType].cameraPosition;
+                    // Smoothly animate to the new position
+                    const startPos = camera.position.clone();
+                    const duration = 1000; // 1 second
+                    const startTime = performance.now();
+                    
+                    function updateCameraPosition() {
+                        const elapsed = performance.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        // Use easing function for smoother transition
+                        const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+                        
+                        camera.position.lerpVectors(startPos, targetPos, easeProgress);
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(updateCameraPosition);
+                        }
+                    }
+                    
+                    updateCameraPosition();
+                }
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize the photon wave system will be done after scene is created
+        
+        // This animate function is already defined in init()
+        
+        // Modify the createPhoton function to also emit a wave
+        function createPhoton() {
+            // Remove any existing photon waves first
+            scene.children.forEach(child => {
+                if (child.userData && child.userData.isPhotonWave) {
+                    scene.remove(child);
+                }
+            });
+            
+            // Create a proper sinusoidal EM wave
+            const waveGeometry = new THREE.PlaneGeometry(20, 20, 400, 400); // Smaller plane
+            const waveMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    wavelength: { value: photonWavelength * 4.0 }, // Shorter wavelength
+                    speed: { value: 0.3 }, // Keep slow speed
+                    amplitude: { value: 1.2 }, // Keep amplitude
+                    color1: { value: new THREE.Color(0xffffff) }, // Top color (white)
+                    color2: { value: new THREE.Color(0x07b164) }  // Bottom color (green)
+                },
+                vertexShader: `
+                    uniform float time;
+                    uniform float wavelength;
+                    uniform float speed;
+                    uniform float amplitude;
+                    varying vec3 vPosition;
+                    varying float vWaveHeight;
+                    varying float vEdgeFade;
+                    varying float vGradientFactor;
+                    varying float vIsInWaveArea;
+                    varying float vDisplacedZ; // For color gradient
+                    varying float vWavePhase; // Pass the wave phase to fragment shader
+
+                    void main() {
+                        vPosition = position;
+                        
+                        // Calculate wave properties
+                        float k = 2.0 * 3.141592 / wavelength;
+                        
+                        // Create waves moving from left to right (along X axis)
+                        float wavePhase = k * (position.x - time * speed);
+                        vWavePhase = wavePhase; // Pass to fragment shader
+                        
+                        // Z-axis narrowing with rapid falloff at z=±3
+                        float zThreshold = 3.0; // Smaller threshold
+                        float zSharpness = 5.0; // Sharper falloff
+                        float zFactor = 1.0 / (1.0 + exp(zSharpness * (abs(position.y) - zThreshold)));
+                        
+                        // Create a single wave with a Gaussian envelope
+                        float waveRadius = 8.0; // Smaller radius
+                        float distFromCenter = length(position.xz);
+                        float waveAreaFactor = smoothstep(waveRadius, waveRadius - 2.0, distFromCenter);
+                        vIsInWaveArea = waveAreaFactor;
+                        
+                        float waveHeight = amplitude * sin(wavePhase);
+                        vWaveHeight = waveHeight * waveAreaFactor * zFactor;
+                        vEdgeFade = smoothstep(waveRadius - 2.0, waveRadius, distFromCenter);
+                        vGradientFactor = vWaveHeight;
+                        
+                        vec3 newPosition = position;
+                        newPosition.z += vWaveHeight;
+                        vDisplacedZ = newPosition.z; // Pass displaced Z to fragment shader
+                        
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color1;
+                    uniform vec3 color2;
+                    varying vec3 vPosition;
+                    varying float vWaveHeight;
+                    varying float vEdgeFade;
+                    varying float vGradientFactor;
+                    varying float vIsInWaveArea;
+                    varying float vDisplacedZ;
+                    varying float vWavePhase;
+                
+                    void main() {
+                        float distFromCenter = length(vPosition.xz);
+                        float radialFade = smoothstep(8.0 - 2.0, 8.0, distFromCenter);
+                    
+                        // Blend color from bottom (low z) to top (high z) using displaced Z
+                        float zMin = -1.2;
+                        float zMax = 1.2;
+                        float zBlend = clamp((vDisplacedZ - zMin) / (zMax - zMin), 0.0, 1.0);
+                        vec3 waveColor = mix(color2, color1, zBlend);
+                    
+                        // COMPLETELY REMOVE GRID LINES
+                        float lightFactor = 0.7 + 0.3 * abs(vWaveHeight);
+                    
+                        // Make the wave visible along its entire path within the wave area
+                        float finalAlpha = 0.0;
+                    
+                        if (vIsInWaveArea > 0.01) {
+                            // Calculate distance from the wave's zero-crossing line
+                            float phaseModulo = mod(vWavePhase, 6.28318);
+                            float distFromZeroCrossing = min(
+                                min(abs(phaseModulo - 0.0), abs(phaseModulo - 6.28318)),
+                                min(abs(phaseModulo - 3.14159), abs(phaseModulo - 9.42478))
+                            );
+                            
+                            // Create a continuous band along the wave
+                            float bandWidth = 0.8;
+                            float pathVisibility = smoothstep(bandWidth, 0.0, distFromZeroCrossing);
+                            
+                            // Combine wave height visibility with wave path visibility
+                            float heightVisibility = smoothstep(0.01, 0.1, abs(vWaveHeight)) * 0.9;
+                            finalAlpha = max(heightVisibility, pathVisibility * 0.7 * vIsInWaveArea);
+                            
+                            // ENSURE NO PLANE IS VISIBLE - only show where there's actual wave
+                            if (abs(vWaveHeight) < 0.05 && pathVisibility < 0.3) {
+                                finalAlpha = 0.0;
+                            }
+                        }
+                    
+                        // If outside wave area or at edge, make transparent
+                        if (vIsInWaveArea < 0.01 || radialFade > 0.9) {
+                            finalAlpha = 0.0;
+                        }
+                    
+                        vec3 finalColor = waveColor * lightFactor;
+                    
+                        gl_FragColor = vec4(finalColor, finalAlpha);
+                    }
+                `,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            
+            const wave = new THREE.Mesh(waveGeometry, waveMaterial);
+            wave.rotation.x = -Math.PI / 2;
+            wave.position.y = 0; // At the same level as the atom
+            wave.position.x = -10; // Start closer to the atom
+            wave.userData = {
+                isPhotonWave: true,
+                startTime: performance.now() * 0.001, // Current time in seconds
+                totalDistance: 0,
+                wavelength: photonWavelength * 4.0 // Store the wavelength for reference
+            };
+            scene.add(wave);
+            
+            photons = [wave];
+            isPhotonActive = true;
+        }
+
+        function updatePhoton(deltaTime) {
+            for (let i = photons.length - 1; i >= 0; i--) {
+                const photon = photons[i];
+                
+                if (photon.material && photon.material.uniforms) {
+                    const elapsedTime = (performance.now() * 0.001) - photon.userData.startTime;
+                    photon.material.uniforms.time.value = elapsedTime;
+                    
+                    // Move the photon along the x-axis
+                    const moveSpeed = 0.3;
+                    photon.position.x += moveSpeed * deltaTime;
+                    
+                    // Track total distance traveled
+                    photon.userData.totalDistance += moveSpeed * deltaTime;
+                    
+                    // Remove photon after it has traveled approximately one wavelength
+                    const maxDistance = photon.userData.wavelength * 1.2;
+                    
+                    if (photon.userData.totalDistance > maxDistance) {
+                        scene.remove(photon);
+                        photons.splice(i, 1);
+                        
+                        if (photons.length === 0) {
+                            isPhotonActive = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add photon controls to the UI
+        function addPhotonControls() {
+            // Create a container for photon controls
+            const guiContainer = document.getElementById('gui-container');
+            
+            const photonContainer = document.createElement('div');
+            photonContainer.style.marginTop = '15px';
+            guiContainer.appendChild(photonContainer);
+            
+            // Add wavelength slider
+            const wavelengthLabel = document.createElement('label');
+            wavelengthLabel.textContent = 'Photon Wavelength (nm):';
+            wavelengthLabel.setAttribute('for', 'wavelengthSlider');
+            photonContainer.appendChild(wavelengthLabel);
+            
+            const wavelengthSlider = document.createElement('input');
+            wavelengthSlider.type = 'range';
+            wavelengthSlider.id = 'wavelengthSlider';
+            wavelengthSlider.min = '0.1';
+            wavelengthSlider.max = '2.0';
+            wavelengthSlider.step = '0.1';
+            wavelengthSlider.value = photonWavelength;
+            wavelengthSlider.style.width = '100%';
+            wavelengthSlider.style.marginTop = '5px';
+            photonContainer.appendChild(wavelengthSlider);
+            
+            const wavelengthDisplay = document.createElement('div');
+            wavelengthDisplay.style.display = 'flex';
+            wavelengthDisplay.style.justifyContent = 'space-between';
+            wavelengthDisplay.style.fontSize = '12px';
+            wavelengthDisplay.innerHTML = '<span>0.1</span><span>1.0</span><span>2.0</span>';
+            photonContainer.appendChild(wavelengthDisplay);
+            
+            // Add energy display (E = hc/λ)
+            const energyDisplay = document.createElement('div');
+            energyDisplay.id = 'energyDisplay';
+            energyDisplay.style.marginTop = '5px';
+            energyDisplay.style.fontSize = '14px';
+            updateEnergyDisplay();
+            photonContainer.appendChild(energyDisplay);
+            
+            // Add emit photon button
+            const emitButton = document.createElement('button');
+            emitButton.textContent = 'Emit Photon';
+            emitButton.style.marginTop = '10px';
+            emitButton.style.padding = '8px 12px';
+            emitButton.style.backgroundColor = '#444';
+            emitButton.style.color = '#f0f0f0';
+            emitButton.style.border = '1px solid #555';
+            emitButton.style.borderRadius = '4px';
+            emitButton.style.cursor = 'pointer';
+            emitButton.style.width = '100%';
+            photonContainer.appendChild(emitButton);
+            
+            // Event listeners
+            wavelengthSlider.addEventListener('input', function(event) {
+                photonWavelength = parseFloat(event.target.value);
+                updateEnergyDisplay();
+            });
+            
+            emitButton.addEventListener('click', function() {
+                createPhoton();
+            });
+            
+            function updateEnergyDisplay() {
+                // E = hc/λ, h = 4.135667696e-15 eV⋅s, c = 299792458 m/s
+                const h = 4.135667696e-15; // eV⋅s
+                const c = 299792458; // m/s
+                const energyEV = (h * c) / (photonWavelength * 1e-9);
+                energyDisplay.textContent = `Energy: ${energyEV.toFixed(2)} eV`;
+            }
+            
+            updateEnergyDisplay(); // Initial display
+        }
+
+        // ---- ADD PHOTON FUNCTIONS END ----
+
+        function createOrbital(orbitalType) {
+            const params = orbitalParams[orbitalType];
+            const scale = params.scale;
+            
+            // Generate points for this orbital type
+            const points = params.generatePoints(particleCount, scale);
+            
+            // Create instanced mesh for particles
+            const sphereGeometry = new THREE.SphereGeometry(particleSize, 8, 6);
+            
+            // Create shader material
+            const material = new THREE.ShaderMaterial({
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                uniforms: {
+                    baseColor: { value: new THREE.Color(params.color) },
+                    lowDensityColor: { value: new THREE.Color(params.lowDensityColor) },
+                    midDensityColor: { value: new THREE.Color(params.midDensityColor) },
+                    highDensityColor: { value: new THREE.Color(params.highDensityColor) },
+                    ambientLightColor: { value: scene.userData.ambientLightColor },
+                    directionalLightColor1: { value: scene.userData.directionalLight1.color },
+                    directionalLightDirection1: { value: scene.userData.directionalLight1.direction },
+                    directionalLightColor2: { value: scene.userData.directionalLight2.color },
+                    directionalLightDirection2: { value: scene.userData.directionalLight2.direction },
+                    orbitalScale: { value: scale },
+                    u_time: { value: 0.0 },
+                    u_maxSpeedAtCenter: { value: 50.0 },
+                    u_minSpeedAtEdge: { value: 0.01 },
+                    u_exponentialFalloffRate: { value: 3.5 },
+                    u_crossSectionX: { value: 10.0 }, // Default to showing full orbital
+                    viewMatrix: { value: camera.matrixWorldInverse },
+                    u_waveHeight: { value: waveHeight },
+                    u_waveFrequency: { value: waveFrequency }
+                }
+            });
+            
+            // Create instanced mesh
+            const instancedMesh = new THREE.InstancedMesh(sphereGeometry, material, points.length);
+            
+            // Create a buffer attribute for initial phase
+            const initialPhaseAttribute = new Float32Array(points.length);
+            for (let i = 0; i < points.length; i++) {
+                initialPhaseAttribute[i] = Math.random() * Math.PI * 2;
+            }
+            
+            // Add the attribute to the geometry
+            instancedMesh.geometry.setAttribute('a_initialPhase', new THREE.InstancedBufferAttribute(initialPhaseAttribute, 1));
+            
+            // Set instance matrices
+            const dummy = new THREE.Object3D();
+            for (let i = 0; i < points.length; i++) {
+                dummy.position.set(points[i].x, points[i].y, points[i].z);
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+            }
+            
+            instancedMesh.instanceMatrix.needsUpdate = true;
+            
+            return instancedMesh;
+        }
+
+        function generate1sPoints(count, scale) {
+            const points = [];
+            // 1s orbital - spherically symmetric
+            for (let i = 0; i < count; i++) {
+                // Use rejection sampling for proper 1s distribution
+                let r, prob;
+                do {
+                    r = scale * Math.random(); // Random radius up to scale
+                    // 1s probability density ~ r^2 * e^(-2r/a0)
+                    const rScaled = r / (scale/4);
+                    prob = rScaled * rScaled * Math.exp(-2 * rScaled);
+                } while (Math.random() > prob); // Rejection sampling
+                
+                // Uniform distribution on sphere
+                const theta = Math.acos(2 * Math.random() - 1);
+                const phi = Math.random() * Math.PI * 2;
+                
+                // Convert to Cartesian coordinates
+                const x = r * Math.sin(theta) * Math.cos(phi);
+                const y = r * Math.sin(theta) * Math.sin(phi);
+                const z = r * Math.cos(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            return points;
+        }
+
+        // Point generation for 2s Orbital (Spherical with one radial node)
+        function generate2sPoints(count, scale) {
+            const points = [];
+            // 2s orbital - spherical with radial node at r = 2*a0
+            for (let i = 0; i < count; i++) {
+                // Use rejection sampling for proper 2s distribution
+                let r, prob;
+                do {
+                    r = scale * 1.5 * Math.random(); // Larger radius for 2s
+                    // 2s probability density ~ r^2 * (2-r/a0)^2 * e^(-r/2a0)
+                    const rScaled = r / (scale/4);
+                    
+                    // This creates a more pronounced node
+                    const nodeTerm = Math.pow(2 - rScaled/2, 2);
+                    
+                    // If we're near the node, drastically reduce probability
+                    const nodeEffect = Math.abs(rScaled/2 - 2) < 0.3 ? 0.05 : 1.0;
+                    
+                    prob = rScaled * rScaled * nodeTerm * Math.exp(-rScaled/2) * nodeEffect;
+                } while (Math.random() * 2.0 > prob); // Stricter rejection
+                
+                // Uniform distribution on sphere
+                const theta = Math.acos(2 * Math.random() - 1);
+                const phi = Math.random() * Math.PI * 2;
+                
+                const x = r * Math.sin(theta) * Math.cos(phi);
+                const y = r * Math.sin(theta) * Math.sin(phi);
+                const z = r * Math.cos(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            return points;
+        }
+
+        // Point generation for 2pz orbital (dumbbell shape) - Serves as 2p_H_z
+        function generate2pzPoints(count, scale) {
+            const points = [];
+            // 2pz orbital - dumbbell shape along z-axis
+            for (let i = 0; i < count; i++) {
+                // Use rejection sampling for 2pz distribution
+                let r, theta, prob;
+                do {
+                    r = scale * 1.2 * Math.random(); // Radius
+                    theta = Math.acos(2 * Math.random() - 1); // Angle from z-axis
+                    
+                    // 2pz probability ~ r^2 * e^(-r/a0) * cos^2(theta)
+                    const rScaled = r / (scale/4);
+                    
+                    // Enhance the angular dependence to create a more pronounced dumbbell
+                    const angularTerm = Math.pow(Math.cos(theta), 4); // Use cos^4 instead of cos^2
+                    
+                    // Create a nodal plane at xy (theta = PI/2)
+                    const nodalPlaneEffect = Math.abs(Math.cos(theta)) < 0.2 ? 0.01 : 1.0;
+                    
+                    prob = rScaled * rScaled * Math.exp(-rScaled) * angularTerm * nodalPlaneEffect;
+                } while (Math.random() * 0.3 > prob); // Stricter rejection
+                
+                const phi = Math.random() * Math.PI * 2;
+                
+                const x = r * Math.sin(theta) * Math.cos(phi);
+                const y = r * Math.sin(theta) * Math.sin(phi);
+                const z = r * Math.cos(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            return points;
+        }
+
+        // Point generation for 3pz Orbital (Dumbbell with one radial node)
+        function generate3pzPoints(count, scale) {
+            const points = [];
+            // 3pz orbital - dumbbell with radial node
+            for (let i = 0; i < count; i++) {
+                // Use rejection sampling for 3pz distribution
+                let r, theta, prob;
+                do {
+                    r = scale * 1.5 * Math.random(); // Larger radius for 3p
+                    theta = Math.acos(2 * Math.random() - 1); // Angle from z-axis
+                    
+                    // 3pz probability ~ r^2 * (6-r/a0)^2 * (r/a0)^2 * e^(-r/3a0) * cos^2(theta)
+                    const rScaled = r / (scale/6);
+                    
+                    // Enhanced angular term for more pronounced dumbbell
+                    const angularTerm = Math.pow(Math.cos(theta), 4); // Use cos^4 instead of cos^2
+                    
+                    // Create a nodal plane at xy (theta = PI/2)
+                    const nodalPlaneEffect = Math.abs(Math.cos(theta)) < 0.2 ? 0.01 : 1.0;
+                    
+                    // Create a more pronounced radial node
+                    const radialNodeTerm = Math.pow(6 - rScaled, 2) * Math.pow(rScaled, 2);
+                    const radialNodeEffect = Math.abs(rScaled - 6) < 0.5 ? 0.05 : 1.0;
+                    
+                    prob = radialNodeTerm * Math.exp(-rScaled/3) * angularTerm * nodalPlaneEffect * radialNodeEffect;
+                } while (Math.random() * 5.0 > prob); // Stricter rejection
+                
+                const phi = Math.random() * Math.PI * 2;
+                
+                const x = r * Math.sin(theta) * Math.cos(phi);
+                const y = r * Math.sin(theta) * Math.sin(phi);
+                const z = r * Math.cos(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            return points;
+        }
+
+        // Point generation for 3dz² orbital
+        function generate3dz2Points(count, scale) {
+            const points = [];
+            // 3dz² orbital - donut with two lobes along z-axis
+            for (let i = 0; i < count; i++) {
+                // Use rejection sampling for 3dz² distribution
+                let r, theta, prob;
+                do {
+                    r = scale * 1.5 * Math.random(); // Larger radius for 3d
+                    theta = Math.acos(2 * Math.random() - 1); // Angle from z-axis
+                    
+                    // 3dz² probability ~ r^4 * e^(-r/3a0) * (3cos²(θ)-1)²
+                    const rScaled = r / (scale/6);
+                    
+                    // Angular part for 3dz² - creates the donut and two lobes
+                    const angularPart = Math.pow(3 * Math.pow(Math.cos(theta), 2) - 1, 2);
+                    
+                    // Create more pronounced nodal cones
+                    const nodalConeEffect = Math.abs(3 * Math.pow(Math.cos(theta), 2) - 1) < 0.3 ? 0.05 : 1.0;
+                    
+                    prob = Math.pow(rScaled, 4) * Math.exp(-rScaled/3) * angularPart * nodalConeEffect;
+                } while (Math.random() * 10.0 > prob); // Much stricter rejection
+                
+                const phi = Math.random() * Math.PI * 2;
+                
+                const x = r * Math.sin(theta) * Math.cos(phi);
+                const y = r * Math.sin(theta) * Math.sin(phi);
+                const z = r * Math.cos(theta);
+                
+                points.push(new THREE.Vector3(x, y, z));
+            }
+            return points;
+        }
+
+
+        init();
+    </script>
+</body>
+</html>
