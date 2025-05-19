@@ -13,12 +13,48 @@ const simulations = [
     available: true
   },
   {
-    id: 'placeholder',
+    id: 'gravity-wells',
     title: 'Placeholder',
-    description: 'Visualize spacetime curvature and orbital mechanics',
+    description: 'Placeholder',
     color: '#ea4335',
     image: '🪐',
     path: '/gravity-wells',
+    available: false
+  },
+  {
+    id: 'fluid-dynamics',
+    title: 'Placeholder',
+    description: 'Placeholder',
+    color: '#34a853',
+    image: '💧',
+    path: '/fluid-dynamics',
+    available: false
+  },
+  {
+    id: 'wave-mechanics',
+    title: 'Placeholder',
+    description: 'Placeholder',
+    color: '#fbbc04',
+    image: '🌊',
+    path: '/wave-mechanics',
+    available: false
+  },
+  {
+    id: 'particle-collider',
+    title: 'Placeholder',
+    description: 'Placeholder',
+    color: '#9c27b0',
+    image: '💥',
+    path: '/particle-collider',
+    available: false
+  },
+  {
+    id: 'electric-fields',
+    title: 'Placeholder',
+    description: 'Placeholder',
+    color: '#00bcd4',
+    image: '⚡',
+    path: '/electric-fields',
     available: false
   },
 ];
@@ -26,6 +62,9 @@ const simulations = [
 // SimulationCard component
 function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave, themeColors }) {
   const { id, title, description, color, image, path, available } = simulation;
+  
+  // Use the simulation's color for card accents
+  const cardAccentColor = color;
   
   return (
     <Link 
@@ -36,19 +75,19 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave, them
         cursor: available ? 'pointer' : 'not-allowed',
         transform: isActive ? 'translateY(-5px)' : 'translateY(0)'
       }}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={() => onMouseEnter(id)}
       onMouseLeave={onMouseLeave}
     >
       <div 
         className="glass card-content transition-transform duration-500 ease-out h-full p-6 flex flex-col"
         style={{ 
-          borderLeft: `3px solid ${themeColors.accent}`,
-          boxShadow: isActive ? `0 0 20px ${themeColors.accent}80` : 'none',
+          borderLeft: `3px solid ${cardAccentColor}`,
+          boxShadow: isActive ? `0 0 20px ${cardAccentColor}80` : 'none',
           background: themeColors.card
         }}
       >
         <div className="emoji-icon text-5xl mb-4 transition-all duration-300" style={{ 
-          filter: isActive ? `drop-shadow(0 0 10px ${themeColors.accent})` : 'none',
+          filter: isActive ? `drop-shadow(0 0 10px ${cardAccentColor})` : 'none',
           transform: isActive ? 'scale(1.05)' : 'scale(1)',
           transformOrigin: 'center'
         }}>
@@ -56,7 +95,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave, them
         </div>
         
         <h2 className="text-2xl font-bold mb-2 transition-all duration-300" style={{ 
-          color: themeColors.accent,
+          color: cardAccentColor,
           transform: isActive ? 'scale(1.05)' : 'scale(1)',
           transformOrigin: 'left'
         }}>
@@ -74,7 +113,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave, them
           
           <div className="progress-bar h-1 mt-3 rounded-full transition-all duration-500" 
             style={{ 
-              background: `linear-gradient(to right, ${themeColors.accent}80, ${themeColors.accent})`,
+              background: `linear-gradient(to right, ${cardAccentColor}80, ${cardAccentColor})`,
               opacity: isActive ? 1 : 0,
               transform: isActive ? 'scaleX(1)' : 'scaleX(0)'
             }}>
@@ -87,7 +126,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave, them
 
 export default function Home() {
   const [activeSim, setActiveSim] = useState(null);
-  const [theme, setTheme] = useState('dark'); // 'dark', 'light', 'blue', or 'gray'
+  const [theme, setTheme] = useState('gray'); // Changed from 'dark' to 'gray'
   
   const handleMouseEnter = (id) => {
     setActiveSim(id);
@@ -241,7 +280,7 @@ export default function Home() {
       </div>
       
       {/* Main Content */}
-      <div className="col-span-10 col-start-3 px-4 py-16">
+      <div className="col-span-10 col-start-3 px-8 py-16 max-w-7xl mx-auto">
         <header className="text-center mb-16">
           <h1 className={`text-6xl font-bold mb-4 bg-gradient-to-r ${currentTheme.gradient} text-transparent bg-clip-text px-4 py-4`}>
             GigaLab
@@ -251,13 +290,13 @@ export default function Home() {
           </p>
         </header>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto">
           {simulations.map((sim) => (
             <SimulationCard
               key={sim.id}
               simulation={sim}
               isActive={activeSim === sim.id}
-              onMouseEnter={() => handleMouseEnter(sim.id)}
+              onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               themeColors={currentTheme}
             />
