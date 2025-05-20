@@ -9,7 +9,7 @@ const simulations = [
     description: 'Explore electron clouds and photon interactions',
     color: '#1a73e8',
     image: '⚛️',
-    path: '/quantum-playground',
+    path: '/Atom',
     available: true
   },
   {
