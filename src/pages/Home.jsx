@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const simulations = [
   {
     id: 'quantum-playground',
-    title: 'Quantum Playground',
+    title: 'Atom',
     description: 'Explore electron clouds and photon interactions',
     color: '#1a73e8',
     image: '⚛️',
@@ -286,7 +286,7 @@ export default function Home() {
             GigaLab
           </h1>
           <p className="text-xl" style={{ color: currentTheme.text }}>
-            Interactive physics simulations based on reality
+            Interactive physics simulations (and other stuff)
           </p>
         </header>
         

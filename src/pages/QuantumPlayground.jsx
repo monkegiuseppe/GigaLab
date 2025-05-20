@@ -533,12 +533,6 @@ export default function QuantumPlayground() {
             const energy = calculatePhotonEnergy(photonWavelength);
             document.getElementById('photonEnergyDisplay').textContent = 
                 `Photon Energy: ${energy.eV.toFixed(1)} eV`;
-            
-            // Always update wave color based on wavelength
-            const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
-            const color = new THREE.Color().setHSL(hue/360, 1, 0.5);
-            waveParticleMaterial.color.copy(color);
-            waveParticleMaterial.emissive.copy(color).multiplyScalar(0.3);
         });
         
         // Add value markers below slider
@@ -740,7 +734,7 @@ export default function QuantumPlayground() {
         let wavePosition = 5; // Starting z position (to the right)
         
         // Create a grid of particles for the wave
-        const gridSize = 100;      
+        const gridSize = 120;      
         const gridSpacing = 0.25;  
         const totalParticles = gridSize * gridSize;
         
@@ -759,7 +753,9 @@ export default function QuantumPlayground() {
             waveParticleMaterial,
             totalParticles
         );
-        waveParticles.visible = false;
+        
+        // Make the plane visible immediately
+        waveParticles.visible = true;
         scene.add(waveParticles);
         
         // Initialize instance colors
@@ -777,12 +773,21 @@ export default function QuantumPlayground() {
                 
                 // Position in a grid on the x-z plane
                 const x = (i - gridSize/2) * gridSpacing;
-                const z = (j - gridSize/2) * gridSpacing;
+                const z = (j - gridSize/2) * gridSpacing - 5;
                 const y = 0; // Y position at center level
                 
                 dummy.position.set(x, y, z + 5); // Start position (to the right of the atom)
+                
+                // Set initial scale to small but visible
+                dummy.scale.set(0.3, 0.3, 0.3);
+                
                 dummy.updateMatrix();
                 waveParticles.setMatrixAt(index, dummy.matrix);
+                
+                // Set initial color for the plane
+                const baseHue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
+                const color = new THREE.Color().setHSL(baseHue/360, 0.5, 0.4);
+                waveParticles.setColorAt(index, color);
             }
         }
         waveParticles.instanceMatrix.needsUpdate = true;
@@ -792,7 +797,6 @@ export default function QuantumPlayground() {
         function emitWave() {
             if (waveActive) return;
             
-            waveParticles.visible = true;
             waveActive = true;
             waveTime = 0;
             wavePosition = 10;
@@ -805,17 +809,44 @@ export default function QuantumPlayground() {
             const energy = calculatePhotonEnergy(photonWavelength);
             document.getElementById('photonEnergyDisplay').textContent = 
                 `Photon Energy: ${energy.eV.toFixed(2)} eV`;
-            
-            // Update wave color based on wavelength (blue for short, red for long)
-            const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
-            const color = new THREE.Color().setHSL(hue/360, 1, 0.5);
-            waveParticleMaterial.color.copy(color);
-            waveParticleMaterial.emissive.copy(color).multiplyScalar(0.3);
         }
         
         // Function to update wave animation
         function updateWave(deltaTime) {
-            if (!waveActive) return;
+            
+            // If no active wave, just keep the plane visible with minimal height
+            if (!waveActive) {
+                // Optional: add gentle ambient motion to the plane when not active
+                for (let i = 0; i < gridSize; i++) {
+                    for (let j = 0; j < gridSize; j++) {
+                        const index = i * gridSize + j;
+                        
+                        // Position in a grid on the x-z plane
+                        const x = (i - gridSize/2) * gridSpacing;
+                        const z = (j - gridSize/2) * gridSpacing;
+                        
+                        // Very subtle motion
+                        const height = Math.sin(time * 0.5 + x + z) * 0.02;
+                        
+                        // Apply height to Y position
+                        dummy.position.set(x, height, z + 5);
+                        
+                        // Keep a standard small scale when inactive
+                        dummy.scale.set(0.3, 0.3, 0.3);
+                        
+                        dummy.updateMatrix();
+                        waveParticles.setMatrixAt(index, dummy.matrix);
+                        
+                        // Set neutral color for inactive plane
+                        const color = new THREE.Color(0x7799aa);  // Blue-gray
+                        waveParticles.setColorAt(index, color);
+                    }
+                }
+                
+                waveParticles.instanceMatrix.needsUpdate = true;
+                waveParticles.instanceColor.needsUpdate = true;
+                return;
+            }
             
             // Get current values from sliders if they exist
             if (document.getElementById('waveSpeedSlider')) {
@@ -837,13 +868,8 @@ export default function QuantumPlayground() {
             // Update time and position - moving left (negative direction)
             waveTime += deltaTime * waveConfig.waveSpeed * 0.5;
             wavePosition -= deltaTime * waveConfig.waveSpeed * 1.2;
-            
-            // If wave has moved past the atom, hide it
-            if (wavePosition < -10) {
-                waveActive = false;
-                waveParticles.visible = false;
-                return;
-            }
+
+            let waveExiting = wavePosition < -15;
             
             // Update particle positions based on wave function
             for (let i = 0; i < gridSize; i++) {
@@ -852,57 +878,50 @@ export default function QuantumPlayground() {
                     
                     // Base position in grid (x-z plane)
                     const x = (i - gridSize/2) * gridSpacing;
-                    const z = (j - gridSize/2) * gridSpacing;
+                    const z = (j - gridSize/2) * gridSpacing - 5;
                     
                     // Calculate distance from wave center in X-Z plane (circular wave)
                     const dx = x;
                     const dz = z - wavePosition;
                     const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
                     
-                    // Define the active wave radius and larger visible radius
+                    // Define the active wave radius and always visible base radius
                     const waveRadius = 4.0 * photonWavelength;
                     const visibleRadius = 8.0 * photonWavelength;
                     
                     // Calculate wave effect
                     let height = 0;
-                    let opacity = 0;
                     
                     if (distanceFromCenter < visibleRadius) {
-                        // Calculate smooth opacity throughout the entire visible area
-                        const normalizedDist = distanceFromCenter / visibleRadius;
-                        // Smooth falloff curve
-                        opacity = Math.pow(1.0 - normalizedDist, 1.5) * 0.8;
-                        
                         if (distanceFromCenter < waveRadius) {
                             // Calculate height using smooth bell curve
                             const heightFactor = 1.0 - (distanceFromCenter / waveRadius);
                             height = waveConfig.waveHeight * photonWavelength * Math.pow(heightFactor, 2);
-                            
-                            // Add more opacity to the wave peak
-                            opacity = Math.max(opacity, Math.min(1.0, height / (waveConfig.waveHeight * photonWavelength)));
                         }
-                        
-                        // Apply color gradient based on height/amplitude and wavelength
-                        const baseHue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
-                        const heightFactor = height / (waveConfig.waveHeight * photonWavelength);
-                        const saturation = 0.5 + heightFactor * 0.5;
-                        const lightness = 0.3 + heightFactor * 0.4;
-                        const particleColor = new THREE.Color().setHSL(baseHue/360, saturation, lightness);
-                        waveParticles.setColorAt(index, particleColor);
                     }
                     
                     // Apply height to Y position
-                    dummy.position.set(x, height, z);
+                    dummy.position.set(x, height, z + 5);
                     
-                    // Set scale based on opacity for smooth transition
-                    const scale = 0.2 + opacity * 0.8;
+                    // Set scale based on height - always visible but grows with wave
+                    const scale = 0.3 + height * 0.7;
                     dummy.scale.set(scale, scale, scale);
                     
                     dummy.updateMatrix();
                     waveParticles.setMatrixAt(index, dummy.matrix);
+                    
+                    // Color only depends on height - from base color to bright
+                    const heightFactor = Math.min(1.0, height / (waveConfig.waveHeight * photonWavelength));
+                    const blue = new THREE.Color(0x0088ff);
+                    // Make color brighter with height
+                    const colorIntensity = 0.4 + heightFactor * 0.6;
+                    const color = blue.clone().multiplyScalar(colorIntensity);
+                    waveParticles.setColorAt(index, color);
                 }
             }
-            
+            if (waveExiting && wavePosition < -25) {
+                waveActive = false;
+            }
             waveParticles.instanceMatrix.needsUpdate = true;
             waveParticles.instanceColor.needsUpdate = true;
         }
