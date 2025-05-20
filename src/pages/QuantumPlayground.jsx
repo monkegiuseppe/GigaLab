@@ -19,6 +19,7 @@ export default function QuantumPlayground() {
     const particleCount = 45000; 
     const particleSize = 0.06;  
 
+    let waveType = 'linear';
     let photons = [];
     let photonWavelength = 0.5;
     let photonSpeed = 2.0;
@@ -464,10 +465,22 @@ export default function QuantumPlayground() {
 
     // Create a React-friendly version of the GUI controls
     function createGuiControls() {
+
+    const orbitalSection = document.createElement('div');
+    const crossSectionSection = document.createElement('div');
+    const orbitalLabel = document.createElement('label');
+    const crossSectionLabel = document.createElement('label'); 
       // Create the orbital selector
       const orbitalSelector = document.createElement('select');
       orbitalSelector.id = 'orbitalSelector';
-      
+      orbitalSelector.style.width = '100%';
+        orbitalSelector.style.padding = '8px';
+        orbitalSelector.style.borderRadius = '4px';
+        orbitalSelector.style.backgroundColor = 'rgba(60, 60, 60, 0.8)';
+        orbitalSelector.style.color = 'rgba(220, 220, 220, 0.9)';
+        orbitalSelector.style.border = '1px solid rgba(80, 80, 80, 0.8)';
+        orbitalSection.style.marginBottom = '15px';
+
       for (const type in orbitalParams) {
         const option = document.createElement('option');
         option.value = type;
@@ -478,15 +491,31 @@ export default function QuantumPlayground() {
       orbitalSelector.addEventListener('change', (event) => {
         switchOrbital(event.target.value);
       });
-      
+    
       // Create cross-section slider
       const crossSectionSlider = document.createElement('input');
+      crossSectionSection.className = 'glass';
+        crossSectionSection.style.padding = '15px';
+        crossSectionSection.style.borderRadius = '8px';
+        crossSectionSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+        crossSectionSection.style.backdropFilter = 'blur(10px)';
+        crossSectionSection.style.WebkitBackdropFilter = 'blur(10px)';
+        crossSectionSection.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+        crossSectionSection.style.marginBottom = '15px';
       crossSectionSlider.type = 'range';
       crossSectionSlider.id = 'crossSectionSlider';
       crossSectionSlider.min = '-10';
       crossSectionSlider.max = '10';
       crossSectionSlider.value = '10';
       crossSectionSlider.step = '0.1';
+      crossSectionLabel.style.fontWeight = 'bold';
+        crossSectionLabel.style.marginBottom = '10px';
+        crossSectionLabel.style.display = 'block';
+        crossSectionLabel.style.color = 'rgba(220, 220, 220, 0.9)';
+
+        crossSectionSlider.style.accentColor = 'rgb(220, 40, 40)';
+        crossSectionSlider.style.width = '100%';
+        crossSectionSlider.style.marginBottom = '5px';
       
       crossSectionSlider.addEventListener('input', (event) => {
         const value = parseFloat(event.target.value);
@@ -500,14 +529,33 @@ export default function QuantumPlayground() {
       // Create wave controls
       const wavelengthSection = document.createElement('div');
         wavelengthSection.style.marginTop = '15px';
+        wavelengthSection.className = 'glass';
+        wavelengthSection.style.padding = '15px';
+        wavelengthSection.style.borderRadius = '8px';
+        wavelengthSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+        wavelengthSection.style.backdropFilter = 'blur(10px)';
+        wavelengthSection.style.WebkitBackdropFilter = 'blur(10px)';
+        wavelengthSection.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+        wavelengthSection.style.marginBottom = '15px';
 
         const wavelengthLabel = document.createElement('label');
+        wavelengthLabel.style.fontWeight = 'bold';
+        wavelengthLabel.style.marginBottom = '10px';
+        wavelengthLabel.style.display = 'block';
+        wavelengthLabel.style.color = 'rgba(220, 220, 220, 0.9)';
         wavelengthLabel.textContent = 'Photon Wavelength:';
         wavelengthLabel.setAttribute('for', 'wavelengthSlider');
         wavelengthSection.appendChild(wavelengthLabel);
 
         // Add wavelength display
         const wavelengthDisplay = document.createElement('div');
+        wavelengthDisplay.style.textAlign = 'center';
+        wavelengthDisplay.style.marginBottom = '10px';
+        wavelengthDisplay.style.padding = '5px';
+        wavelengthDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
+        wavelengthDisplay.style.borderRadius = '4px';
+        wavelengthDisplay.style.color = 'rgb(220, 40, 40)';
+        wavelengthDisplay.style.fontWeight = 'bold';
         wavelengthDisplay.id = 'currentWavelength';
         wavelengthDisplay.textContent = photonWavelength.toFixed(1) + ' nm';
         wavelengthDisplay.style.fontSize = '14px';
@@ -516,6 +564,9 @@ export default function QuantumPlayground() {
         wavelengthSection.appendChild(wavelengthDisplay);
 
         const wavelengthSlider = document.createElement('input');
+        wavelengthSlider.style.accentColor = 'rgb(220, 40, 40)';
+        wavelengthSlider.style.width = '100%';
+        wavelengthSlider.style.marginBottom = '5px';
         wavelengthSlider.type = 'range';
         wavelengthSlider.id = 'wavelengthSlider';
         wavelengthSlider.min = '0.2';
@@ -546,10 +597,14 @@ export default function QuantumPlayground() {
 
         // Add photon energy display
         const energyDisplay = document.createElement('div');
+        energyDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
+        energyDisplay.style.padding = '5px';
+        energyDisplay.style.borderRadius = '4px';
+        energyDisplay.style.marginTop = '10px';
+        energyDisplay.style.fontSize = '13px';
+        energyDisplay.style.color = 'rgba(200, 200, 200, 0.8)';
         energyDisplay.id = 'photonEnergyDisplay';
         energyDisplay.textContent = `Photon Energy: ${calculatePhotonEnergy(photonWavelength).eV.toFixed(1)} eV`;
-        energyDisplay.style.fontSize = '14px';
-        energyDisplay.style.marginTop = '5px';
         wavelengthSection.appendChild(energyDisplay);
       
         
@@ -565,13 +620,21 @@ export default function QuantumPlayground() {
       
       // Here just a placeholder for the logic
       const guiContainer = guiContainerRef.current;
-      
       // Clear existing content
       guiContainer.innerHTML = '';
+      guiContainer.className = 'glass';
+        guiContainer.style.padding = '20px';
+        guiContainer.style.borderRadius = '12px';
+        guiContainer.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        guiContainer.style.width = '280px';
+        guiContainer.style.color = 'rgba(220, 220, 220, 0.9)';
+        
+      
       
       // Orbital selector section
-      const orbitalSection = document.createElement('div');
-      const orbitalLabel = document.createElement('label');
+      orbitalLabel.style.fontWeight = 'bold';
+        orbitalLabel.style.marginBottom = '10px';
+        orbitalLabel.style.display = 'block';
       orbitalLabel.textContent = 'Select Orbital:';
       orbitalLabel.setAttribute('for', 'orbitalSelector');
       
@@ -581,10 +644,9 @@ export default function QuantumPlayground() {
       guiContainer.appendChild(wavelengthSection);
 
       // Cross-section slider section
-      const crossSectionSection = document.createElement('div');
+    
       crossSectionSection.style.marginTop = '15px';
       
-      const crossSectionLabel = document.createElement('label');
       crossSectionLabel.textContent = 'Cross-Section (X-axis):';
       crossSectionLabel.setAttribute('for', 'crossSectionSlider');
       
@@ -599,13 +661,43 @@ export default function QuantumPlayground() {
       
       crossSectionSection.appendChild(crossSectionMarkers);
       guiContainer.appendChild(crossSectionSection);
-      
-      // Add photon wave controls
-      // ... (similar structure for wave controls)
-      
+
+      const waveTypeToggle = document.createElement('button');
+        waveTypeToggle.id = 'waveTypeToggleBtn';
+        waveTypeToggle.textContent = 'Wave Type: Point';
+        waveTypeToggle.className = 'w-full p-2 rounded border transition-all'; // Apply site-wide button styles
+        waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+        waveTypeToggle.style.borderColor = 'rgba(80, 80, 80, 0.8)';
+        waveTypeToggle.style.color = 'rgba(220, 220, 220, 0.9)';
+        waveTypeToggle.style.fontSize = '14px';
+        waveTypeToggle.style.margin = '10px 0';
+
+        waveTypeToggle.addEventListener('click', () => {
+            // Toggle between 'linear' and 'circular' wave types
+            if (waveType === 'linear') {
+                waveType = 'circular';
+                waveTypeToggle.textContent = 'Wave Type: Circular';
+                waveTypeToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+            } else {
+                waveType = 'linear';
+                waveTypeToggle.textContent = 'Wave Type: Point';
+                waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+            }
+        });
+
+        // Add to GUI
+        const waveTypeSection = document.createElement('div');
+        waveTypeSection.style.marginTop = '10px';
+        waveTypeSection.appendChild(waveTypeToggle);
+        guiContainer.appendChild(waveTypeSection);
+
       // Add emit button
       const emitSection = document.createElement('div');
       emitSection.style.marginTop = '15px';
+      emitButton.className = 'w-full p-2 rounded border transition-all hover:bg-opacity-90';
+      emitButton.style.backgroundColor = 'rgb(220, 40, 40)'; // Use the accent color from your gray theme
+      emitButton.style.borderColor = 'rgb(220, 40, 40)';
+      emitButton.style.color = 'rgba(220, 220, 220, 0.9)';
       emitSection.appendChild(emitButton);
       guiContainer.appendChild(emitSection);
     }
@@ -843,7 +935,7 @@ export default function QuantumPlayground() {
                 for (let j = 0; j < gridSize; j++) {
                     const index = i * gridSize + j;
                     
-                    // Position in a grid on the x-z plane - KEEP CONSISTENT
+                    // Position in a grid on the x-z plane
                     const x = (i - gridSize/2) * gridSpacing;
                     const z = (j - gridSize/2) * gridSpacing + zOffset;
                     
@@ -853,27 +945,83 @@ export default function QuantumPlayground() {
                     
                     // If wave is active, calculate its effect
                     if (waveActive) {
-                        // Calculate distance from wave center
-                        const dx = x;
-                        const dz = z - wavePosition;
-                        const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
+                        let distanceFromWave;
                         
-                        // Define the active wave radius based on wavelength 
-                        const waveRadius = 4.0 * photonWavelength; 
-                        const visibleRadius = 8.0 * photonWavelength; 
-                        
-                        // Calculate wave effect
-                        if (distanceFromCenter < visibleRadius) {
-                            if (distanceFromCenter < waveRadius) {
-                                // Calculate height using smooth bell curve
-                                const heightFactor = 1.0 - (distanceFromCenter / waveRadius);
-                                const waveHeight = waveConfig.waveHeight * photonWavelength * Math.pow(heightFactor, 2);
+                        if (waveType === 'linear') {
+                            // POINT-LIKE wave - distance from a moving point
+                            const dx = x;
+                            const dz = z - wavePosition;
+                            const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
+                            
+                            // Define the active wave radius based on wavelength
+                            const waveRadius = 5.0 * photonWavelength; // Width of the wave
+                            const visibleRadius = 10.0 * photonWavelength; // Visible area
+                            
+                            // Calculate wave effect
+                            if (distanceFromCenter < visibleRadius) {
+                                if (distanceFromCenter < waveRadius) {
+                                    // Calculate height using smooth bell curve
+                                    const heightFactor = 1.0 - (distanceFromCenter / waveRadius);
+                                    const waveHeight = waveConfig.waveHeight * photonWavelength * Math.pow(heightFactor, 2);
+                                    
+                                    if (waveHeight > height) {
+                                        height = waveHeight;
+                                        colorIntensity = 0.4 + Math.min(0.6, height / (waveConfig.waveHeight * photonWavelength) * 0.6);
+                                    }
+                                }
+                            }
+                        } else { // circular wave
+                            // Start from an earlier position to the right
+                            const waveOriginZ = 17; // Further to the right (was 15)
+                            const waveOriginX = 0;  // Center X position
+                            
+                            // Calculate the current radius of the expanding circle based on wave position
+                            // Use a more natural expansion rate
+                            const expandingRadius = Math.abs(waveOriginZ - wavePosition) * 1.2;
+                            
+                            // Calculate distance from the expanding circle
+                            const dx = x - waveOriginX;
+                            const dz = z - waveOriginZ;
+                            const distanceFromOrigin = Math.sqrt(dx * dx + dz * dz);
+                            
+                            // Calculate angle from the origin
+                            const angle = Math.atan2(dx, -dz);
+                            
+                            // Limit to approximately 150 degrees total (75 degrees each side)
+                            const maxAngle = Math.PI * 0.42; // ~75 degrees
+                            
+                            // Only process points within the angle range
+                            if (Math.abs(angle) <= maxAngle) {
+                                // For a natural wave, use a constant thickness that doesn't widen in middle
+                                const ringThickness = 1.8 * photonWavelength; // Thinner base thickness
                                 
-                                // Only override the height if wave is higher
-                                if (waveHeight > height) {
-                                    height = waveHeight;
-                                    // Adjust color intensity based on height
-                                    colorIntensity = 0.4 + Math.min(0.6, height / (waveConfig.waveHeight * photonWavelength) * 0.6);
+                                // Calculate distance from the expanding circle edge
+                                const distanceFromRing = Math.abs(distanceFromOrigin - expandingRadius);
+                                
+                                // Calculate wave effect - height is maximum at the ring radius
+                                if (distanceFromRing < ringThickness) {
+                                    // Use a bell curve that gets proportionally thinner as the wave expands
+                                    const heightFactor = 1.0 - (distanceFromRing / ringThickness);
+                                    
+                                    // Wave height decreases slightly as it expands (inverse square law)
+                                    const distanceFactor = Math.max(0.3, 1.0 / (1.0 + expandingRadius * 0.05));
+                                    
+                                    // Additional factor to fade out at the edges of the angle range
+                                    // Use a smoother fade at edges with cosine
+                                    const angleFactor = Math.cos(angle / maxAngle * (Math.PI/2)) * Math.cos(angle / maxAngle * (Math.PI/2));
+                                    
+                                    // In the early stages of the wave, make the wave thinner to prevent middle widening
+                                    const initialStageCorrection = expandingRadius < 8 ? 
+                                        Math.max(0.5, expandingRadius / 8) : 1.0;
+                                    
+                                    const waveHeight = waveConfig.waveHeight * photonWavelength * 
+                                                      Math.pow(heightFactor, 2) * distanceFactor * 
+                                                      Math.pow(angleFactor, 2) * initialStageCorrection;
+                                    
+                                    if (waveHeight > height) {
+                                        height = waveHeight;
+                                        colorIntensity = 0.4 + Math.min(0.6, height / (waveConfig.waveHeight * photonWavelength) * 0.6);
+                                    }
                                 }
                             }
                         }
@@ -882,14 +1030,14 @@ export default function QuantumPlayground() {
                     // Apply height to Y position
                     dummy.position.set(x, height, z);
                     
-                    // Set scale based on height - always visible but grows with wave
+                    // Set scale based on height
                     const scale = defaultScale + height * 0.7;
                     dummy.scale.set(scale, scale, scale);
                     
                     dummy.updateMatrix();
                     waveParticles.setMatrixAt(index, dummy.matrix);
                     
-                    // Set color intensity based on height - ALWAYS SAME COLOR
+                    // Set color intensity based on height
                     const color = defaultColor.clone().multiplyScalar(colorIntensity);
                     waveParticles.setColorAt(index, color);
                 }
@@ -973,9 +1121,17 @@ export default function QuantumPlayground() {
     };
     }, []);
     return (
-        <div className="quantum-container">
-          <div ref={containerRef} className="renderer-container"></div>
-          <div ref={guiContainerRef} className="gui-container"></div>
+        <div className="quantum-container" style={{position: 'relative', width: '100%', height: '100vh'}}>
+          <div ref={containerRef} className="renderer-container" style={{width: '100%', height: '100%'}}></div>
+          <div ref={guiContainerRef} className="gui-container" style={{
+            position: 'absolute', 
+            top: '20px', 
+            left: '20px', 
+            zIndex: 10, 
+            backgroundColor: 'rgba(40,40,40,0.85)',
+            padding: '15px',
+            width: '280px'
+          }}></div>
         </div>
       );
     }
