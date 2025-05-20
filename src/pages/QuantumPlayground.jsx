@@ -498,24 +498,67 @@ export default function QuantumPlayground() {
       });
       
       // Create wave controls
-      const wavelengthSlider = document.createElement('input');
-      wavelengthSlider.type = 'range';
-      wavelengthSlider.id = 'wavelengthSlider';
-      wavelengthSlider.min = '0.1';
-      wavelengthSlider.max = '2.0';
-      wavelengthSlider.value = photonWavelength;
-      wavelengthSlider.step = '0.1';
+      const wavelengthSection = document.createElement('div');
+        wavelengthSection.style.marginTop = '15px';
+
+        const wavelengthLabel = document.createElement('label');
+        wavelengthLabel.textContent = 'Photon Wavelength:';
+        wavelengthLabel.setAttribute('for', 'wavelengthSlider');
+        wavelengthSection.appendChild(wavelengthLabel);
+
+        // Add wavelength display
+        const wavelengthDisplay = document.createElement('div');
+        wavelengthDisplay.id = 'currentWavelength';
+        wavelengthDisplay.textContent = photonWavelength.toFixed(1) + ' nm';
+        wavelengthDisplay.style.fontSize = '14px';
+        wavelengthDisplay.style.textAlign = 'center';
+        wavelengthDisplay.style.marginBottom = '5px';
+        wavelengthSection.appendChild(wavelengthDisplay);
+
+        const wavelengthSlider = document.createElement('input');
+        wavelengthSlider.type = 'range';
+        wavelengthSlider.id = 'wavelengthSlider';
+        wavelengthSlider.min = '0.2';
+        wavelengthSlider.max = '3.0';
+        wavelengthSlider.value = photonWavelength;
+        wavelengthSlider.step = '0.1';
+        wavelengthSection.appendChild(wavelengthSlider);
+
+        
+        wavelengthSlider.addEventListener('input', (event) => {
+            photonWavelength = parseFloat(event.target.value);
+            document.getElementById('currentWavelength').textContent = photonWavelength.toFixed(1) + ' nm';
+            
+            // Calculate and update energy display
+            const energy = calculatePhotonEnergy(photonWavelength);
+            document.getElementById('photonEnergyDisplay').textContent = 
+                `Photon Energy: ${energy.eV.toFixed(1)} eV`;
+            
+            // Always update wave color based on wavelength
+            const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
+            const color = new THREE.Color().setHSL(hue/360, 1, 0.5);
+            waveParticleMaterial.color.copy(color);
+            waveParticleMaterial.emissive.copy(color).multiplyScalar(0.3);
+        });
+        
+        // Add value markers below slider
+        const wavelengthMarkers = document.createElement('div');
+        wavelengthMarkers.style.display = 'flex';
+        wavelengthMarkers.style.justifyContent = 'space-between';
+        wavelengthMarkers.style.fontSize = '12px';
+        wavelengthMarkers.style.marginTop = '2px';
+        wavelengthMarkers.innerHTML = '<span>0.2 nm</span><span>3.0 nm</span>';
+        wavelengthSection.appendChild(wavelengthMarkers);
+
+        // Add photon energy display
+        const energyDisplay = document.createElement('div');
+        energyDisplay.id = 'photonEnergyDisplay';
+        energyDisplay.textContent = `Photon Energy: ${calculatePhotonEnergy(photonWavelength).eV.toFixed(1)} eV`;
+        energyDisplay.style.fontSize = '14px';
+        energyDisplay.style.marginTop = '5px';
+        wavelengthSection.appendChild(energyDisplay);
       
-      wavelengthSlider.addEventListener('input', (event) => {
-        photonWavelength = parseFloat(event.target.value);
-        document.getElementById('currentWavelength').textContent = photonWavelength.toFixed(1) + ' nm';
-        const energy = calculatePhotonEnergy(photonWavelength);
-        document.getElementById('photonEnergyDisplay').textContent = 
-          `Photon Energy: ${energy.eV.toFixed(1)} eV`;
-      });
-      
-      // Create other sliders similar to above
-      // ... (wave speed slider, wave height slider)
+        
       
       // Create emit button
       const emitButton = document.createElement('button');
@@ -526,8 +569,6 @@ export default function QuantumPlayground() {
         // This will be implemented in setupPhotonWave
       });
       
-      // Add elements to the GUI container
-      // This part will be replaced with React-friendly structure
       // Here just a placeholder for the logic
       const guiContainer = guiContainerRef.current;
       
@@ -543,7 +584,8 @@ export default function QuantumPlayground() {
       orbitalSection.appendChild(orbitalLabel);
       orbitalSection.appendChild(orbitalSelector);
       guiContainer.appendChild(orbitalSection);
-      
+      guiContainer.appendChild(wavelengthSection);
+
       // Cross-section slider section
       const crossSectionSection = document.createElement('div');
       crossSectionSection.style.marginTop = '15px';
@@ -681,9 +723,6 @@ export default function QuantumPlayground() {
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     }
 
-    // Add implementation for setupPhotonWave, updatePhoton, etc.
-    // These are quite complex and would be adapted from the original code
-
     function setupPhotonWave(scene) {
         // Configuration for the wave
         const waveConfig = {
@@ -695,13 +734,18 @@ export default function QuantumPlayground() {
             waveMode: 'partial'
         };
     
+        // Wave animation variables
+        let waveActive = false;
+        let waveTime = 0;
+        let wavePosition = 5; // Starting z position (to the right)
+        
         // Create a grid of particles for the wave
-        const gridSize = 80;      
-        const gridSpacing = 0.3;  
+        const gridSize = 100;      
+        const gridSpacing = 0.25;  
         const totalParticles = gridSize * gridSize;
         
         // Create geometry for wave particles
-        const waveParticleGeometry = new THREE.SphereGeometry(0.15, 8, 6);
+        const waveParticleGeometry = new THREE.SphereGeometry(0.12, 8, 6);
         const waveParticleMaterial = new THREE.MeshStandardMaterial({ 
             color: 0x00ffff,
             emissive: 0x003333,
@@ -744,32 +788,26 @@ export default function QuantumPlayground() {
         waveParticles.instanceMatrix.needsUpdate = true;
         waveParticles.instanceColor.needsUpdate = true;
         
-        // Wave animation variables
-        let waveActive = false;
-        let waveTime = 0;
-        let wavePosition = 5; // Starting z position (to the right)
-        
         // Function to emit a photon wave
         function emitWave() {
-            if (waveActive) return; // Don't emit if a wave is already active
+            if (waveActive) return;
             
-            // Make wave visible immediately
             waveParticles.visible = true;
-            
-            // Set wave active state immediately
             waveActive = true;
             waveTime = 0;
-            
-            // Start position closer to the atom for faster appearance
             wavePosition = 10;
             
-            // Calculate and update photon energy based on current wavelength
+            // Update wave parameters based on wavelength
+            waveConfig.wavelength = photonWavelength;
+            waveConfig.waveFrequency = 1.0 / photonWavelength; // Inverse relationship
+            
+            // Calculate and display energy
             const energy = calculatePhotonEnergy(photonWavelength);
             document.getElementById('photonEnergyDisplay').textContent = 
                 `Photon Energy: ${energy.eV.toFixed(2)} eV`;
             
-            // Update wave color based on photon wavelength
-            const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 2)));
+            // Update wave color based on wavelength (blue for short, red for long)
+            const hue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
             const color = new THREE.Color().setHSL(hue/360, 1, 0.5);
             waveParticleMaterial.color.copy(color);
             waveParticleMaterial.emissive.copy(color).multiplyScalar(0.3);
@@ -822,43 +860,42 @@ export default function QuantumPlayground() {
                     const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
                     
                     // Define the active wave radius and larger visible radius
-                    const waveRadius = 6.0 * photonWavelength;
-                    const visibleRadius = 12.0 * photonWavelength;
+                    const waveRadius = 4.0 * photonWavelength;
+                    const visibleRadius = 8.0 * photonWavelength;
                     
                     // Calculate wave effect
                     let height = 0;
                     let opacity = 0;
                     
                     if (distanceFromCenter < visibleRadius) {
-                        // Calculate fade factor based on distance from wave center
-                        const fadeFactor = 1.0 - (distanceFromCenter / visibleRadius);
-                        const smoothFade = Math.pow(fadeFactor, 5);
-                        opacity = smoothFade * 0.1;
+                        // Calculate smooth opacity throughout the entire visible area
+                        const normalizedDist = distanceFromCenter / visibleRadius;
+                        // Smooth falloff curve
+                        opacity = Math.pow(1.0 - normalizedDist, 1.5) * 0.8;
                         
                         if (distanceFromCenter < waveRadius) {
-                            // Calculate wave height using a smooth bell curve
-                            const normalizedDist = distanceFromCenter / waveRadius;
-                            height = waveConfig.waveHeight * photonWavelength * Math.exp(-normalizedDist * normalizedDist * 1.2);
+                            // Calculate height using smooth bell curve
+                            const heightFactor = 1.0 - (distanceFromCenter / waveRadius);
+                            height = waveConfig.waveHeight * photonWavelength * Math.pow(heightFactor, 2);
                             
-                            // Calculate opacity based on height (higher = more visible)
-                            const heightFactor = height / (waveConfig.waveHeight * photonWavelength);
-                            opacity = Math.min(0.1 + heightFactor * 0.9, 1.0);
-                            opacity = Math.pow(opacity, 0.6);
-                            
-                            // Apply color gradient based on height/amplitude
-                            const baseHue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 2)));
-                            const saturation = 0.5 + heightFactor * 0.5;
-                            const lightness = 0.3 + heightFactor * 0.4;
-                            const particleColor = new THREE.Color().setHSL(baseHue/360, saturation, lightness);
-                            waveParticles.setColorAt(index, particleColor);
+                            // Add more opacity to the wave peak
+                            opacity = Math.max(opacity, Math.min(1.0, height / (waveConfig.waveHeight * photonWavelength)));
                         }
+                        
+                        // Apply color gradient based on height/amplitude and wavelength
+                        const baseHue = Math.max(0, Math.min(240, 240 * (1 - photonWavelength / 3)));
+                        const heightFactor = height / (waveConfig.waveHeight * photonWavelength);
+                        const saturation = 0.5 + heightFactor * 0.5;
+                        const lightness = 0.3 + heightFactor * 0.4;
+                        const particleColor = new THREE.Color().setHSL(baseHue/360, saturation, lightness);
+                        waveParticles.setColorAt(index, particleColor);
                     }
                     
-                    // Apply height to Y position - particles only move up and down
+                    // Apply height to Y position
                     dummy.position.set(x, height, z);
                     
-                    // Set scale based on opacity (smaller when fading)
-                    const scale = opacity;
+                    // Set scale based on opacity for smooth transition
+                    const scale = 0.2 + opacity * 0.8;
                     dummy.scale.set(scale, scale, scale);
                     
                     dummy.updateMatrix();
