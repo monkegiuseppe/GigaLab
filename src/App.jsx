@@ -8,7 +8,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/quantum-playground" element={<QuantumPlayground />} />
+        <Route path="/atom" element={<QuantumPlayground />} />
         {/* Add more routes as you develop new simulations */}
       </Routes>
     </Router>

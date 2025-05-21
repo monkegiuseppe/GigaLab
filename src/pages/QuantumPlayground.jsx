@@ -18,6 +18,7 @@ export default function QuantumPlayground() {
 
     const particleCount = 45000; 
     const particleSize = 0.06;  
+    
 
     let waveType = 'linear';
     let photons = [];
@@ -31,6 +32,12 @@ export default function QuantumPlayground() {
     let waveFrequency = 0.3;
     let photonWave = null;
 
+    let absorptionActive = false;
+    let absorptionStrength = 0.0;
+    let absorptionFrequency = 0.0;
+    let absorptionPhase = 0.0;
+    let lastWavePosition = 0;
+
     // Shaders - paste the shader code from Q-Wave.html
     const vertexShader = `
       // Attributes from THREE.SphereGeometry
@@ -42,6 +49,9 @@ export default function QuantumPlayground() {
       uniform float u_minSpeedAtEdge;
       uniform float u_exponentialFalloffRate;
       uniform float u_crossSectionX;
+      uniform float u_absorptionStrength;
+      uniform float u_absorptionFrequency;
+      uniform float u_absorptionPhase;
       
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -68,14 +78,33 @@ export default function QuantumPlayground() {
           );
 
           // Calculate the new animated center of the instance
-          vec3 animated_instance_center_object_space = (rotationAnimMatrix * vec4(original_pos, 1.0)).xyz;
-          
-          // Create a translation matrix to this new animated center
+          vec3 animated_position = (rotationAnimMatrix * vec4(original_pos, 1.0)).xyz;
+
+          // Apply absorption effect if active
+          if (u_absorptionStrength > 0.01) {
+              // Calculate distance from center
+              float dist = length(animated_position);
+              
+              // Calculate direction vector
+              vec3 direction = normalize(animated_position);
+              
+              // Apply wave-like displacement based on distance from center
+              float displacement = sin(dist * u_absorptionFrequency - u_absorptionPhase) * u_absorptionStrength;
+              
+              // Scale displacement by distance (more at edges, less at center)
+              float scaleFactor = smoothstep(0.0, orbitalScale * 0.8, dist);
+              displacement *= scaleFactor * 0.5;
+              
+              // Apply displacement in radial direction
+              animated_position += direction * displacement;
+          }
+
+          // Create a translation matrix to this new animated position
           mat4 translationToAnimatedCenter = mat4(
               1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0,
               0.0, 0.0, 1.0, 0.0,
-              animated_instance_center_object_space.x, animated_instance_center_object_space.y, animated_instance_center_object_space.z, 1.0
+              animated_position.x, animated_position.y, animated_position.z, 1.0
           );
 
           // Transform the local vertex of the sphere ('position') to its animated spot
@@ -435,6 +464,23 @@ export default function QuantumPlayground() {
         }
 
         time += 0.01 * waveSpeed;
+        if (absorptionActive) {
+          const currentOrbitalGroup = orbitalGroups[currentOrbital];
+          if (currentOrbitalGroup.material && currentOrbitalGroup.material.uniforms) {
+              // Pass absorption parameters to the orbital shader
+              if (!currentOrbitalGroup.material.uniforms.u_absorptionStrength) {
+                  // Create uniforms if they don't exist
+                  currentOrbitalGroup.material.uniforms.u_absorptionStrength = { value: absorptionStrength };
+                  currentOrbitalGroup.material.uniforms.u_absorptionFrequency = { value: absorptionFrequency };
+                  currentOrbitalGroup.material.uniforms.u_absorptionPhase = { value: absorptionPhase };
+              } else {
+                  // Update existing uniforms
+                  currentOrbitalGroup.material.uniforms.u_absorptionStrength.value = absorptionStrength;
+                  currentOrbitalGroup.material.uniforms.u_absorptionFrequency.value = absorptionFrequency;
+                  currentOrbitalGroup.material.uniforms.u_absorptionPhase.value = absorptionPhase;
+              }
+          }
+      }
         
         for (const type in orbitalGroups) {
           if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
@@ -735,7 +781,10 @@ export default function QuantumPlayground() {
           u_crossSectionX: { value: 10.0 },
           viewMatrix: { value: camera.matrixWorldInverse },
           u_waveHeight: { value: waveHeight },
-          u_waveFrequency: { value: waveFrequency }
+          u_waveFrequency: { value: waveFrequency },
+          u_absorptionStrength: { value: 0.0 },
+          u_absorptionFrequency: { value: 0.3 },
+          u_absorptionPhase: { value: 0.0 }
         }
       });
       
@@ -819,7 +868,8 @@ export default function QuantumPlayground() {
             movementType: 'linear',
             waveMode: 'partial'
         };
-    
+        
+
         // Wave animation variables
         let waveActive = false;
         let waveTime = 0;
@@ -871,6 +921,11 @@ export default function QuantumPlayground() {
             for (let j = 0; j < gridSize; j++) {
                 const index = i * gridSize + j;
                 
+                particleData[index] = {
+                    reemissionHeight: 0,
+                    intensity: 0
+                };
+
                 // Position in a grid on the x-z plane
                 const x = (i - gridSize/2) * gridSpacing;
                 const z = (j - gridSize/2) * gridSpacing + zOffset;
@@ -1026,12 +1081,25 @@ export default function QuantumPlayground() {
                             }
                         }
                     }
-                    
+
+                    let finalHeight = height; // Start with the wave height
+
+                    // Add reemission height if available
+                    if (particleData[index] && particleData[index].reemissionHeight > 0) {
+                        finalHeight += particleData[index].reemissionHeight;
+                        // Decay the reemission height
+                        particleData[index].reemissionHeight *= 0.96;
+                        
+                        // Update color intensity based on combined height
+                        colorIntensity = Math.max(colorIntensity, 
+                            0.4 + Math.min(0.6, particleData[index].intensity * 0.8));
+                    }
+
                     // Apply height to Y position
-                    dummy.position.set(x, height, z);
+                    dummy.position.set(x, finalHeight, z);
                     
                     // Set scale based on height
-                    const scale = defaultScale + height * 0.7;
+                    const scale = defaultScale + finalHeight * 0.7;
                     dummy.scale.set(scale, scale, scale);
                     
                     dummy.updateMatrix();
@@ -1043,6 +1111,88 @@ export default function QuantumPlayground() {
                 }
             }
             
+            if (waveActive) {
+                // Check if wave is interacting with the electron cloud
+                const cloudRadius = orbitalParams[currentOrbital].scale;
+                const distanceToCenter = Math.abs(wavePosition);
+                
+                // Only interact when wave is near the electron cloud (origin)
+                if (distanceToCenter < cloudRadius * 1.2) {
+                    // Calculate absorption based on distance and wavelength
+                    const normalizedDistance = distanceToCenter / cloudRadius;
+                    const wavelengthMatch = Math.exp(-Math.pow(photonWavelength - 1.0, 2) * 2);
+                    
+                    // Absorption is strongest when wavelength matches orbital energy levels
+                    const newAbsorptionStrength = (1 - normalizedDistance) * wavelengthMatch * 0.7;
+                    
+                    // Only activate absorption when strength increases (wave moving closer)
+                    if (newAbsorptionStrength > absorptionStrength) {
+                        absorptionActive = true;
+                        absorptionFrequency = 0.8 / photonWavelength;
+                        absorptionPhase = waveTime * 6.28;
+                    }
+                    
+                    absorptionStrength = Math.max(absorptionStrength, newAbsorptionStrength);
+                } else {
+                    // Gradually decrease absorption strength when wave moves away
+                    absorptionStrength *= 0.98;
+                    if (absorptionStrength < 0.01) {
+                        absorptionActive = false;
+                        absorptionStrength = 0;
+                    }
+                }
+                
+                // Store wave position for next frame
+                lastWavePosition = wavePosition;
+            }
+
+            if (absorptionActive && absorptionStrength > 0.1) {
+              // Create circular waves emanating from the center
+              for (let i = 0; i < gridSize; i++) {
+                  for (let j = 0; j < gridSize; j++) {
+                      const index = i * gridSize + j;
+                      
+                      // Position in grid
+                      const x = (i - gridSize/2) * gridSpacing;
+                      const z = (j - gridSize/2) * gridSpacing + zOffset;
+                      
+                      // Calculate distance from origin (electron cloud center)
+                      const distFromCenter = Math.sqrt(x * x + z * z);
+                      
+                      // Reemission wave parameters
+                      const reemissionWavelength = photonWavelength * 1.1; // Slightly longer wavelength
+                      const reemissionFrequency = 1.0 / reemissionWavelength;
+                      const reemissionSpeed = 0.8;
+                      
+                      // Calculate expanding ring radius
+                      const reemissionRadius = waveTime * reemissionSpeed * 2.0 * absorptionStrength;
+                      
+                      // Calculate distance from expanding ring
+                      const distFromRing = Math.abs(distFromCenter - reemissionRadius);
+                      const ringThickness = reemissionWavelength * 0.8;
+                      
+                      // Only apply effect near the ring
+                      if (distFromRing < ringThickness) {
+                          // Modify the height calculation for reemission particles
+                          const heightFactor = 1.0 - (distFromRing / ringThickness);
+                          const reemissionIntensity = Math.pow(heightFactor, 1.5) * absorptionStrength;
+                          const reemissionHeight = waveConfig.waveHeight * 0.5 * reemissionIntensity;
+                          
+                          // Store additional height and color info for the updateWave function
+                          if (!particleData[index]) {
+                              particleData[index] = {
+                                  reemissionHeight: reemissionHeight,
+                                  intensity: reemissionIntensity
+                              };
+                          } else {
+                              particleData[index].reemissionHeight = reemissionHeight;
+                              particleData[index].intensity = reemissionIntensity;
+                          }
+                      }
+                  }
+              }
+          }
+
             waveParticles.instanceMatrix.needsUpdate = true;
             waveParticles.instanceColor.needsUpdate = true;
         }
