@@ -13,12 +13,15 @@ export default function QuantumPlayground() {
     // Core variables
     let scene, camera, renderer, controls;
     const orbitalGroups = {}; 
-    let currentOrbital = '1s_H';
+    let currentOrbital = '2p3/2';
     const particleData = {}; 
+    
+    // Shell layering mode
+    let layeringMode = 'focused'; // 'focused' or 'all'
+    let secondaryOpacity = 0.1; // Very low opacity for secondary orbitals
 
     const particleCount = 45000; 
     const particleSize = 0.06;  
-    
 
     let waveType = 'linear';
     let photons = [];
@@ -38,9 +41,8 @@ export default function QuantumPlayground() {
     let absorptionPhase = 0.0;
     let lastWavePosition = 0;
 
-    // Shaders - paste the shader code from Q-Wave.html
+    // Shaders with modifications for different rendering modes
     const vertexShader = `
-      // Attributes from THREE.SphereGeometry
       attribute float a_initialPhase;
       
       uniform float orbitalScale;
@@ -52,6 +54,7 @@ export default function QuantumPlayground() {
       uniform float u_absorptionStrength;
       uniform float u_absorptionFrequency;
       uniform float u_absorptionPhase;
+      uniform float u_particleScale;
       
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -59,15 +62,12 @@ export default function QuantumPlayground() {
       varying float vCrossSectionVisibility;
       
       void main() {
-          // Extract the original position from the instanceMatrix (translation part)
           vec3 original_pos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
 
-          // Calculate dynamic rotation for this instance based on its original_pos
           float distanceToYAxis = length(original_pos.xz);
           float angularSpeed = (u_maxSpeedAtCenter - u_minSpeedAtEdge) * exp(-distanceToYAxis * u_exponentialFalloffRate) + u_minSpeedAtEdge;
           float currentRotationY = a_initialPhase + angularSpeed * u_time;
 
-          // Create rotation matrix around Y axis for the particle's position
           float s = sin(currentRotationY);
           float c = cos(currentRotationY);
           mat4 rotationAnimMatrix = mat4(
@@ -77,29 +77,17 @@ export default function QuantumPlayground() {
               0, 0, 0, 1
           );
 
-          // Calculate the new animated center of the instance
           vec3 animated_position = (rotationAnimMatrix * vec4(original_pos, 1.0)).xyz;
 
-          // Apply absorption effect if active
           if (u_absorptionStrength > 0.01) {
-              // Calculate distance from center
               float dist = length(animated_position);
-              
-              // Calculate direction vector
               vec3 direction = normalize(animated_position);
-              
-              // Apply wave-like displacement based on distance from center
               float displacement = sin(dist * u_absorptionFrequency - u_absorptionPhase) * u_absorptionStrength;
-              
-              // Scale displacement by distance (more at edges, less at center)
               float scaleFactor = smoothstep(0.0, orbitalScale * 0.8, dist);
               displacement *= scaleFactor * 0.5;
-              
-              // Apply displacement in radial direction
               animated_position += direction * displacement;
           }
 
-          // Create a translation matrix to this new animated position
           mat4 translationToAnimatedCenter = mat4(
               1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0,
@@ -107,14 +95,13 @@ export default function QuantumPlayground() {
               animated_position.x, animated_position.y, animated_position.z, 1.0
           );
 
-          // Transform the local vertex of the sphere ('position') to its animated spot
-          vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(position, 1.0);
+          // Apply particle scale uniform
+          vec3 scaledPosition = position * u_particleScale;
+          vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(scaledPosition, 1.0);
           vWorldPosition = worldPosition.xyz;
           
-          // Calculate cross-section visibility (1 = visible, 0 = hidden)
           vCrossSectionVisibility = worldPosition.x <= u_crossSectionX ? 1.0 : 0.0;
           
-          // Normals are transformed by the model matrix
           vNormalWorld = normalize(mat3(modelMatrix) * normal);
 
           vec4 viewPosition = viewMatrix * worldPosition; 
@@ -137,6 +124,8 @@ export default function QuantumPlayground() {
       uniform vec3 directionalLightColor2;
       uniform vec3 directionalLightDirection2;
       uniform float u_crossSectionX;
+      uniform float u_opacity;
+      uniform bool u_isWireframe;
 
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -179,15 +168,20 @@ export default function QuantumPlayground() {
           density = pow(density, 2.0);
           
           vec3 densityColor;
-          if (density > 0.7) {
-              float t = (density - 0.7) / 0.3;
-              densityColor = mix(midDensityColor, highDensityColor, t);
-          } else if (density > 0.3) {
-              float t = (density - 0.3) / 0.4;
-              densityColor = mix(lowDensityColor, midDensityColor, t);
+          if (u_isWireframe) {
+              // For wireframe mode, use a single color
+              densityColor = baseColor;
           } else {
-              float t = density / 0.3;
-              densityColor = mix(lowDensityColor, lowDensityColor, t);
+              if (density > 0.7) {
+                  float t = (density - 0.7) / 0.3;
+                  densityColor = mix(midDensityColor, highDensityColor, t);
+              } else if (density > 0.3) {
+                  float t = (density - 0.3) / 0.4;
+                  densityColor = mix(lowDensityColor, midDensityColor, t);
+              } else {
+                  float t = density / 0.3;
+                  densityColor = mix(lowDensityColor, lowDensityColor, t);
+              }
           }
           
           vec3 litColor = densityColor * rawLighting;
@@ -198,68 +192,139 @@ export default function QuantumPlayground() {
 
           finalColor = clamp(finalColor, vec3(minOverallBrightness), vec3(maxOverallBrightness));
 
-          gl_FragColor = vec4(finalColor, 1.0);
+          gl_FragColor = vec4(finalColor, u_opacity);
       }
     `;
 
-    // Orbital parameters - defining the different orbital types
+    // Iron orbital parameters with visual differentiation
     const orbitalParams = {
-      '1s_H': {
-        name: "1s H (1,0,0) - Simple sphere",
-        color: 0x4682B4,
-        lowDensityColor: 0xB0C4DE,
-        midDensityColor: 0x4682B4,
-        highDensityColor: 0x27496D,
-        scale: 4.0, 
+      // K-shell - very small and close to nucleus (solid, bright)
+      '1s': {
+        name: "1s",
+        shell: "K",
+        color: 0xFF4444,
+        lowDensityColor: 0xFFAAAA,
+        midDensityColor: 0xFF6666,
+        highDensityColor: 0xCC0000,
+        scale: 0.3,
+        particleCount: 5000,  // Reduced for performance
         generatePoints: generate1sPoints,
-        cameraPosition: new THREE.Vector3(5, 5, 8)
+        cameraPosition: new THREE.Vector3(1, 1, 1.5),
+        energy: 7112,
+        particleScale: 1.0,  // Full size particles
+        renderMode: 'solid',
+        renderOrder: 2  // Render inner shells later
       },
-      '2s_H': {
-        name: "2s H (2,0,0) - Sphere with radial node",
-        color: 0x87CEEB,
-        lowDensityColor: 0xD6F3FF,
-        midDensityColor: 0x87CEEB,
-        highDensityColor: 0x468DAF,
-        scale: 5.0,
+      // L-shell - medium size (semi-transparent, smaller particles)
+      '2s': {
+        name: "2s",
+        shell: "L",
+        color: 0x44FF44,
+        lowDensityColor: 0xAAFFAA,
+        midDensityColor: 0x66FF66,
+        highDensityColor: 0x00CC00,
+        scale: 0.8,
+        particleCount: 10000,
         generatePoints: generate2sPoints,
-        cameraPosition: new THREE.Vector3(7, 7, 11)
+        cameraPosition: new THREE.Vector3(2, 2, 3),
+        energy: 844,
+        particleScale: 0.8,  // Slightly smaller
+        renderMode: 'solid',
+        renderOrder: 1
       },
-      '2p_H_z': {
-        name: "2pz H (2,1,0) - Dumbbell",
-        color: 0xFFC0CB,
-        lowDensityColor: 0xFFE4EC,
-        midDensityColor: 0xFFC0CB,
-        highDensityColor: 0xC08090,
-        scale: 5.0,
+      '2p1/2': {
+        name: "2p₁/₂",
+        shell: "L",
+        color: 0x44FFAA,
+        lowDensityColor: 0xAAFFDD,
+        midDensityColor: 0x66FFBB,
+        highDensityColor: 0x00CC88,
+        scale: 0.8,
+        particleCount: 10000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(7, 7, 11)
+        cameraPosition: new THREE.Vector3(2, 2, 3),
+        energy: 720,
+        particleScale: 0.8,
+        renderMode: 'solid',
+        renderOrder: 1
       },
-      '3p_H_z': {
-        name: "3pz H (3,1,0) - Larger dumbbell with radial node",
-        color: 0xFFDAB9,
-        lowDensityColor: 0xFFF2E5,
-        midDensityColor: 0xFFDAB9,
-        highDensityColor: 0xCC9C75,
-        scale: 6.0,
+      '2p3/2': {
+        name: "2p₃/₂",
+        shell: "L",
+        color: 0x44AAFF,
+        lowDensityColor: 0xAADDFF,
+        midDensityColor: 0x66BBFF,
+        highDensityColor: 0x0088CC,
+        scale: 0.8,
+        particleCount: 10000,
+        generatePoints: generate2pzPoints,
+        cameraPosition: new THREE.Vector3(2, 2, 3),
+        energy: 707,
+        particleScale: 0.8,
+        renderMode: 'solid',
+        renderOrder: 1
+      },
+      // M-shell - largest (can be wireframe or point cloud)
+      '3s': {
+        name: "3s",
+        shell: "M",
+        color: 0xFFFF44,
+        lowDensityColor: 0xFFFFAA,
+        midDensityColor: 0xFFFF66,
+        highDensityColor: 0xCCCC00,
+        scale: 1.5,
+        particleCount: 15000,
+        generatePoints: generate3sPoints,
+        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        energy: 92,
+        particleScale: 0.6,  // Smaller particles
+        renderMode: 'solid',
+        renderOrder: 0
+      },
+      '3p': {
+        name: "3p",
+        shell: "M",
+        color: 0xFFAA44,
+        lowDensityColor: 0xFFDDAA,
+        midDensityColor: 0xFFBB66,
+        highDensityColor: 0xCC8800,
+        scale: 1.5,
+        particleCount: 15000,
         generatePoints: generate3pzPoints,
-        cameraPosition: new THREE.Vector3(9, 9, 14)
+        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        energy: 52,
+        particleScale: 0.6,
+        renderMode: 'solid',
+        renderOrder: 0
       },
-      '3d_Fe_z2': {
-        name: "3dz² Fe (3,2,0) - Larger dumbbell with radial node",
-        color: 0xFFFF00,
-        lowDensityColor: 0xFFFFE0,
-        midDensityColor: 0xFFFF00,
-        highDensityColor: 0xBFBF00,
-        scale: 6.5,
+      '3d': {
+        name: "3d",
+        shell: "M",
+        color: 0xFF44FF,
+        lowDensityColor: 0xFFAAFF,
+        midDensityColor: 0xFF66FF,
+        highDensityColor: 0xCC00CC,
+        scale: 1.5,
+        particleCount: 15000,
         generatePoints: generate3dz2Points,
-        cameraPosition: new THREE.Vector3(10, 10, 15)
+        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        energy: 1,
+        particleScale: 0.6,
+        renderMode: 'solid',
+        renderOrder: 0
       }
     };
 
-    // Function definitions for the various orbital shapes
+    // Modified point generation functions with adaptive density
     function generate1sPoints(count, scale) {
       const points = [];
-      for (let i = 0; i < count; i++) {
+      const minDistance = scale * 0.03; // Minimum distance between particles
+      let attempts = 0;
+      const maxAttempts = count * 3; // Reduced max attempts
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
         let r, prob;
         do {
           r = scale * Math.random();
@@ -274,14 +339,40 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        points.push(new THREE.Vector3(x, y, z));
+        // Simple distance check without spatial grid for performance
+        let tooClose = false;
+        if (points.length < 100) { // Only check first 100 points
+          for (let i = 0; i < Math.min(points.length, 50); i++) {
+            const p = points[i];
+            const dist = Math.sqrt(
+              Math.pow(x - p.x, 2) + 
+              Math.pow(y - p.y, 2) + 
+              Math.pow(z - p.z, 2)
+            );
+            if (dist < minDistance) {
+              tooClose = true;
+              break;
+            }
+          }
+        }
+        
+        if (!tooClose) {
+          points.push(new THREE.Vector3(x, y, z));
+        }
       }
+      
       return points;
     }
 
     function generate2sPoints(count, scale) {
       const points = [];
-      for (let i = 0; i < count; i++) {
+      const minDistance = scale * 0.04;
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
         let r, prob;
         do {
           r = scale * 1.5 * Math.random();
@@ -300,12 +391,19 @@ export default function QuantumPlayground() {
         
         points.push(new THREE.Vector3(x, y, z));
       }
+      
       return points;
     }
 
     function generate2pzPoints(count, scale) {
       const points = [];
-      for (let i = 0; i < count; i++) {
+      const minDistance = scale * 0.04;
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
         let r, theta, prob;
         do {
           r = scale * 1.2 * Math.random();
@@ -326,12 +424,48 @@ export default function QuantumPlayground() {
         
         points.push(new THREE.Vector3(x, y, z));
       }
+      
+      return points;
+    }
+
+    function generate3sPoints(count, scale) {
+      const points = [];
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
+        let r, prob;
+        do {
+          r = scale * 1.8 * Math.random();
+          const rScaled = r / (scale/6);
+          const nodeTerm1 = Math.pow(27 - 18*rScaled/3 + 2*Math.pow(rScaled/3, 2), 2);
+          const nodeEffect = (Math.abs(rScaled - 6) < 0.4 || Math.abs(rScaled - 12) < 0.4) ? 0.05 : 1.0;
+          prob = rScaled * rScaled * nodeTerm1 * Math.exp(-rScaled/3) * nodeEffect;
+        } while (Math.random() * 3.0 > prob);
+        
+        const theta = Math.acos(2 * Math.random() - 1);
+        const phi = Math.random() * Math.PI * 2;
+        
+        const x = r * Math.sin(theta) * Math.cos(phi);
+        const y = r * Math.sin(theta) * Math.sin(phi);
+        const z = r * Math.cos(theta);
+        
+        points.push(new THREE.Vector3(x, y, z));
+      }
+      
       return points;
     }
 
     function generate3pzPoints(count, scale) {
       const points = [];
-      for (let i = 0; i < count; i++) {
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
         let r, theta, prob;
         do {
           r = scale * 1.5 * Math.random();
@@ -354,12 +488,18 @@ export default function QuantumPlayground() {
         
         points.push(new THREE.Vector3(x, y, z));
       }
+      
       return points;
     }
 
     function generate3dz2Points(count, scale) {
       const points = [];
-      for (let i = 0; i < count; i++) {
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
         let r, theta, prob;
         do {
           r = scale * 1.5 * Math.random();
@@ -380,23 +520,41 @@ export default function QuantumPlayground() {
         
         points.push(new THREE.Vector3(x, y, z));
       }
+      
       return points;
     }
 
     // Function to initialize the 3D scene
     function init() {
+      // Add loading indicator
+      const loadingDiv = document.createElement('div');
+      loadingDiv.style.position = 'absolute';
+      loadingDiv.style.top = '50%';
+      loadingDiv.style.left = '50%';
+      loadingDiv.style.transform = 'translate(-50%, -50%)';
+      loadingDiv.style.color = 'rgba(220, 220, 220, 0.9)';
+      loadingDiv.style.fontSize = '20px';
+      loadingDiv.style.fontFamily = 'Arial, sans-serif';
+      loadingDiv.textContent = 'Loading Iron Atom...';
+      containerRef.current.appendChild(loadingDiv);
+
       // Scene
       scene = new THREE.Scene();
 
       // Camera
       camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.1, 1000);
-      camera.position.set(5, 5, 8);
+      camera.position.set(3, 3, 4);
 
-      // Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true });
+      // Renderer with optimized settings
+      renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance"
+      });
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
       renderer.setClearColor(0x333333);
+      renderer.sortObjects = true; // Enable proper sorting
       containerRef.current.appendChild(renderer.domElement);
 
       // Lighting
@@ -431,7 +589,7 @@ export default function QuantumPlayground() {
       const nucleusGeometry = new THREE.SphereGeometry(0.1, 32, 32);
       const nucleusMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFE0, emissive: 0x333300 });
       const nucleus = new THREE.Mesh(nucleusGeometry, nucleusMaterial);
-      nucleus.visible = false; 
+      nucleus.visible = true;
       scene.add(nucleus);
 
       // Create orbital particle systems
@@ -439,6 +597,14 @@ export default function QuantumPlayground() {
         orbitalGroups[type] = createOrbital(type);
         scene.add(orbitalGroups[type]);
       }
+
+      // Remove loading indicator
+      if (loadingDiv && loadingDiv.parentNode) {
+        loadingDiv.parentNode.removeChild(loadingDiv);
+      }
+
+      // Initialize opacity based on layering mode
+      updateLayeringMode();
 
       // UI - connect to our React refs
       createGuiControls();
@@ -467,14 +633,11 @@ export default function QuantumPlayground() {
         if (absorptionActive) {
           const currentOrbitalGroup = orbitalGroups[currentOrbital];
           if (currentOrbitalGroup.material && currentOrbitalGroup.material.uniforms) {
-              // Pass absorption parameters to the orbital shader
               if (!currentOrbitalGroup.material.uniforms.u_absorptionStrength) {
-                  // Create uniforms if they don't exist
                   currentOrbitalGroup.material.uniforms.u_absorptionStrength = { value: absorptionStrength };
                   currentOrbitalGroup.material.uniforms.u_absorptionFrequency = { value: absorptionFrequency };
                   currentOrbitalGroup.material.uniforms.u_absorptionPhase = { value: absorptionPhase };
               } else {
-                  // Update existing uniforms
                   currentOrbitalGroup.material.uniforms.u_absorptionStrength.value = absorptionStrength;
                   currentOrbitalGroup.material.uniforms.u_absorptionFrequency.value = absorptionFrequency;
                   currentOrbitalGroup.material.uniforms.u_absorptionPhase.value = absorptionPhase;
@@ -509,59 +672,310 @@ export default function QuantumPlayground() {
       animate();
     }
 
+    // Update layering mode
+    function updateLayeringMode() {
+      if (layeringMode === 'focused') {
+        // Shell-based layering: current orbital full opacity, same shell medium, others very low
+        const currentShell = orbitalParams[currentOrbital].shell;
+        
+        for (const type in orbitalGroups) {
+          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+            if (type === currentOrbital) {
+              orbitalGroups[type].material.uniforms.u_opacity.value = 1.0;
+            } else if (orbitalParams[type].shell === currentShell) {
+              orbitalGroups[type].material.uniforms.u_opacity.value = secondaryOpacity * 2; // Same shell gets a bit more visibility
+            } else {
+              orbitalGroups[type].material.uniforms.u_opacity.value = secondaryOpacity;
+            }
+          }
+        }
+      } else {
+        // Show all orbitals with the slider-controlled opacity
+        updateOrbitalOpacities(currentOrbital, secondaryOpacity);
+      }
+    }
+
     // Create a React-friendly version of the GUI controls
     function createGuiControls() {
+      const guiContainer = guiContainerRef.current;
+      guiContainer.innerHTML = '';
+      guiContainer.className = 'glass';
+      guiContainer.style.padding = '20px';
+      guiContainer.style.borderRadius = '12px';
+      guiContainer.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+      guiContainer.style.width = '320px';
+      guiContainer.style.color = 'rgba(220, 220, 220, 0.9)';
+      guiContainer.style.maxHeight = '90vh';
+      guiContainer.style.overflowY = 'auto';
 
-    const orbitalSection = document.createElement('div');
-    const crossSectionSection = document.createElement('div');
-    const orbitalLabel = document.createElement('label');
-    const crossSectionLabel = document.createElement('label'); 
-      // Create the orbital selector
-      const orbitalSelector = document.createElement('select');
-      orbitalSelector.id = 'orbitalSelector';
-      orbitalSelector.style.width = '100%';
-        orbitalSelector.style.padding = '8px';
-        orbitalSelector.style.borderRadius = '4px';
-        orbitalSelector.style.backgroundColor = 'rgba(60, 60, 60, 0.8)';
-        orbitalSelector.style.color = 'rgba(220, 220, 220, 0.9)';
-        orbitalSelector.style.border = '1px solid rgba(80, 80, 80, 0.8)';
-        orbitalSection.style.marginBottom = '15px';
+      // Title
+      const title = document.createElement('h3');
+      title.textContent = 'Iron (Fe) Orbitals';
+      title.style.margin = '0 0 15px 0';
+      title.style.textAlign = 'center';
+      guiContainer.appendChild(title);
 
-      for (const type in orbitalParams) {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = orbitalParams[type].name;
-        orbitalSelector.appendChild(option);
+      // Layering mode toggle
+      const layeringSection = document.createElement('div');
+      layeringSection.className = 'glass';
+      layeringSection.style.padding = '10px';
+      layeringSection.style.borderRadius = '8px';
+      layeringSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+      layeringSection.style.marginBottom = '15px';
+      
+      const layeringToggle = document.createElement('button');
+      layeringToggle.textContent = layeringMode === 'focused' ? 'Mode: Focused Shell' : 'Mode: Show All';
+      layeringToggle.style.width = '100%';
+      layeringToggle.style.padding = '8px';
+      layeringToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+      layeringToggle.style.border = '1px solid rgba(100, 100, 150, 0.8)';
+      layeringToggle.style.borderRadius = '4px';
+      layeringToggle.style.color = 'rgba(220, 220, 220, 0.9)';
+      layeringToggle.style.cursor = 'pointer';
+      
+      layeringToggle.onclick = () => {
+        layeringMode = layeringMode === 'focused' ? 'all' : 'focused';
+        layeringToggle.textContent = layeringMode === 'focused' ? 'Mode: Focused Shell' : 'Mode: Show All';
+        updateLayeringMode();
+      };
+      
+      layeringSection.appendChild(layeringToggle);
+      guiContainer.appendChild(layeringSection);
+
+      // Shell selector with previews
+      const shellSection = document.createElement('div');
+      shellSection.style.marginBottom = '15px';
+      
+      const shells = {
+        'K': ['1s'],
+        'L': ['2s', '2p1/2', '2p3/2'],
+        'M': ['3s', '3p', '3d']
+      };
+
+      for (const [shell, orbitals] of Object.entries(shells)) {
+        const shellDiv = document.createElement('div');
+        shellDiv.style.marginBottom = '10px';
+        shellDiv.style.borderRadius = '4px';
+        shellDiv.style.overflow = 'hidden';
+        
+        const shellHeader = document.createElement('div');
+        shellHeader.style.padding = '8px';
+        shellHeader.style.backgroundColor = 'rgba(60, 60, 60, 0.8)';
+        shellHeader.style.cursor = 'pointer';
+        shellHeader.style.fontWeight = 'bold';
+        shellHeader.textContent = `${shell}-shell`;
+        
+        const orbitalList = document.createElement('div');
+        orbitalList.style.display = 'none';
+        orbitalList.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
+        
+        shellHeader.onclick = () => {
+          orbitalList.style.display = orbitalList.style.display === 'none' ? 'block' : 'none';
+        };
+        
+        orbitals.forEach(orbital => {
+          const orbitalBtn = document.createElement('div');
+          orbitalBtn.style.padding = '8px 15px';
+          orbitalBtn.style.cursor = 'pointer';
+          orbitalBtn.style.display = 'flex';
+          orbitalBtn.style.alignItems = 'center';
+          orbitalBtn.style.justifyContent = 'space-between';
+          orbitalBtn.className = 'orbital-btn';
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = orbitalParams[orbital].name;
+          
+          const energySpan = document.createElement('span');
+          energySpan.style.fontSize = '12px';
+          energySpan.style.color = 'rgba(150, 150, 150, 0.9)';
+          energySpan.textContent = `${orbitalParams[orbital].energy} eV`;
+          
+          orbitalBtn.appendChild(labelSpan);
+          orbitalBtn.appendChild(energySpan);
+          
+          orbitalBtn.onclick = () => {
+            switchOrbital(orbital);
+            document.querySelectorAll('.orbital-btn').forEach(btn => {
+              btn.style.backgroundColor = '';
+            });
+            orbitalBtn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+          };
+          
+          if (orbital === currentOrbital) {
+            orbitalBtn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+            orbitalList.style.display = 'block'; // Auto-expand current shell
+          }
+          
+          orbitalList.appendChild(orbitalBtn);
+        });
+        
+        shellDiv.appendChild(shellHeader);
+        shellDiv.appendChild(orbitalList);
+        shellSection.appendChild(shellDiv);
       }
       
-      orbitalSelector.addEventListener('change', (event) => {
-        switchOrbital(event.target.value);
+      guiContainer.appendChild(shellSection);
+
+      // Opacity slider for secondary orbitals
+      const opacitySection = document.createElement('div');
+      opacitySection.className = 'glass';
+      opacitySection.style.padding = '15px';
+      opacitySection.style.borderRadius = '8px';
+      opacitySection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+      opacitySection.style.marginBottom = '15px';
+      
+      const opacityLabel = document.createElement('label');
+      opacityLabel.textContent = 'Secondary Opacity:';
+      opacityLabel.style.fontWeight = 'bold';
+      opacityLabel.style.display = 'block';
+      opacityLabel.style.marginBottom = '10px';
+      
+      const opacitySlider = document.createElement('input');
+      opacitySlider.type = 'range';
+      opacitySlider.min = '0';
+      opacitySlider.max = '30'; // Max 30% for secondary orbitals
+      opacitySlider.value = '10'; // Default 10%
+      opacitySlider.style.width = '100%';
+      opacitySlider.style.accentColor = 'rgb(220, 40, 40)';
+      
+      const opacityDisplay = document.createElement('span');
+      opacityDisplay.style.fontSize = '12px';
+      opacityDisplay.textContent = '10%';
+      
+      opacitySlider.oninput = (e) => {
+        secondaryOpacity = e.target.value / 100;
+        opacityDisplay.textContent = `${e.target.value}%`;
+        updateLayeringMode();
+      };
+      
+      opacitySection.appendChild(opacityLabel);
+      opacitySection.appendChild(opacitySlider);
+      opacitySection.appendChild(opacityDisplay);
+      guiContainer.appendChild(opacitySection);
+
+      // Photon controls
+      const photonSection = document.createElement('div');
+      photonSection.className = 'glass';
+      photonSection.style.padding = '15px';
+      photonSection.style.borderRadius = '8px';
+      photonSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+      photonSection.style.marginBottom = '15px';
+      
+      const photonLabel = document.createElement('label');
+      photonLabel.textContent = 'Photon Energy:';
+      photonLabel.style.fontWeight = 'bold';
+      photonLabel.style.display = 'block';
+      photonLabel.style.marginBottom = '10px';
+      
+      const energyInput = document.createElement('input');
+      energyInput.type = 'number';
+      energyInput.id = 'photonEnergyInput';
+      energyInput.value = '100';
+      energyInput.style.width = '60%';
+      energyInput.style.padding = '4px';
+      energyInput.style.marginRight = '5px';
+      
+      const energyUnit = document.createElement('span');
+      energyUnit.textContent = 'eV';
+      
+      // Energy display
+      const energyDisplay = document.createElement('div');
+      energyDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
+      energyDisplay.style.padding = '5px';
+      energyDisplay.style.borderRadius = '4px';
+      energyDisplay.style.marginTop = '10px';
+      energyDisplay.style.fontSize = '13px';
+      energyDisplay.style.color = 'rgba(200, 200, 200, 0.8)';
+      energyDisplay.id = 'photonEnergyDisplay';
+      energyDisplay.textContent = `Wavelength: ${(1239.84 / 100).toFixed(2)} nm`;
+      
+      energyInput.oninput = (e) => {
+        const energy = parseFloat(e.target.value) || 100;
+        updatePhotonWavelength(energy);
+        energyDisplay.textContent = `Wavelength: ${(1239.84 / energy).toFixed(2)} nm`;
+      };
+      
+      photonSection.appendChild(photonLabel);
+      photonSection.appendChild(energyInput);
+      photonSection.appendChild(energyUnit);
+      photonSection.appendChild(energyDisplay);
+      
+      // Preset buttons
+      const presetDiv = document.createElement('div');
+      presetDiv.style.marginTop = '10px';
+      presetDiv.style.display = 'grid';
+      presetDiv.style.gridTemplateColumns = '1fr 1fr';
+      presetDiv.style.gap = '5px';
+      
+      const presets = [
+        { name: 'K-edge', energy: 7112 },
+        { name: 'L₃-edge', energy: 707 },
+        { name: 'L₂-edge', energy: 720 },
+        { name: 'M-edge', energy: 92 }
+      ];
+      
+      presets.forEach(preset => {
+        const btn = document.createElement('button');
+        btn.textContent = preset.name;
+        btn.style.padding = '5px';
+        btn.style.fontSize = '12px';
+        btn.style.backgroundColor = 'rgba(70, 70, 70, 0.8)';
+        btn.style.border = '1px solid rgba(100, 100, 100, 0.8)';
+        btn.style.borderRadius = '4px';
+        btn.style.color = 'rgba(220, 220, 220, 0.9)';
+        btn.style.cursor = 'pointer';
+        
+        btn.onclick = () => {
+          energyInput.value = preset.energy;
+          updatePhotonWavelength(preset.energy);
+          energyDisplay.textContent = `Wavelength: ${(1239.84 / preset.energy).toFixed(2)} nm`;
+          
+          // Find and highlight the corresponding orbital
+          for (const [key, params] of Object.entries(orbitalParams)) {
+            if (Math.abs(params.energy - preset.energy) < 10) {
+              switchOrbital(key);
+              document.querySelectorAll('.orbital-btn').forEach(btn => {
+                btn.style.backgroundColor = '';
+              });
+              document.querySelectorAll('.orbital-btn').forEach(btn => {
+                if (btn.querySelector('span').textContent === params.name) {
+                  btn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+                }
+              });
+              break;
+            }
+          }
+        };
+        
+        presetDiv.appendChild(btn);
       });
-    
-      // Create cross-section slider
-      const crossSectionSlider = document.createElement('input');
+      
+      photonSection.appendChild(presetDiv);
+      guiContainer.appendChild(photonSection);
+
+      // Cross-section slider section
+      const crossSectionSection = document.createElement('div');
       crossSectionSection.className = 'glass';
-        crossSectionSection.style.padding = '15px';
-        crossSectionSection.style.borderRadius = '8px';
-        crossSectionSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-        crossSectionSection.style.backdropFilter = 'blur(10px)';
-        crossSectionSection.style.WebkitBackdropFilter = 'blur(10px)';
-        crossSectionSection.style.border = '1px solid rgba(255, 255, 255, 0.05)';
-        crossSectionSection.style.marginBottom = '15px';
+      crossSectionSection.style.padding = '15px';
+      crossSectionSection.style.borderRadius = '8px';
+      crossSectionSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+      crossSectionSection.style.marginBottom = '15px';
+      
+      const crossSectionLabel = document.createElement('label');
+      crossSectionLabel.textContent = 'Cross-Section (X-axis):';
+      crossSectionLabel.style.fontWeight = 'bold';
+      crossSectionLabel.style.display = 'block';
+      crossSectionLabel.style.marginBottom = '10px';
+      
+      const crossSectionSlider = document.createElement('input');
       crossSectionSlider.type = 'range';
       crossSectionSlider.id = 'crossSectionSlider';
       crossSectionSlider.min = '-10';
       crossSectionSlider.max = '10';
       crossSectionSlider.value = '10';
       crossSectionSlider.step = '0.1';
-      crossSectionLabel.style.fontWeight = 'bold';
-        crossSectionLabel.style.marginBottom = '10px';
-        crossSectionLabel.style.display = 'block';
-        crossSectionLabel.style.color = 'rgba(220, 220, 220, 0.9)';
-
-        crossSectionSlider.style.accentColor = 'rgb(220, 40, 40)';
-        crossSectionSlider.style.width = '100%';
-        crossSectionSlider.style.marginBottom = '5px';
+      crossSectionSlider.style.width = '100%';
+      crossSectionSlider.style.accentColor = 'rgb(220, 40, 40)';
       
       crossSectionSlider.addEventListener('input', (event) => {
         const value = parseFloat(event.target.value);
@@ -571,130 +985,6 @@ export default function QuantumPlayground() {
           }
         }
       });
-      
-      // Create wave controls
-      const wavelengthSection = document.createElement('div');
-        wavelengthSection.style.marginTop = '15px';
-        wavelengthSection.className = 'glass';
-        wavelengthSection.style.padding = '15px';
-        wavelengthSection.style.borderRadius = '8px';
-        wavelengthSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-        wavelengthSection.style.backdropFilter = 'blur(10px)';
-        wavelengthSection.style.WebkitBackdropFilter = 'blur(10px)';
-        wavelengthSection.style.border = '1px solid rgba(255, 255, 255, 0.05)';
-        wavelengthSection.style.marginBottom = '15px';
-
-        const wavelengthLabel = document.createElement('label');
-        wavelengthLabel.style.fontWeight = 'bold';
-        wavelengthLabel.style.marginBottom = '10px';
-        wavelengthLabel.style.display = 'block';
-        wavelengthLabel.style.color = 'rgba(220, 220, 220, 0.9)';
-        wavelengthLabel.textContent = 'Photon Wavelength:';
-        wavelengthLabel.setAttribute('for', 'wavelengthSlider');
-        wavelengthSection.appendChild(wavelengthLabel);
-
-        // Add wavelength display
-        const wavelengthDisplay = document.createElement('div');
-        wavelengthDisplay.style.textAlign = 'center';
-        wavelengthDisplay.style.marginBottom = '10px';
-        wavelengthDisplay.style.padding = '5px';
-        wavelengthDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
-        wavelengthDisplay.style.borderRadius = '4px';
-        wavelengthDisplay.style.color = 'rgb(220, 40, 40)';
-        wavelengthDisplay.style.fontWeight = 'bold';
-        wavelengthDisplay.id = 'currentWavelength';
-        wavelengthDisplay.textContent = photonWavelength.toFixed(1) + ' nm';
-        wavelengthDisplay.style.fontSize = '14px';
-        wavelengthDisplay.style.textAlign = 'center';
-        wavelengthDisplay.style.marginBottom = '5px';
-        wavelengthSection.appendChild(wavelengthDisplay);
-
-        const wavelengthSlider = document.createElement('input');
-        wavelengthSlider.style.accentColor = 'rgb(220, 40, 40)';
-        wavelengthSlider.style.width = '100%';
-        wavelengthSlider.style.marginBottom = '5px';
-        wavelengthSlider.type = 'range';
-        wavelengthSlider.id = 'wavelengthSlider';
-        wavelengthSlider.min = '0.2';
-        wavelengthSlider.max = '3.0';
-        wavelengthSlider.value = photonWavelength;
-        wavelengthSlider.step = '0.1';
-        wavelengthSection.appendChild(wavelengthSlider);
-
-        
-        wavelengthSlider.addEventListener('input', (event) => {
-            photonWavelength = parseFloat(event.target.value);
-            document.getElementById('currentWavelength').textContent = photonWavelength.toFixed(1) + ' nm';
-            
-            // Calculate and update energy display
-            const energy = calculatePhotonEnergy(photonWavelength);
-            document.getElementById('photonEnergyDisplay').textContent = 
-                `Photon Energy: ${energy.eV.toFixed(1)} eV`;
-        });
-        
-        // Add value markers below slider
-        const wavelengthMarkers = document.createElement('div');
-        wavelengthMarkers.style.display = 'flex';
-        wavelengthMarkers.style.justifyContent = 'space-between';
-        wavelengthMarkers.style.fontSize = '12px';
-        wavelengthMarkers.style.marginTop = '2px';
-        wavelengthMarkers.innerHTML = '<span>0.2 nm</span><span>3.0 nm</span>';
-        wavelengthSection.appendChild(wavelengthMarkers);
-
-        // Add photon energy display
-        const energyDisplay = document.createElement('div');
-        energyDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
-        energyDisplay.style.padding = '5px';
-        energyDisplay.style.borderRadius = '4px';
-        energyDisplay.style.marginTop = '10px';
-        energyDisplay.style.fontSize = '13px';
-        energyDisplay.style.color = 'rgba(200, 200, 200, 0.8)';
-        energyDisplay.id = 'photonEnergyDisplay';
-        energyDisplay.textContent = `Photon Energy: ${calculatePhotonEnergy(photonWavelength).eV.toFixed(1)} eV`;
-        wavelengthSection.appendChild(energyDisplay);
-      
-        
-      
-      // Create emit button
-      const emitButton = document.createElement('button');
-      emitButton.id = 'emitWaveBtn';
-      emitButton.textContent = 'Emit Photon Wave';
-      
-      emitButton.addEventListener('click', () => {
-        // This will be implemented in setupPhotonWave
-      });
-      
-      // Here just a placeholder for the logic
-      const guiContainer = guiContainerRef.current;
-      // Clear existing content
-      guiContainer.innerHTML = '';
-      guiContainer.className = 'glass';
-        guiContainer.style.padding = '20px';
-        guiContainer.style.borderRadius = '12px';
-        guiContainer.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-        guiContainer.style.width = '280px';
-        guiContainer.style.color = 'rgba(220, 220, 220, 0.9)';
-        
-      
-      
-      // Orbital selector section
-      orbitalLabel.style.fontWeight = 'bold';
-        orbitalLabel.style.marginBottom = '10px';
-        orbitalLabel.style.display = 'block';
-      orbitalLabel.textContent = 'Select Orbital:';
-      orbitalLabel.setAttribute('for', 'orbitalSelector');
-      
-      orbitalSection.appendChild(orbitalLabel);
-      orbitalSection.appendChild(orbitalSelector);
-      guiContainer.appendChild(orbitalSection);
-      guiContainer.appendChild(wavelengthSection);
-
-      // Cross-section slider section
-    
-      crossSectionSection.style.marginTop = '15px';
-      
-      crossSectionLabel.textContent = 'Cross-Section (X-axis):';
-      crossSectionLabel.setAttribute('for', 'crossSectionSlider');
       
       crossSectionSection.appendChild(crossSectionLabel);
       crossSectionSection.appendChild(crossSectionSlider);
@@ -708,44 +998,86 @@ export default function QuantumPlayground() {
       crossSectionSection.appendChild(crossSectionMarkers);
       guiContainer.appendChild(crossSectionSection);
 
+      // Wave type toggle
       const waveTypeToggle = document.createElement('button');
-        waveTypeToggle.id = 'waveTypeToggleBtn';
-        waveTypeToggle.textContent = 'Wave Type: Point';
-        waveTypeToggle.className = 'w-full p-2 rounded border transition-all'; // Apply site-wide button styles
-        waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-        waveTypeToggle.style.borderColor = 'rgba(80, 80, 80, 0.8)';
-        waveTypeToggle.style.color = 'rgba(220, 220, 220, 0.9)';
-        waveTypeToggle.style.fontSize = '14px';
-        waveTypeToggle.style.margin = '10px 0';
+      waveTypeToggle.id = 'waveTypeToggleBtn';
+      waveTypeToggle.textContent = 'Wave Type: Point';
+      waveTypeToggle.className = 'w-full p-2 rounded border transition-all';
+      waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+      waveTypeToggle.style.borderColor = 'rgba(80, 80, 80, 0.8)';
+      waveTypeToggle.style.color = 'rgba(220, 220, 220, 0.9)';
+      waveTypeToggle.style.fontSize = '14px';
+      waveTypeToggle.style.margin = '10px 0';
 
-        waveTypeToggle.addEventListener('click', () => {
-            // Toggle between 'linear' and 'circular' wave types
-            if (waveType === 'linear') {
-                waveType = 'circular';
-                waveTypeToggle.textContent = 'Wave Type: Circular';
-                waveTypeToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-            } else {
-                waveType = 'linear';
-                waveTypeToggle.textContent = 'Wave Type: Point';
-                waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-            }
-        });
+      waveTypeToggle.addEventListener('click', () => {
+        if (waveType === 'linear') {
+          waveType = 'circular';
+          waveTypeToggle.textContent = 'Wave Type: Circular';
+          waveTypeToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+        } else {
+          waveType = 'linear';
+          waveTypeToggle.textContent = 'Wave Type: Point';
+          waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
+        }
+      });
 
-        // Add to GUI
-        const waveTypeSection = document.createElement('div');
-        waveTypeSection.style.marginTop = '10px';
-        waveTypeSection.appendChild(waveTypeToggle);
-        guiContainer.appendChild(waveTypeSection);
+      const waveTypeSection = document.createElement('div');
+      waveTypeSection.style.marginTop = '10px';
+      waveTypeSection.appendChild(waveTypeToggle);
+      guiContainer.appendChild(waveTypeSection);
 
-      // Add emit button
+      // Emit button
       const emitSection = document.createElement('div');
       emitSection.style.marginTop = '15px';
+      const emitButton = document.createElement('button');
+      emitButton.id = 'emitWaveBtn';
+      emitButton.textContent = 'Emit Photon Wave';
       emitButton.className = 'w-full p-2 rounded border transition-all hover:bg-opacity-90';
-      emitButton.style.backgroundColor = 'rgb(220, 40, 40)'; // Use the accent color from your gray theme
+      emitButton.style.backgroundColor = 'rgb(220, 40, 40)';
       emitButton.style.borderColor = 'rgb(220, 40, 40)';
       emitButton.style.color = 'rgba(220, 220, 220, 0.9)';
       emitSection.appendChild(emitButton);
       guiContainer.appendChild(emitSection);
+    }
+
+    // Helper functions
+    function updateOrbitalOpacities(activeOrbital, otherOpacity) {
+      for (const type in orbitalGroups) {
+        if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+          if (type === activeOrbital) {
+            orbitalGroups[type].material.uniforms.u_opacity.value = 1.0;
+          } else {
+            orbitalGroups[type].material.uniforms.u_opacity.value = otherOpacity;
+          }
+        }
+      }
+    }
+
+    function updatePhotonWavelength(energyEV) {
+      // E = hc/λ → λ = hc/E
+      const hc = 1239.84; // eV·nm
+      const wavelengthNm = hc / energyEV;
+      
+      // More realistic scaling for X-ray wavelengths relative to atom size
+      // Iron atom has shells from 0.3 to 1.5 units
+      // X-ray wavelengths should be comparable to inner shell sizes
+      
+      if (energyEV > 5000) {
+        // K-edge X-rays - wavelength ~ 0.1-0.2 nm
+        photonWavelength = 0.15;
+      } else if (energyEV > 500) {
+        // L-edge X-rays - wavelength ~ 0.5-2 nm
+        photonWavelength = 0.3 + (5000 - energyEV) / 10000;
+      } else if (energyEV > 50) {
+        // M-edge and soft X-rays - wavelength ~ 2-20 nm
+        photonWavelength = 0.5 + (500 - energyEV) / 500;
+      } else {
+        // Very soft X-rays / UV
+        photonWavelength = 1.0 + (50 - energyEV) / 50;
+      }
+      
+      // Scale to match our coordinate system where K-shell is 0.3 units
+      photonWavelength *= 0.8;
     }
 
     // More function implementations
@@ -754,7 +1086,7 @@ export default function QuantumPlayground() {
       const scale = params.scale;
       
       // Generate points for this orbital type
-      const points = params.generatePoints(particleCount, scale);
+      const points = params.generatePoints(params.particleCount || particleCount, scale);
       
       // Create instanced mesh for particles
       const sphereGeometry = new THREE.SphereGeometry(particleSize, 8, 6);
@@ -763,6 +1095,10 @@ export default function QuantumPlayground() {
       const material = new THREE.ShaderMaterial({
         vertexShader: vertexShader,
         fragmentShader: fragmentShader,
+        transparent: true,
+        depthWrite: false, // Critical for proper transparency
+        depthTest: true,
+        blending: THREE.NormalBlending,
         uniforms: {
           baseColor: { value: new THREE.Color(params.color) },
           lowDensityColor: { value: new THREE.Color(params.lowDensityColor) },
@@ -775,7 +1111,7 @@ export default function QuantumPlayground() {
           directionalLightDirection2: { value: scene.userData.directionalLight2.direction },
           orbitalScale: { value: scale },
           u_time: { value: 0.0 },
-          u_maxSpeedAtCenter: { value: 50.0 },
+          u_maxSpeedAtCenter: { value: 30.0 },
           u_minSpeedAtEdge: { value: 0.01 },
           u_exponentialFalloffRate: { value: 3.5 },
           u_crossSectionX: { value: 10.0 },
@@ -784,12 +1120,18 @@ export default function QuantumPlayground() {
           u_waveFrequency: { value: waveFrequency },
           u_absorptionStrength: { value: 0.0 },
           u_absorptionFrequency: { value: 0.3 },
-          u_absorptionPhase: { value: 0.0 }
+          u_opacity: { value: 0.2 },
+          u_absorptionPhase: { value: 0.0 },
+          u_particleScale: { value: params.particleScale || 1.0 },
+          u_isWireframe: { value: false }
         }
       });
       
       // Create instanced mesh
       const instancedMesh = new THREE.InstancedMesh(sphereGeometry, material, points.length);
+      
+      // Set render order based on shell (outer shells render first)
+      instancedMesh.renderOrder = params.renderOrder || 0;
       
       // Create a buffer attribute for initial phase
       const initialPhaseAttribute = new Float32Array(points.length);
@@ -814,39 +1156,31 @@ export default function QuantumPlayground() {
     }
 
     function switchOrbital(orbitalType) {
-      // Hide all orbitals first
-      for (const type in orbitalGroups) {
-        orbitalGroups[type].visible = false;
-      }
+      currentOrbital = orbitalType;
+      updateLayeringMode();
       
-      // Show only the selected orbital
-      if (orbitalGroups[orbitalType]) {
-        orbitalGroups[orbitalType].visible = true;
-        currentOrbital = orbitalType;
+      // Update camera position based on the selected orbital
+      if (orbitalParams[orbitalType].cameraPosition) {
+        const targetPos = orbitalParams[orbitalType].cameraPosition;
+        // Smoothly animate to the new position
+        const startPos = camera.position.clone();
+        const duration = 1000; // 1 second
+        const startTime = performance.now();
         
-        // Update camera position based on the selected orbital
-        if (orbitalParams[orbitalType].cameraPosition) {
-          const targetPos = orbitalParams[orbitalType].cameraPosition;
-          // Smoothly animate to the new position
-          const startPos = camera.position.clone();
-          const duration = 1000; // 1 second
-          const startTime = performance.now();
+        function updateCameraPosition() {
+          const elapsed = performance.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Use easing function for smoother transition
+          const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
           
-          function updateCameraPosition() {
-            const elapsed = performance.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            // Use easing function for smoother transition
-            const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
-            
-            camera.position.lerpVectors(startPos, targetPos, easeProgress);
-            
-            if (progress < 1) {
-              requestAnimationFrame(updateCameraPosition);
-            }
+          camera.position.lerpVectors(startPos, targetPos, easeProgress);
+          
+          if (progress < 1) {
+            requestAnimationFrame(updateCameraPosition);
           }
-          
-          updateCameraPosition();
         }
+        
+        updateCameraPosition();
       }
     }
 
@@ -876,8 +1210,8 @@ export default function QuantumPlayground() {
         let wavePosition = 5; // Starting z position
         
         // Create a grid of particles for the wave - LARGER GRID
-        const gridSize = 130;      
-        const gridSpacing = 0.25;  
+        const gridSize = 80;      
+        const gridSpacing = 0.15;  
         const totalParticles = gridSize * gridSize;
         
         // Consistent default particle appearance
@@ -948,31 +1282,18 @@ export default function QuantumPlayground() {
             waveTime = 0;
             wavePosition = 10; // Starting position (right side)
             
-            // Update wave parameters based on wavelength
+            // Get photon energy from input
+            const energyInput = document.getElementById('photonEnergyInput');
+            const energy = parseFloat(energyInput.value) || 100;
+            
+            // Update wave parameters based on energy
+            updatePhotonWavelength(energy);
             waveConfig.wavelength = photonWavelength;
             waveConfig.waveFrequency = 1.0 / photonWavelength;
-            
-            // Calculate and display energy
-            const energy = calculatePhotonEnergy(photonWavelength);
-            document.getElementById('photonEnergyDisplay').textContent = 
-                `Photon Energy: ${energy.eV.toFixed(2)} eV`;
         }
         
         // Function to update wave animation
         function updateWave(deltaTime) {
-            // Get current values from sliders if they exist
-            if (document.getElementById('wavelengthSlider')) {
-                photonWavelength = parseFloat(document.getElementById('wavelengthSlider').value);
-                document.getElementById('currentWavelength').textContent = photonWavelength.toFixed(1) + ' nm';
-                
-                // Update energy display when wavelength changes
-                const energy = calculatePhotonEnergy(photonWavelength);
-                document.getElementById('photonEnergyDisplay').textContent = 
-                    `Photon Energy: ${energy.eV.toFixed(1)} eV`;
-                    
-                // DON'T update the wave color based on wavelength
-            }
-            
             // If active wave, update its position
             if (waveActive) {
                 // Update time and position - moving left (negative direction)
@@ -1118,12 +1439,17 @@ export default function QuantumPlayground() {
                 
                 // Only interact when wave is near the electron cloud (origin)
                 if (distanceToCenter < cloudRadius * 1.2) {
-                    // Calculate absorption based on distance and wavelength
-                    const normalizedDistance = distanceToCenter / cloudRadius;
-                    const wavelengthMatch = Math.exp(-Math.pow(photonWavelength - 1.0, 2) * 2);
+                    // Get photon energy from input
+                    const energyInput = document.getElementById('photonEnergyInput');
+                    const photonEnergy = parseFloat(energyInput.value) || 100;
+                    const orbitalEnergy = orbitalParams[currentOrbital].energy;
                     
-                    // Absorption is strongest when wavelength matches orbital energy levels
-                    const newAbsorptionStrength = (1 - normalizedDistance) * wavelengthMatch * 0.7;
+                    // Calculate absorption based on energy matching
+                    const energyMatch = Math.exp(-Math.pow((photonEnergy - orbitalEnergy) / orbitalEnergy, 2) * 10);
+                    
+                    // Absorption is strongest when energies match
+                    const normalizedDistance = distanceToCenter / cloudRadius;
+                    const newAbsorptionStrength = (1 - normalizedDistance) * energyMatch * 0.7;
                     
                     // Only activate absorption when strength increases (wave moving closer)
                     if (newAbsorptionStrength > absorptionStrength) {
