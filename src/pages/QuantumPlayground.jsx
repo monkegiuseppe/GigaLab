@@ -18,7 +18,7 @@ export default function QuantumPlayground() {
     
     // Shell layering mode
     let layeringMode = 'focused'; // 'focused' or 'all'
-    let secondaryOpacity = 0.1; // Increased from 0.05 for better visibility
+    let secondaryOpacity = 0.05; // Changed from 0.1 to 0.05 (5% instead of 10%)
     let performanceMode = 'normal'; // 'normal' or 'low'
 
     const particleCount = 45000; 
@@ -42,7 +42,7 @@ export default function QuantumPlayground() {
     let absorptionPhase = 0.0;
     let lastWavePosition = 0;
 
-    // Shaders with modifications for different rendering modes
+    // Shaders with camera-based culling and improved visibility
     const vertexShader = `
       attribute float a_initialPhase;
       
@@ -56,11 +56,15 @@ export default function QuantumPlayground() {
       uniform float u_absorptionFrequency;
       uniform float u_absorptionPhase;
       uniform float u_particleScale;
+      uniform vec3 u_cameraPosition;
+      uniform float u_cameraCullDistance;
+      uniform float u_depthCullDistance;
       
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
       varying float vDepthFactor;
       varying float vCrossSectionVisibility;
+      varying float vCameraCull;
       
       void main() {
           vec3 original_pos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
@@ -101,7 +105,26 @@ export default function QuantumPlayground() {
           vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(scaledPosition, 1.0);
           vWorldPosition = worldPosition.xyz;
           
-          vCrossSectionVisibility = worldPosition.x <= u_crossSectionX ? 1.0 : 0.0;
+          // Updated cross-section visibility (0-10 range instead of -10 to 10)
+          float crossSectionFactor = u_crossSectionX / 10.0; // Convert 0-10 to 0-1
+          vCrossSectionVisibility = worldPosition.x <= mix(-10.0, 10.0, crossSectionFactor) ? 1.0 : 0.0;
+          
+          // Camera-based culling for better visibility
+          float distanceToCamera = distance(worldPosition.xyz, u_cameraPosition);
+          
+          // Cull particles too close to camera (bulldozer effect)
+          vCameraCull = distanceToCamera > u_cameraCullDistance ? 1.0 : 0.0;
+          
+          // Additional depth-based culling for particles in front of inner orbitals
+          vec3 toCameraDir = normalize(u_cameraPosition - worldPosition.xyz);
+          vec3 toOriginDir = normalize(-worldPosition.xyz);
+          float viewAlignment = dot(toCameraDir, toOriginDir);
+          
+          // Cull particles that are far from origin AND in front of camera
+          float distanceFromOrigin = length(worldPosition.xyz);
+          if (distanceFromOrigin > u_depthCullDistance && viewAlignment < 0.3) {
+              vCameraCull = 0.0;
+          }
           
           vNormalWorld = normalize(mat3(modelMatrix) * normal);
 
@@ -132,6 +155,7 @@ export default function QuantumPlayground() {
       varying vec3 vNormalWorld;
       varying float vDepthFactor;
       varying float vCrossSectionVisibility;
+      varying float vCameraCull;
       
       const float minOverallBrightness = 0.12;
       const float maxOverallBrightness = 0.98;
@@ -139,7 +163,8 @@ export default function QuantumPlayground() {
       const float maxRawLight = 1.9;
 
       void main() {
-          if (vCrossSectionVisibility < 0.5) {
+          // Apply camera culling and cross-section visibility
+          if (vCrossSectionVisibility < 0.5 || vCameraCull < 0.5) {
               discard;
           }
           
@@ -197,9 +222,9 @@ export default function QuantumPlayground() {
       }
     `;
 
-    // Iron orbital parameters with visual differentiation
+    // Iron orbital parameters with less aggressive camera positioning
     const orbitalParams = {
-      // K-shell - very small and close to nucleus (solid, bright)
+      // K-shell - reduced zoom-in
       '1s': {
         name: "1s",
         shell: "K",
@@ -208,15 +233,15 @@ export default function QuantumPlayground() {
         midDensityColor: 0xFF6666,
         highDensityColor: 0xCC0000,
         scale: 0.3,
-        particleCount: 5000,  // Increased for better visibility
+        particleCount: 5000,
         generatePoints: generate1sPoints,
-        cameraPosition: new THREE.Vector3(1, 1, 1.5),
+        cameraPosition: new THREE.Vector3(2, 1.5, 2.5), // Less zoom-in
         energy: 7112,
-        particleScale: 1.5,  // Larger particles for visibility
+        particleScale: 1.5,
         renderMode: 'solid',
-        renderOrder: 1000  // Highest render order - renders last/on top
+        renderOrder: 1000
       },
-      // L-shell - medium size (semi-transparent, smaller particles)
+      // L-shell - reduced zoom-in
       '2s': {
         name: "2s",
         shell: "L",
@@ -225,13 +250,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0x66FF66,
         highDensityColor: 0x00CC00,
         scale: 0.65,
-        particleCount: 6000,  // Balanced for visibility and performance
+        particleCount: 6000,
         generatePoints: generate2sPoints,
-        cameraPosition: new THREE.Vector3(2, 2, 3),
+        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
         energy: 844,
-        particleScale: 1.0,  // Increased scale
+        particleScale: 1.0,
         renderMode: 'solid',
-        renderOrder: 500  // Middle render order
+        renderOrder: 500
       },
       '2p1/2': {
         name: "2p₁/₂",
@@ -243,7 +268,7 @@ export default function QuantumPlayground() {
         scale: 0.75,
         particleCount: 6000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(2, 2, 3),
+        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
         energy: 720,
         particleScale: 1.0,
         renderMode: 'solid',
@@ -259,13 +284,13 @@ export default function QuantumPlayground() {
         scale: 0.85,
         particleCount: 6000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(2, 2, 3),
+        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
         energy: 707,
         particleScale: 1.0,
         renderMode: 'solid',
         renderOrder: 300
       },
-      // M-shell - largest (can be wireframe or point cloud)
+      // M-shell - keep larger distances
       '3s': {
         name: "3s",
         shell: "M",
@@ -278,7 +303,7 @@ export default function QuantumPlayground() {
         generatePoints: generate3sPoints,
         cameraPosition: new THREE.Vector3(3, 3, 4.5),
         energy: 92,
-        particleScale: 0.8,  // Slightly larger for better visibility
+        particleScale: 0.8,
         renderMode: 'solid',
         renderOrder: 2
       },
@@ -743,7 +768,7 @@ export default function QuantumPlayground() {
                   currentOrbitalGroup.material.uniforms.u_absorptionPhase.value = absorptionPhase;
               }
           }
-      }
+        }
         
         for (const type in orbitalGroups) {
           if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
@@ -752,6 +777,9 @@ export default function QuantumPlayground() {
             if (opacity > 0.01) {
               orbitalGroups[type].material.uniforms.u_time.value = time;
               orbitalGroups[type].material.uniforms.viewMatrix.value = camera.matrixWorldInverse;
+              
+              // Update camera position for culling
+              orbitalGroups[type].material.uniforms.u_cameraPosition.value = camera.position;
               
               if (orbitalGroups[type].material.uniforms.u_waveHeight) {
                 orbitalGroups[type].material.uniforms.u_waveHeight.value = waveHeight;
@@ -776,7 +804,7 @@ export default function QuantumPlayground() {
       animate();
     }
 
-    // Update layering mode
+    // Update layering mode - FIXED to apply immediately
     function updateLayeringMode() {
       if (layeringMode === 'focused') {
         // Shell-based layering: current orbital full opacity, same shell medium, others very low
@@ -803,8 +831,52 @@ export default function QuantumPlayground() {
           }
         }
       } else {
-        // Show all orbitals with the slider-controlled opacity
-        updateOrbitalOpacities(currentOrbital, secondaryOpacity);
+        // Show all orbitals with higher opacity
+        for (const type in orbitalGroups) {
+          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+            if (type === currentOrbital) {
+              orbitalGroups[type].material.uniforms.u_opacity.value = 1.0;
+              orbitalGroups[type].material.depthWrite = true;
+              orbitalGroups[type].material.transparent = false;
+            } else {
+              orbitalGroups[type].material.uniforms.u_opacity.value = 0.4; // Higher visibility in "show all" mode
+              orbitalGroups[type].material.depthWrite = false;
+              orbitalGroups[type].material.transparent = true;
+            }
+            orbitalGroups[type].material.needsUpdate = true;
+          }
+        }
+      }
+    }
+
+    // Enhanced inner orbital visibility function
+    function updateInnerOrbitalVisibility() {
+      const focusedScale = orbitalParams[currentOrbital].scale;
+      const isInnerOrbital = focusedScale < 0.5; // K and inner L shells
+      
+      if (layeringMode === 'focused' && isInnerOrbital) {
+        // Super aggressive culling for inner orbital viewing
+        for (const type in orbitalGroups) {
+          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+            const orbitalScale = orbitalParams[type].scale;
+            
+            if (type === currentOrbital) {
+              // Boost the focused inner orbital
+              orbitalGroups[type].material.uniforms.u_opacity.value = 1.0;
+              orbitalGroups[type].material.uniforms.u_particleScale.value = orbitalParams[type].particleScale * 1.8; // Bigger particles
+              orbitalGroups[type].material.uniforms.u_cameraCullDistance.value = 0.3; // Closer culling
+            } else {
+              // Much more aggressive opacity reduction for outer orbitals
+              const distanceRatio = orbitalScale / focusedScale;
+              const aggressiveOpacity = secondaryOpacity / (distanceRatio * distanceRatio); // Quadratic reduction
+              
+              orbitalGroups[type].material.uniforms.u_opacity.value = Math.max(0.01, aggressiveOpacity);
+              orbitalGroups[type].material.uniforms.u_cameraCullDistance.value = 1.0; // More aggressive culling
+              orbitalGroups[type].material.uniforms.u_depthCullDistance.value = focusedScale * 2.0; // Cull outer particles more aggressively
+            }
+            orbitalGroups[type].material.needsUpdate = true;
+          }
+        }
       }
     }
 
@@ -849,7 +921,7 @@ export default function QuantumPlayground() {
       layeringToggle.onclick = () => {
         layeringMode = layeringMode === 'focused' ? 'all' : 'focused';
         layeringToggle.textContent = layeringMode === 'focused' ? 'Mode: Focused Shell' : 'Mode: Show All';
-        updateLayeringMode();
+        updateLayeringMode(); // This will now apply immediately
       };
       
       layeringSection.appendChild(layeringToggle);
@@ -994,13 +1066,13 @@ export default function QuantumPlayground() {
       opacitySlider.type = 'range';
       opacitySlider.min = '0';
       opacitySlider.max = '30'; // Max 30% for secondary orbitals
-      opacitySlider.value = '10'; // Default 10%
+      opacitySlider.value = '5'; // Default 5% instead of 10%
       opacitySlider.style.width = '100%';
       opacitySlider.style.accentColor = 'rgb(220, 40, 40)';
       
       const opacityDisplay = document.createElement('span');
       opacityDisplay.style.fontSize = '12px';
-      opacityDisplay.textContent = '10%';
+      opacityDisplay.textContent = '5%'; // Updated default display
       
       opacitySlider.oninput = (e) => {
         secondaryOpacity = e.target.value / 100;
@@ -1113,7 +1185,7 @@ export default function QuantumPlayground() {
       photonSection.appendChild(presetDiv);
       guiContainer.appendChild(photonSection);
 
-      // Cross-section slider section
+      // Cross-section slider section - Updated to 0-10 range
       const crossSectionSection = document.createElement('div');
       crossSectionSection.className = 'glass';
       crossSectionSection.style.padding = '15px';
@@ -1122,7 +1194,7 @@ export default function QuantumPlayground() {
       crossSectionSection.style.marginBottom = '15px';
       
       const crossSectionLabel = document.createElement('label');
-      crossSectionLabel.textContent = 'Cross-Section (X-axis):';
+      crossSectionLabel.textContent = 'Cross-Section View:';
       crossSectionLabel.style.fontWeight = 'bold';
       crossSectionLabel.style.display = 'block';
       crossSectionLabel.style.marginBottom = '10px';
@@ -1130,9 +1202,9 @@ export default function QuantumPlayground() {
       const crossSectionSlider = document.createElement('input');
       crossSectionSlider.type = 'range';
       crossSectionSlider.id = 'crossSectionSlider';
-      crossSectionSlider.min = '-10';
+      crossSectionSlider.min = '0'; // Changed from -10
       crossSectionSlider.max = '10';
-      crossSectionSlider.value = '10';
+      crossSectionSlider.value = '10'; // Start with full view
       crossSectionSlider.step = '0.1';
       crossSectionSlider.style.width = '100%';
       crossSectionSlider.style.accentColor = 'rgb(220, 40, 40)';
@@ -1153,7 +1225,7 @@ export default function QuantumPlayground() {
       crossSectionMarkers.style.display = 'flex';
       crossSectionMarkers.style.justifyContent = 'space-between';
       crossSectionMarkers.style.fontSize = '12px';
-      crossSectionMarkers.innerHTML = '<span>-10</span><span>0</span><span>10</span>';
+      crossSectionMarkers.innerHTML = '<span>50%</span><span>75%</span><span>100%</span>'; // Updated labels
       
       crossSectionSection.appendChild(crossSectionMarkers);
       guiContainer.appendChild(crossSectionSection);
@@ -1281,16 +1353,19 @@ export default function QuantumPlayground() {
           u_maxSpeedAtCenter: { value: 10.0 },
           u_minSpeedAtEdge: { value: 0.005 },
           u_exponentialFalloffRate: { value: 5 },
-          u_crossSectionX: { value: 10.0 },
+          u_crossSectionX: { value: 10.0 }, // Changed default to 10 (full view)
           viewMatrix: { value: camera.matrixWorldInverse },
           u_waveHeight: { value: waveHeight },
           u_waveFrequency: { value: waveFrequency },
           u_absorptionStrength: { value: 0.0 },
           u_absorptionFrequency: { value: 0.3 },
-          u_opacity: { value: 0.2 },
+          u_opacity: { value: 0.05 }, // Changed default to 5%
           u_absorptionPhase: { value: 0.0 },
           u_particleScale: { value: params.particleScale || 1.0 },
-          u_isWireframe: { value: false }
+          u_isWireframe: { value: false },
+          u_cameraPosition: { value: camera.position }, // Add camera position
+          u_cameraCullDistance: { value: 0.5 }, // Distance for bulldozer effect
+          u_depthCullDistance: { value: scale * 1.5 } // Distance for depth culling
         }
       });
       
@@ -1352,9 +1427,15 @@ export default function QuantumPlayground() {
           } else {
             // Show all mode
             orbitalGroups[type].visible = true;
-            orbitalGroups[type].material.uniforms.u_opacity.value = 0.7;
-            orbitalGroups[type].material.depthWrite = false;
-            orbitalGroups[type].material.transparent = true;
+            if (type === orbitalType) {
+              orbitalGroups[type].material.uniforms.u_opacity.value = 1.0;
+              orbitalGroups[type].material.depthWrite = true;
+              orbitalGroups[type].material.transparent = false;
+            } else {
+              orbitalGroups[type].material.uniforms.u_opacity.value = 0.4; // Higher visibility in show all mode
+              orbitalGroups[type].material.depthWrite = false;
+              orbitalGroups[type].material.transparent = true;
+            }
             orbitalGroups[type].material.needsUpdate = true;
             // Reset lighting to normal
             orbitalGroups[type].material.uniforms.directionalLightColor1.value.copy(scene.userData.directionalLight1.color);
@@ -1388,6 +1469,9 @@ export default function QuantumPlayground() {
         
         updateCameraPosition();
       }
+      
+      // Apply enhanced visibility for inner orbitals
+      updateInnerOrbitalVisibility();
     }
 
     function onWindowResize() {
@@ -1525,38 +1609,42 @@ export default function QuantumPlayground() {
                 const distanceToCenter = Math.abs(wavePosition);
                 
                 // Only interact when wave is near the electron cloud (origin)
-                if (distanceToCenter < cloudRadius * 1.2) {
+                if (distanceToCenter < cloudRadius * 1.5) { // Increased interaction range
                     // Get photon energy from input
                     const energyInput = document.getElementById('photonEnergyInput');
                     const photonEnergy = parseFloat(energyInput.value) || 100;
                     const orbitalEnergy = orbitalParams[currentOrbital].energy;
                     
-                    // Calculate absorption based on energy matching
-                    const energyMatch = Math.exp(-Math.pow((photonEnergy - orbitalEnergy) / orbitalEnergy, 2) * 10);
+                    // Smoother energy matching with wider acceptance range
+                    const energyDifference = Math.abs(photonEnergy - orbitalEnergy) / orbitalEnergy;
+                    const energyMatch = Math.exp(-Math.pow(energyDifference, 2) * 5); // Reduced from 10 for smoother matching
                     
-                    // Absorption is strongest when energies match
-                    const normalizedDistance = distanceToCenter / cloudRadius;
-                    const newAbsorptionStrength = (1 - normalizedDistance) * energyMatch * 0.7;
+                    // Smoother distance-based interaction
+                    const normalizedDistance = distanceToCenter / (cloudRadius * 1.5);
+                    const distanceEffect = Math.pow(1 - Math.min(normalizedDistance, 1), 2);
                     
-                    // Check if energies match well enough for absorption
-                    if (energyMatch > 0.7 && distanceToCenter < cloudRadius * 0.5) {
-                        // Wave is absorbed!
-                        waveAbsorbed = true;
-                        reemissionTime = 0;
-                        absorptionActive = true;
-                        absorptionFrequency = 0.8 / photonWavelength;
-                        absorptionPhase = waveTime * 6.28;
-                    } else if (newAbsorptionStrength > absorptionStrength) {
-                        // Partial interaction without full absorption
+                    // Gradual absorption buildup
+                    const targetAbsorptionStrength = distanceEffect * energyMatch * 0.8;
+                    absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05; // Smooth interpolation
+                    
+                    // Check for full absorption with lower threshold for smoother transition
+                    if (energyMatch > 0.5 && distanceToCenter < cloudRadius * 0.8 && absorptionStrength > 0.3) {
+                        if (!waveAbsorbed) { // Only trigger once
+                            waveAbsorbed = true;
+                            reemissionTime = 0;
+                            absorptionActive = true;
+                            absorptionFrequency = 0.8 / photonWavelength;
+                            absorptionPhase = waveTime * 6.28;
+                        }
+                    } else if (absorptionStrength > 0.01) {
+                        // Partial interaction
                         absorptionActive = true;
                         absorptionFrequency = 0.8 / photonWavelength;
                         absorptionPhase = waveTime * 6.28;
                     }
-                    
-                    absorptionStrength = Math.max(absorptionStrength, newAbsorptionStrength);
                 } else {
                     // Gradually decrease absorption strength when wave moves away
-                    absorptionStrength *= 0.98;
+                    absorptionStrength *= 0.96; // Slower decay for smoother transition
                     if (absorptionStrength < 0.01) {
                         absorptionActive = false;
                         absorptionStrength = 0;
@@ -1625,9 +1713,9 @@ export default function QuantumPlayground() {
                             // Calculate angle from the origin
                             const angle = Math.atan2(dz, dx);
                             
-                            // Start with narrow angle that widens as wave expands
-                            const expansionFactor = Math.min(1.0, expandingRadius / 10.0); // Gradually increase to full width
-                            const maxAngle = Math.PI * 0.1 + (Math.PI * 0.32 * expansionFactor); // Start at ~18° total, expand to ~75° each side
+                            // Start with much narrower angle that stays focused
+                            const expansionFactor = Math.min(1.0, expandingRadius / 15.0); // Slower expansion
+                            const maxAngle = Math.PI * 0.05 + (Math.PI * 0.08 * expansionFactor); // Much narrower: ~9° to ~23° total spread
                             
                             // Only process points within the angle range
                             if (Math.abs(angle) <= maxAngle) {
