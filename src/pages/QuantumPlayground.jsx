@@ -789,7 +789,7 @@ export default function QuantumPlayground() {
           updatePhotonWave(deltaTime);
         }
 
-        time += 0.01 * waveSpeed;
+        time += deltaTime * waveSpeed;
         if (absorptionActive) {
           const currentOrbitalGroup = orbitalGroups[currentOrbital];
           if (currentOrbitalGroup.material && currentOrbitalGroup.material.uniforms) {
@@ -1572,12 +1572,17 @@ export default function QuantumPlayground() {
             waveParticleMaterial,
             totalParticles
         );
-        
+        // Add opacity attribute for per-particle visibility
+        const opacities = new Float32Array(totalParticles);
+        waveParticles.geometry.setAttribute('opacity', new THREE.InstancedBufferAttribute(opacities, 1));
         waveParticles.renderOrder = -1000;
 
         // Make the plane visible immediately
         waveParticles.visible = true;
         scene.add(waveParticles);
+        // Add material transparency
+        waveParticleMaterial.transparent = true;
+        waveParticleMaterial.opacity = 0.8; // Start invisible
         
         // Initialize instance colors
         waveParticles.instanceColor = new THREE.InstancedBufferAttribute(
@@ -1851,8 +1856,52 @@ export default function QuantumPlayground() {
                     
                     // Set color intensity based on height
                     const color = defaultColor.clone().multiplyScalar(colorIntensity);
-                    waveParticles.setColorAt(index, color);
-                }
+
+                    // Calculate visibility based on wave proximity
+                    let visible = false;
+                    let opacity = 0.0;
+
+                    if (waveActive) {
+                        // Calculate distance from wave center
+                        const dx = x;
+                        const dz = z - wavePosition;
+                        const distFromWave = Math.sqrt(dx * dx + dz * dz);
+                        const visibleRadius = 12.0 * photonWavelength; // Visibility radius
+                        
+                        if (distFromWave < visibleRadius) {
+                            visible = true;
+                            // Fade out at edges
+                            opacity = 1.0 - (distFromWave / visibleRadius);
+                            opacity = Math.pow(opacity, 2) * 0.8; // Smooth falloff
+                        }
+                    }
+
+                    // Also check for reemission visibility
+                    if (waveAbsorbed && absorptionStrength > 0.1) {
+                        const distFromCenter = Math.sqrt(x * x + z * z);
+                        const reemissionRadius = reemissionTime * 1.2 * 2.0;
+                        if (Math.abs(distFromCenter - reemissionRadius) < 2.0) {
+                            visible = true;
+                            opacity = Math.max(opacity, 0.5);
+                        }
+                    }
+
+                    // Only render particle if visible
+                    if (visible && height > 0.01) {
+                        dummy.position.set(x, height, z);
+                        const scale = defaultScale + height * 0.7;
+                        dummy.scale.set(scale, scale, scale);
+                        waveParticles.setColorAt(index, color);
+                    } else {
+                        // Hide particle completely
+                        dummy.position.set(x, 0, z);
+                        dummy.scale.set(0, 0, 0); // Scale to 0 to hide
+                        waveParticles.setColorAt(index, new THREE.Color(0, 0, 0));
+                    }
+
+                    dummy.updateMatrix();
+                    waveParticles.setMatrixAt(index, dummy.matrix);
+                                    }
             }
             
             // Clean up if reemission has propagated far enough
