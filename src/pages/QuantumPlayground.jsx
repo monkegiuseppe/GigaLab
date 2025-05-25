@@ -13,7 +13,7 @@ export default function QuantumPlayground() {
     // Core variables
     let scene, camera, renderer, controls;
     const orbitalGroups = {}; 
-    let currentOrbital = '2p3/2';
+    let currentOrbital = '3p';
     const particleData = {}; 
     
     // Shell layering mode
@@ -127,21 +127,39 @@ export default function QuantumPlayground() {
           float crossSectionFactor = u_crossSectionX / 10.0; // Convert 0-10 to 0-1
           vCrossSectionVisibility = worldPosition.x <= mix(0.0, 10.0, crossSectionFactor) ? 1.0 : 0.0;
           
-          // Camera-based culling for better visibility
+          // Camera-based culling with different behavior for primary vs secondary orbitals
           float distanceToCamera = distance(worldPosition.xyz, u_cameraPosition);
-          
-          // Cull particles too close to camera (bulldozer effect)
-          vCameraCull = distanceToCamera > u_cameraCullDistance ? 1.0 : 0.0;
-          
-          // Additional depth-based culling for particles in front of inner orbitals
-          vec3 toCameraDir = normalize(u_cameraPosition - worldPosition.xyz);
-          vec3 toOriginDir = normalize(-worldPosition.xyz);
-          float viewAlignment = dot(toCameraDir, toOriginDir);
-          
-          // Cull particles that are far from origin AND in front of camera
           float distanceFromOrigin = length(worldPosition.xyz);
-          if (distanceFromOrigin > u_depthCullDistance && viewAlignment < 0.3) {
-              vCameraCull = 0.0;
+
+          if (u_isPrimaryOrbital) {
+              // Minimal culling for primary orbital - only cull very close particles
+              vCameraCull = distanceToCamera > u_cameraCullDistance * 0.5 ? 1.0 : 0.0;
+          } else {
+              // Aggressive culling for secondary orbitals
+              
+              // Basic bulldozer effect
+              vCameraCull = distanceToCamera > u_cameraCullDistance ? 1.0 : 0.0;
+              
+              // Calculate if particle is between camera and origin
+              vec3 cameraToOrigin = normalize(-u_cameraPosition);
+              vec3 cameraToParticle = normalize(worldPosition.xyz - u_cameraPosition);
+              float alignment = dot(cameraToOrigin, cameraToParticle);
+              
+              // Cull secondary particles that are:
+              // 1. In front of the camera's view toward origin (alignment > 0.7)
+              // 2. Closer to camera than the primary orbital's typical radius
+              if (alignment > 0.7 && distanceToCamera < distanceFromOrigin) {
+                  vCameraCull = 0.0;
+              }
+              
+              // Also cull particles that are far from origin AND in front
+              vec3 toCameraDir = normalize(u_cameraPosition - worldPosition.xyz);
+              vec3 toOriginDir = normalize(-worldPosition.xyz);
+              float viewAlignment = dot(toCameraDir, toOriginDir);
+              
+              if (distanceFromOrigin > u_depthCullDistance && viewAlignment < 0.3) {
+                  vCameraCull = 0.0;
+              }
           }
           
           vNormalWorld = normalize(mat3(modelMatrix) * normal);
@@ -240,6 +258,7 @@ export default function QuantumPlayground() {
           
           vec3 litColor = densityColor * rawLighting;
 
+                
           float adjustedDepthFactor = vDepthFactor * (1.0 - (crossSectionFactor * 0.02));
           vec3 darkColorMultiplier = vec3(0.25, 0.25, 0.25); 
           vec3 finalColor = mix(litColor, litColor * darkColorMultiplier, adjustedDepthFactor);
@@ -1067,6 +1086,13 @@ export default function QuantumPlayground() {
               btn.style.backgroundColor = '';
             });
             orbitalBtn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
+
+            const energyInput   = document.getElementById('photonEnergyInput');
+            const energyDisplay = document.getElementById('photonEnergyDisplay');
+            const eV = orbitalParams[orbital].energy;
+            energyInput.value = eV;
+            updatePhotonWavelength(eV);
+            energyDisplay.textContent = `Wavelength: ${(1239.84 / eV).toFixed(2)} nm`;
           };
           
           if (orbital === currentOrbital) {
@@ -1138,7 +1164,7 @@ export default function QuantumPlayground() {
       const energyInput = document.createElement('input');
       energyInput.type = 'number';
       energyInput.id = 'photonEnergyInput';
-      energyInput.value = '100';
+      energyInput.value = '52';
       energyInput.style.width = '60%';
       energyInput.style.padding = '4px';
       energyInput.style.marginRight = '5px';
@@ -1168,57 +1194,6 @@ export default function QuantumPlayground() {
       photonSection.appendChild(energyUnit);
       photonSection.appendChild(energyDisplay);
       
-      // Preset buttons
-      const presetDiv = document.createElement('div');
-      presetDiv.style.marginTop = '10px';
-      presetDiv.style.display = 'grid';
-      presetDiv.style.gridTemplateColumns = '1fr 1fr';
-      presetDiv.style.gap = '5px';
-      
-      const presets = [
-        { name: 'K-edge', energy: 7112 },
-        { name: 'L₃-edge', energy: 707 },
-        { name: 'L₂-edge', energy: 720 },
-        { name: 'M-edge', energy: 92 }
-      ];
-      
-      presets.forEach(preset => {
-        const btn = document.createElement('button');
-        btn.textContent = preset.name;
-        btn.style.padding = '5px';
-        btn.style.fontSize = '12px';
-        btn.style.backgroundColor = 'rgba(70, 70, 70, 0.8)';
-        btn.style.border = '1px solid rgba(100, 100, 100, 0.8)';
-        btn.style.borderRadius = '4px';
-        btn.style.color = 'rgba(220, 220, 220, 0.9)';
-        btn.style.cursor = 'pointer';
-        
-        btn.onclick = () => {
-          energyInput.value = preset.energy;
-          updatePhotonWavelength(preset.energy);
-          energyDisplay.textContent = `Wavelength: ${(1239.84 / preset.energy).toFixed(2)} nm`;
-          
-          // Find and highlight the corresponding orbital
-          for (const [key, params] of Object.entries(orbitalParams)) {
-            if (Math.abs(params.energy - preset.energy) < 10) {
-              switchOrbital(key);
-              document.querySelectorAll('.orbital-btn').forEach(btn => {
-                btn.style.backgroundColor = '';
-              });
-              document.querySelectorAll('.orbital-btn').forEach(btn => {
-                if (btn.querySelector('span').textContent === params.name) {
-                  btn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-                }
-              });
-              break;
-            }
-          }
-        };
-        
-        presetDiv.appendChild(btn);
-      });
-      
-      photonSection.appendChild(presetDiv);
       guiContainer.appendChild(photonSection);
 
       // Cross-section slider section - Updated to 0-10 range
@@ -1572,7 +1547,7 @@ export default function QuantumPlayground() {
         let reemissionTime = 0; // Separate time for reemission
         
         // Create a grid of particles for the wave - LARGER GRID
-        const gridSize = 80;      
+        const gridSize = 100;      
         const gridSpacing = 0.15;  
         const totalParticles = gridSize * gridSize;
      
