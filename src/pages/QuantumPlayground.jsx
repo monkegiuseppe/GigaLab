@@ -59,6 +59,11 @@ export default function QuantumPlayground() {
       uniform vec3 u_cameraPosition;
       uniform float u_cameraCullDistance;
       uniform float u_depthCullDistance;
+      uniform mat4 u_projectionMatrix;
+      uniform float u_frustumPadding;
+      uniform bool u_isPrimaryOrbital;
+      uniform float u_overlapCullDistance;
+      uniform float u_densityThreshold;
       
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -69,9 +74,8 @@ export default function QuantumPlayground() {
       void main() {
           vec3 original_pos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
 
-          float distanceToYAxis = length(original_pos.xz);
-          float angularSpeed = (u_maxSpeedAtCenter - u_minSpeedAtEdge) * exp(-distanceToYAxis * u_exponentialFalloffRate) + u_minSpeedAtEdge;
-          float currentRotationY = a_initialPhase + angularSpeed * u_time;
+          float angularSpeed = u_maxSpeedAtCenter; // Use only one speed per orbital
+          float currentRotationY = angularSpeed * u_time;
 
           float s = sin(currentRotationY);
           float c = cos(currentRotationY);
@@ -83,6 +87,11 @@ export default function QuantumPlayground() {
           );
 
           vec3 animated_position = (rotationAnimMatrix * vec4(original_pos, 1.0)).xyz;
+
+          float density = exp(-length(animated_position) / orbitalScale);
+          if (density < u_densityThreshold) {
+              vCameraCull = 0.0; // Hide particle if outside density region
+          }
 
           if (u_absorptionStrength > 0.01) {
               float dist = length(animated_position);
@@ -100,6 +109,15 @@ export default function QuantumPlayground() {
               animated_position.x, animated_position.y, animated_position.z, 1.0
           );
 
+          if (!u_isPrimaryOrbital) {
+              // For secondary orbitals, hide particles that are too close to origin
+              // where primary orbital particles would be dense
+              float distToOrigin = length(animated_position);
+              if (distToOrigin < u_overlapCullDistance) {
+                  vCameraCull = 0.0; // Hide this particle
+              }
+          }
+
           // Apply particle scale uniform
           vec3 scaledPosition = position * u_particleScale;
           vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(scaledPosition, 1.0);
@@ -107,7 +125,7 @@ export default function QuantumPlayground() {
           
           // Updated cross-section visibility (0-10 range instead of -10 to 10)
           float crossSectionFactor = u_crossSectionX / 10.0; // Convert 0-10 to 0-1
-          vCrossSectionVisibility = worldPosition.x <= mix(-10.0, 10.0, crossSectionFactor) ? 1.0 : 0.0;
+          vCrossSectionVisibility = worldPosition.x <= mix(0.0, 10.0, crossSectionFactor) ? 1.0 : 0.0;
           
           // Camera-based culling for better visibility
           float distanceToCamera = distance(worldPosition.xyz, u_cameraPosition);
@@ -134,6 +152,14 @@ export default function QuantumPlayground() {
           vDepthFactor = smoothstep(orbitalScale * 0.45, orbitalScale * 2.8, rawDepth); 
 
           gl_Position = projectionMatrix * viewPosition;
+
+          vec4 clipPos = gl_Position;
+          float w = clipPos.w;
+          if (clipPos.x < -w * u_frustumPadding || clipPos.x > w * u_frustumPadding ||
+              clipPos.y < -w * u_frustumPadding || clipPos.y > w * u_frustumPadding ||
+              clipPos.z < -w || clipPos.z > w) {
+              vCameraCull = 0.0;
+          }
       }
     `;
 
@@ -150,6 +176,8 @@ export default function QuantumPlayground() {
       uniform float u_crossSectionX;
       uniform float u_opacity;
       uniform bool u_isWireframe;
+      uniform bool u_isPrimaryOrbital;
+      uniform float u_overlapCullDistance;
 
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -179,11 +207,11 @@ export default function QuantumPlayground() {
           vec3 diffuse2 = directionalLightColor2 * lambertian2;
 
           vec3 rawLighting = ambientLightColor + diffuse1 + diffuse2;
-          
           float crossSectionFactor = 10.0 - min(u_crossSectionX, 10.0);
           float lightBoost = 1.0 + (crossSectionFactor * 0.05);
+
+          rawLighting *= 1.5;
           
-          rawLighting *= lightBoost;
           rawLighting = clamp(rawLighting, vec3(minRawLight), vec3(maxRawLight));
           
           float distFromCenter = length(vWorldPosition);
@@ -235,10 +263,11 @@ export default function QuantumPlayground() {
         scale: 0.3,
         particleCount: 5000,
         generatePoints: generate1sPoints,
-        cameraPosition: new THREE.Vector3(2, 1.5, 2.5), // Less zoom-in
+        cameraPosition: new THREE.Vector3(2, 1.5, 0.5), // Less zoom-in
         energy: 7112,
         particleScale: 1.5,
         renderMode: 'solid',
+        rotationSpeed: 0.5,
         renderOrder: 1000
       },
       // L-shell - reduced zoom-in
@@ -250,12 +279,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0x66FF66,
         highDensityColor: 0x00CC00,
         scale: 0.65,
-        particleCount: 6000,
+        particleCount: 10000,
         generatePoints: generate2sPoints,
-        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
+        cameraPosition: new THREE.Vector3(3, 2.5, 1), // Less zoom-in
         energy: 844,
         particleScale: 1.0,
         renderMode: 'solid',
+        rotationSpeed: 0.3,
         renderOrder: 500
       },
       '2p1/2': {
@@ -266,12 +296,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0x66FFBB,
         highDensityColor: 0x00CC88,
         scale: 0.75,
-        particleCount: 6000,
+        particleCount: 10000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
+        cameraPosition: new THREE.Vector3(3, 2.5, 1), // Less zoom-in
         energy: 720,
         particleScale: 1.0,
         renderMode: 'solid',
+        rotationSpeed: 0.3,
         renderOrder: 400
       },
       '2p3/2': {
@@ -282,12 +313,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0x66BBFF,
         highDensityColor: 0x0088CC,
         scale: 0.85,
-        particleCount: 6000,
+        particleCount: 10000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(3, 2.5, 4), // Less zoom-in
+        cameraPosition: new THREE.Vector3(3, 2.5, 1), // Less zoom-in
         energy: 707,
         particleScale: 1.0,
         renderMode: 'solid',
+        rotationSpeed: 0.3,
         renderOrder: 300
       },
       // M-shell - keep larger distances
@@ -299,12 +331,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0xFFFF66,
         highDensityColor: 0xCCCC00,
         scale: 1.5,
-        particleCount: 8000,
+        particleCount: 20000,
         generatePoints: generate3sPoints,
-        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        cameraPosition: new THREE.Vector3(3, 3, 1.5),
         energy: 92,
         particleScale: 0.8,
         renderMode: 'solid',
+        rotationSpeed: 0.12,
         renderOrder: 2
       },
       '3p': {
@@ -315,12 +348,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0xFFBB66,
         highDensityColor: 0xCC8800,
         scale: 1.5,
-        particleCount: 8000,
+        particleCount: 20000,
         generatePoints: generate3pzPoints,
-        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        cameraPosition: new THREE.Vector3(3, 3, 1.5),
         energy: 52,
         particleScale: 0.8,
         renderMode: 'solid',
+        rotationSpeed: 0.12,
         renderOrder: 1
       },
       '3d': {
@@ -331,12 +365,13 @@ export default function QuantumPlayground() {
         midDensityColor: 0xFF66FF,
         highDensityColor: 0xCC00CC,
         scale: 1.5,
-        particleCount: 8000,
+        particleCount: 20000,
         generatePoints: generate3dz2Points,
-        cameraPosition: new THREE.Vector3(3, 3, 4.5),
+        cameraPosition: new THREE.Vector3(3, 3, 1.5),
         energy: 1,
         particleScale: 0.8,
         renderMode: 'solid',
+        rotationSpeed: 0.12,
         renderOrder: 0
       }
     };
@@ -666,8 +701,8 @@ export default function QuantumPlayground() {
       scene = new THREE.Scene();
 
       // Camera
-      camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.1, 1000);
-      camera.position.set(4, 3, 3); // Moved more to the right to see waves from left
+      camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.01, 1000);
+      camera.position.set(2, 1.5, 0.5); // Moved more to the right to see waves from left
 
       // Renderer with optimized settings
       renderer = new THREE.WebGLRenderer({ 
@@ -960,7 +995,8 @@ export default function QuantumPlayground() {
             // Update particle count in params
             const params = orbitalParams[type];
             // Keep minimum particle count for inner shells
-            const minParticles = type === '1s' ? 2000 : 3000;
+            const minParticles = params.shell === 'M' ? 10000 : 
+                           params.shell === 'L' ? 4000 : 3000;
             params.particleCount = Math.max(minParticles, Math.floor(params.originalParticleCount * factor));
             
             // Recreate with adjusted particle count
@@ -1326,7 +1362,7 @@ export default function QuantumPlayground() {
       const points = params.generatePoints(params.particleCount || particleCount, scale);
       
       // Create instanced mesh for particles - reduced complexity
-      const sphereGeometry = new THREE.SphereGeometry(particleSize, 6, 4);
+      const sphereGeometry = new THREE.SphereGeometry(particleSize * 0.9, 6, 4);
       
       // Create shader material with proper transparency settings
       const isCurrentOrbital = orbitalType === currentOrbital;
@@ -1337,7 +1373,7 @@ export default function QuantumPlayground() {
         depthWrite: isCurrentOrbital, // Only write depth if focused
         depthTest: true,
         blending: THREE.NormalBlending, // Use normal blending
-        side: THREE.DoubleSide, // Render both sides
+        side: THREE.FrontSide, 
         uniforms: {
           baseColor: { value: new THREE.Color(params.color) },
           lowDensityColor: { value: new THREE.Color(params.lowDensityColor) },
@@ -1350,7 +1386,7 @@ export default function QuantumPlayground() {
           directionalLightDirection2: { value: scene.userData.directionalLight2.direction },
           orbitalScale: { value: scale },
           u_time: { value: 0.0 },
-          u_maxSpeedAtCenter: { value: 10.0 },
+          u_maxSpeedAtCenter: { value: params.rotationSpeed || 0.3 },
           u_minSpeedAtEdge: { value: 0.005 },
           u_exponentialFalloffRate: { value: 5 },
           u_crossSectionX: { value: 10.0 }, // Changed default to 10 (full view)
@@ -1363,9 +1399,15 @@ export default function QuantumPlayground() {
           u_absorptionPhase: { value: 0.0 },
           u_particleScale: { value: params.particleScale || 1.0 },
           u_isWireframe: { value: false },
+          u_minSpeedAtEdge: { value: params.shell === 'K' ? 0.01 : 0.005 },
+          u_exponentialFalloffRate: { value: params.shell === 'K' ? 8 : params.shell === 'L' ? 6 : 4 },
           u_cameraPosition: { value: camera.position }, // Add camera position
-          u_cameraCullDistance: { value: 0.5 }, // Distance for bulldozer effect
-          u_depthCullDistance: { value: scale * 1.5 } // Distance for depth culling
+          u_cameraCullDistance: { value: 0.2 }, // Distance for bulldozer effect
+          u_depthCullDistance: { value: scale * 3.0 },
+          u_projectionMatrix: { value: camera.projectionMatrix },
+          u_frustumPadding: { value: 1.5 }, // Distance for depth culling
+          u_isPrimaryOrbital: { value: orbitalType === currentOrbital },
+          u_overlapCullDistance: { value: orbitalParams[orbitalType].scale * 0.7 } // Distance for overlap culling
         }
       });
       
@@ -1409,10 +1451,6 @@ export default function QuantumPlayground() {
               orbitalGroups[type].material.depthWrite = true; // Write to depth buffer
               orbitalGroups[type].material.transparent = false; // Make opaque
               orbitalGroups[type].material.needsUpdate = true; // Force material update
-              // Boost the lighting for the focused orbital
-              const brightnessFactor = 1.3; // 30% brighter
-              orbitalGroups[type].material.uniforms.directionalLightColor1.value = scene.userData.directionalLight1.color.clone().multiplyScalar(brightnessFactor);
-              orbitalGroups[type].material.uniforms.directionalLightColor2.value = scene.userData.directionalLight2.color.clone().multiplyScalar(brightnessFactor);
             } else {
               // Secondary orbitals - very low opacity and don't write to depth
               orbitalGroups[type].visible = true;
@@ -1424,6 +1462,12 @@ export default function QuantumPlayground() {
               orbitalGroups[type].material.uniforms.directionalLightColor1.value.copy(scene.userData.directionalLight1.color);
               orbitalGroups[type].material.uniforms.directionalLightColor2.value.copy(scene.userData.directionalLight2.color);
             }
+
+            // Update overlap culling
+            orbitalGroups[type].material.uniforms.u_isPrimaryOrbital.value = (type === orbitalType);
+            orbitalGroups[type].material.uniforms.u_overlapCullDistance.value = 
+                (type === orbitalType) ? 0.0 : orbitalParams[orbitalType].scale * 0.5;
+
           } else {
             // Show all mode
             orbitalGroups[type].visible = true;
@@ -1497,7 +1541,7 @@ export default function QuantumPlayground() {
         // Wave animation variables
         let waveActive = false;
         let waveTime = 0;
-        let wavePosition = -8; // Starting x position (left side, closer)
+        let wavePosition = -10; // Starting x position (left side, closer)
         let waveAbsorbed = false; // Track if wave was absorbed
         let reemissionTime = 0; // Separate time for reemission
         
@@ -1505,6 +1549,7 @@ export default function QuantumPlayground() {
         const gridSize = 80;      
         const gridSpacing = 0.15;  
         const totalParticles = gridSize * gridSize;
+     
         
         // Consistent default particle appearance
         const defaultColor = new THREE.Color(0x00BFFF); // Cyan-blue color
@@ -1520,6 +1565,7 @@ export default function QuantumPlayground() {
             opacity: 0.8
         });
         
+
         // Create instanced mesh for wave particles
         const waveParticles = new THREE.InstancedMesh(
             waveParticleGeometry,
@@ -1527,6 +1573,8 @@ export default function QuantumPlayground() {
             totalParticles
         );
         
+        waveParticles.renderOrder = -1000;
+
         // Make the plane visible immediately
         waveParticles.visible = true;
         scene.add(waveParticles);
@@ -1575,7 +1623,7 @@ export default function QuantumPlayground() {
             waveAbsorbed = false;
             waveTime = 0;
             reemissionTime = 0;
-            wavePosition = -8; // Starting position closer to the atom
+            wavePosition = -10; // Starting position closer to the atom
             
             // Reset absorption state
             absorptionActive = false;
@@ -1593,11 +1641,16 @@ export default function QuantumPlayground() {
         
         // Function to update wave animation
         function updateWave(deltaTime) {
+
+          // Get photon energy at the start for use throughout the function
+          const energyInput = document.getElementById('photonEnergyInput');
+          const photonEnergy = parseFloat(energyInput.value) || 100;
+
             // If active wave, update its position
             if (waveActive && !waveAbsorbed) {
                 // Update time and position - moving right (positive X direction)
-                waveTime += deltaTime * waveConfig.waveSpeed * 0.5;
-                wavePosition += deltaTime * waveConfig.waveSpeed * 1.2;
+                waveTime += deltaTime * waveConfig.waveSpeed * 0.3;
+                wavePosition += deltaTime * waveConfig.waveSpeed * 0.8;
                 
                 // If wave has moved completely past the right edge, deactivate it
                 if (wavePosition > 25) {
@@ -1628,7 +1681,8 @@ export default function QuantumPlayground() {
                     absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05; // Smooth interpolation
                     
                     // Check for full absorption with lower threshold for smoother transition
-                    if (energyMatch > 0.5 && distanceToCenter < cloudRadius * 0.8 && absorptionStrength > 0.3) {
+                    const absorptionThreshold = photonEnergy > 5000 ? 0.15 : 0.3;
+                    if (energyMatch > 0.5 && distanceToCenter < cloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
                         if (!waveAbsorbed) { // Only trigger once
                             waveAbsorbed = true;
                             reemissionTime = 0;
@@ -1675,9 +1729,9 @@ export default function QuantumPlayground() {
                         let distanceFromWave;
                         
                         if (waveType === 'linear') {
-                            // POINT-LIKE wave - distance from a moving point
-                            const dx = x - wavePosition;
-                            const dz = z;
+                            // POINT-LIKE wave - moving along Z axis
+                            const dx = x;
+                            const dz = z - wavePosition; // Changed from x - wavePosition
                             const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
                             
                             // Define the active wave radius based on wavelength
@@ -1698,56 +1752,59 @@ export default function QuantumPlayground() {
                                 }
                             }
                         } else { // circular wave
-                            // Start from the left side
-                            const waveOriginX = -8; // Same as starting position
-                            const waveOriginZ = 0;   // Center Z position
-                            
-                            // Calculate the current radius of the expanding circle based on wave position
-                            const expandingRadius = Math.abs(waveOriginX - wavePosition) * 0.8;
-                            
-                            // Calculate distance from the expanding circle
-                            const dx = x - waveOriginX;
-                            const dz = z - waveOriginZ;
-                            const distanceFromOrigin = Math.sqrt(dx * dx + dz * dz);
-                            
-                            // Calculate angle from the origin
-                            const angle = Math.atan2(dz, dx);
-                            
-                            // Start with much narrower angle that stays focused
-                            const expansionFactor = Math.min(1.0, expandingRadius / 15.0); // Slower expansion
-                            const maxAngle = Math.PI * 0.05 + (Math.PI * 0.08 * expansionFactor); // Much narrower: ~9° to ~23° total spread
-                            
-                            // Only process points within the angle range
-                            if (Math.abs(angle) <= maxAngle) {
-                                // Ring thickness that starts thin and gradually increases
-                                const baseThickness = 0.5 + (1.3 * expansionFactor); // Start at 0.5, grow to 1.8
-                                const ringThickness = baseThickness * photonWavelength;
-                                
-                                // Calculate distance from the expanding circle edge
-                                const distanceFromRing = Math.abs(distanceFromOrigin - expandingRadius);
-                                
-                                // Calculate wave effect - height is maximum at the ring radius
-                                if (distanceFromRing < ringThickness && expandingRadius > 0.1) { // Only show when ring has expanded a bit
-                                    // Use a bell curve that gets proportionally thinner as the wave expands
-                                    const heightFactor = 1.0 - (distanceFromRing / ringThickness);
-                                    
-                                    // Wave height decreases slightly as it expands (inverse square law)
-                                    const distanceFactor = Math.max(0.3, 1.0 / (1.0 + expandingRadius * 0.05));
-                                    
-                                    // Additional factor to fade out at the edges of the angle range
-                                    const angleFactor = Math.cos(angle / maxAngle * (Math.PI/2)) * Math.cos(angle / maxAngle * (Math.PI/2));
-                                    
-                                    const waveHeight = waveConfig.waveHeight * photonWavelength * 
-                                                      Math.pow(heightFactor, 2) * distanceFactor * 
-                                                      Math.pow(angleFactor, 2) * expansionFactor;
-                                    
-                                    if (waveHeight > height) {
-                                        height = waveHeight;
-                                        colorIntensity = 0.4 + Math.min(0.6, height / (waveConfig.waveHeight * photonWavelength) * 0.6);
-                                    }
-                                }
-                            }
-                        }
+                          // Start from the left side
+                          const waveOriginX = -8;
+                          const waveOriginZ = 0;
+                          
+                          // Calculate the current radius of the expanding circle
+                          const expandingRadius = Math.max(0, (wavePosition - waveOriginX) * 0.8);
+                          
+                          // Calculate distance from origin
+                          const dx = x - waveOriginX;
+                          const dz = z - waveOriginZ;
+                          const distanceFromOrigin = Math.sqrt(dx * dx + dz * dz);
+                          
+                          // Calculate angle from the origin
+                          const angle = Math.atan2(dz, dx);
+                          
+                          // Ripple effect - starts from a point and expands
+                          const rippleFadeIn = Math.min(1.0, expandingRadius / 2.0); // Fade in effect
+                          
+                          // Narrower angle that expands slightly
+                          const expansionFactor = Math.min(1.0, expandingRadius / 20.0);
+                          const maxAngle = Math.PI * 0.03 + (Math.PI * 0.1 * expansionFactor); // 5.4° to 24° spread
+                          
+                          // Only process points within the angle range
+                          if (Math.abs(angle) <= maxAngle) {
+                              // Ring thickness - starts very thin
+                              const baseThickness = 0.3 + (1.0 * expansionFactor);
+                              const ringThickness = baseThickness * photonWavelength;
+                              
+                              // Calculate distance from the expanding circle edge
+                              const distanceFromRing = Math.abs(distanceFromOrigin - expandingRadius);
+                              
+                              // Wave effect with ripple fade-in
+                              if (distanceFromRing < ringThickness && expandingRadius > 0.05) {
+                                  const heightFactor = 1.0 - (distanceFromRing / ringThickness);
+                                  
+                                  // Amplitude decreases as wave expands
+                                  const distanceFactor = Math.max(0.2, 1.0 / (1.0 + expandingRadius * 0.08));
+                                  
+                                  // Smooth edge fading
+                                  const angleFactor = Math.cos(angle / maxAngle * (Math.PI/2));
+                                  
+                                  const waveHeight = waveConfig.waveHeight * photonWavelength * 
+                                                    Math.pow(heightFactor, 2) * distanceFactor * 
+                                                    angleFactor * rippleFadeIn;
+                                  
+                                  if (waveHeight > height) {
+                                      height = waveHeight;
+                                      // Color intensity varies with ripple
+                                      colorIntensity = 0.3 + Math.min(0.7, (height / (waveConfig.waveHeight * photonWavelength)) * rippleFadeIn);
+                                  }
+                              }
+                          }
+                      }
                     }
 
                     // Handle reemission waves
@@ -1756,8 +1813,9 @@ export default function QuantumPlayground() {
                         const distFromCenter = Math.sqrt(x * x + z * z);
                         
                         // Reemission wave parameters
+                        const energyBoost = photonEnergy > 5000 ? 2.0 : 1.0;
                         const reemissionWavelength = photonWavelength * 1.1; // Slightly longer wavelength
-                        const reemissionSpeed = 1.2;
+                        const reemissionSpeed = 1.2 * energyBoost;
                         
                         // Calculate expanding ring radius based on time since absorption
                         const reemissionRadius = reemissionTime * reemissionSpeed * 2.0;
@@ -1771,7 +1829,7 @@ export default function QuantumPlayground() {
                             const heightFactor = 1.0 - (distFromRing / ringThickness);
                             const distanceFactor = Math.max(0.3, 1.0 / (1.0 + reemissionRadius * 0.1));
                             const reemissionIntensity = Math.pow(heightFactor, 1.5) * absorptionStrength * distanceFactor;
-                            const reemissionHeight = waveConfig.waveHeight * 0.6 * reemissionIntensity;
+                            const reemissionHeight = waveConfig.waveHeight * 0.6 * reemissionIntensity * energyBoost;
                             
                             if (reemissionHeight > height) {
                                 height = reemissionHeight;
