@@ -187,7 +187,7 @@ export default function QuantumPlayground() {
       
       const float minOverallBrightness = 0.12;
       const float maxOverallBrightness = 0.98;
-      const float minRawLight = 0.08;
+      const float minRawLight = 0.15;
       const float maxRawLight = 1.9;
 
       void main() {
@@ -1440,6 +1440,32 @@ export default function QuantumPlayground() {
     }
 
     function switchOrbital(orbitalType) {
+      // Reset key visual parameters for ALL orbitals to their defaults
+      for (const typeToReset in orbitalGroups) {
+          if (orbitalGroups[typeToReset] && orbitalGroups[typeToReset].material && orbitalGroups[typeToReset].material.uniforms) {
+              const paramsForReset = orbitalParams[typeToReset]; // Get parameters for the current orbital being reset
+
+              // Reset particle scale to its defined default in orbitalParams
+              orbitalGroups[typeToReset].material.uniforms.u_particleScale.value = paramsForReset.particleScale || 1.0;
+
+              // Reset camera culling distance (bulldozer effect) to its default from createOrbital
+              orbitalGroups[typeToReset].material.uniforms.u_cameraCullDistance.value = 0.2; // Default is 0.2 in createOrbital
+
+              // Reset depth culling distance to its default from createOrbital
+              orbitalGroups[typeToReset].material.uniforms.u_depthCullDistance.value = paramsForReset.scale * 3.0; // Default is scale * 3.0 in createOrbital
+
+              // Reset lighting color uniforms to their scene defaults
+              // This ensures lighting is not stuck in a dimmed state.
+              if (scene.userData.directionalLight1 && scene.userData.directionalLight2) {
+                  orbitalGroups[typeToReset].material.uniforms.directionalLightColor1.value.copy(scene.userData.directionalLight1.color);
+                  orbitalGroups[typeToReset].material.uniforms.directionalLightColor2.value.copy(scene.userData.directionalLight2.color);
+              }
+              // if (scene.userData.ambientLightColor) { // If ambient light color could also be per-orbital or modified
+              //     orbitalGroups[typeToReset].material.uniforms.ambientLightColor.value.copy(scene.userData.ambientLightColor);
+              // }
+          }
+      }
+
       // Update visibility and opacity for all orbitals
       for (const type in orbitalGroups) {
         if (orbitalGroups[type]) {
