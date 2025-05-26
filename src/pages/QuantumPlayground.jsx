@@ -196,6 +196,7 @@ export default function QuantumPlayground() {
       uniform bool u_isWireframe;
       uniform bool u_isPrimaryOrbital;
       uniform float u_overlapCullDistance;
+      uniform float u_orbitalScale;
 
       varying vec3 vWorldPosition;
       varying vec3 vNormalWorld;
@@ -258,9 +259,14 @@ export default function QuantumPlayground() {
           
           vec3 litColor = densityColor * rawLighting;
 
-                
+          float isKorLShell = u_orbitalScale < 1.0 ? 1.0 : 0.0;
+          float isPrimary = u_isPrimaryOrbital ? 1.0 : 0.0;
+
+          // For K/L shells when primary: 85% brightness, otherwise normal 25%
+          float darkeningStrength = mix(0.25, 0.85, isKorLShell * isPrimary);
+
           float adjustedDepthFactor = vDepthFactor * (1.0 - (crossSectionFactor * 0.02));
-          vec3 darkColorMultiplier = vec3(0.25, 0.25, 0.25); 
+          vec3 darkColorMultiplier = vec3(darkeningStrength, darkeningStrength, darkeningStrength); 
           vec3 finalColor = mix(litColor, litColor * darkColorMultiplier, adjustedDepthFactor);
 
           finalColor = clamp(finalColor, vec3(minOverallBrightness), vec3(maxOverallBrightness));
@@ -391,8 +397,27 @@ export default function QuantumPlayground() {
         particleScale: 0.8,
         renderMode: 'solid',
         rotationSpeed: 0.12,
-        renderOrder: 0
+        renderOrder: 0       
+      },
+
+      '4s': {
+        name: "4s",
+        shell: "N",
+        color: 0xAA44FF,
+        lowDensityColor: 0xDDAAFF,
+        midDensityColor: 0xBB66FF,
+        highDensityColor: 0x8800CC,
+        scale: 2.0,
+        particleCount: 25000,
+        generatePoints: generate4sPoints,
+        cameraPosition: new THREE.Vector3(4, 3.5, 2),
+        energy: 7.9,
+        particleScale: 0.7,
+        renderMode: 'solid',
+        rotationSpeed: 0.08,
+        renderOrder: -1
       }
+
     };
 
     // Modified point generation functions with adaptive density
@@ -681,6 +706,56 @@ export default function QuantumPlayground() {
         let tooClose = false;
         if (points.length < 100) { // Check first 100 points
           for (let i = 0; i < Math.min(points.length, 50); i++) {
+            const p = points[i];
+            const dist = Math.sqrt(
+              Math.pow(x - p.x, 2) + 
+              Math.pow(y - p.y, 2) + 
+              Math.pow(z - p.z, 2)
+            );
+            if (dist < minDistance) {
+              tooClose = true;
+              break;
+            }
+          }
+        }
+        
+        if (!tooClose) {
+          points.push(new THREE.Vector3(x, y, z));
+        }
+      }
+      
+      return points;
+    }
+
+    function generate4sPoints(count, scale) {
+      const points = [];
+      const minDistance = scale * 0.03;
+      let attempts = 0;
+      const maxAttempts = count * 3;
+      
+      while (points.length < count && attempts < maxAttempts) {
+        attempts++;
+        
+        let r, prob;
+        do {
+          r = scale * 2.0 * Math.random();
+          const rScaled = r / (scale/8);
+          // 4s has 3 radial nodes
+          const nodeTerm = Math.pow(48 - 36*rScaled/4 + 9*Math.pow(rScaled/4, 2) - Math.pow(rScaled/4, 3), 2);
+          const nodeEffect = (Math.abs(rScaled - 8) < 0.5 || Math.abs(rScaled - 16) < 0.5 || Math.abs(rScaled - 24) < 0.5) ? 0.05 : 1.0;
+          prob = rScaled * rScaled * nodeTerm * Math.exp(-rScaled/4) * nodeEffect;
+        } while (Math.random() * 4.0 > prob);
+        
+        const theta = Math.acos(2 * Math.random() - 1);
+        const phi = Math.random() * Math.PI * 2;
+        
+        const x = r * Math.sin(theta) * Math.cos(phi);
+        const y = r * Math.sin(theta) * Math.sin(phi);
+        const z = r * Math.cos(theta);
+        
+        let tooClose = false;
+        if (points.length < 50) {
+          for (let i = 0; i < Math.min(points.length, 25); i++) {
             const p = points[i];
             const dist = Math.sqrt(
               Math.pow(x - p.x, 2) + 
@@ -1036,8 +1111,17 @@ export default function QuantumPlayground() {
       const shells = {
         'K': ['1s'],
         'L': ['2s', '2p1/2', '2p3/2'],
-        'M': ['3s', '3p', '3d']
+        'M': ['3s', '3p', '3d'],
+        'N': ['4s']
       };
+
+      const energyExplanation = document.createElement('div');
+      energyExplanation.style.fontSize = '12px';
+      energyExplanation.style.color = 'rgba(180, 180, 180, 0.9)';
+      energyExplanation.style.marginBottom = '10px';
+      energyExplanation.style.fontStyle = 'italic';
+      energyExplanation.textContent = 'Energy values show the binding energy (ionization potential) in eV';
+      guiContainer.appendChild(energyExplanation);
 
       for (const [shell, orbitals] of Object.entries(shells)) {
         const shellDiv = document.createElement('div');
@@ -1382,6 +1466,7 @@ export default function QuantumPlayground() {
           u_projectionMatrix: { value: camera.projectionMatrix },
           u_frustumPadding: { value: 1.5 }, // Distance for depth culling
           u_isPrimaryOrbital: { value: orbitalType === currentOrbital },
+          u_orbitalScale: { value: scale },
           u_overlapCullDistance: { value: orbitalParams[orbitalType].scale * 0.7 } // Distance for overlap culling
         }
       });
