@@ -24,6 +24,8 @@ export default function QuantumPlayground() {
     const particleCount = 45000; 
     const particleSize = 0.05;  // Reduced base size for less overlap  
 
+    const spatialGrid = new Map();
+
     let waveType = 'linear';
     let photons = [];
     let photonWavelength = 0.5;
@@ -420,50 +422,86 @@ export default function QuantumPlayground() {
 
     };
 
+    // Helper function for spatial grid
+    function getGridKey(x, y, z, gridSize = 0.1) {
+        const gx = Math.floor(x / gridSize);
+        const gy = Math.floor(y / gridSize);
+        const gz = Math.floor(z / gridSize);
+        return `${gx},${gy},${gz}`;
+    }
+
     // Modified point generation functions with adaptive density
     function generate1sPoints(count, scale) {
       const points = [];
-      const minDistance = scale * 0.05; // Increased minimum distance between particles
+      const minDistance = scale * 0.05;
+      spatialGrid.clear(); // Clear grid before use
+      
       let attempts = 0;
-      const maxAttempts = count * 3; // Reduced max attempts
+      const maxAttempts = count * 2; // Reduced from 3
       
       while (points.length < count && attempts < maxAttempts) {
-        attempts++;
-        
-        let r, prob;
-        do {
-          r = scale * Math.random();
-          const rScaled = r / (scale/4);
-          prob = rScaled * rScaled * Math.exp(-2 * rScaled);
-        } while (Math.random() > prob);
-        
-        const theta = Math.acos(2 * Math.random() - 1);
-        const phi = Math.random() * Math.PI * 2;
-        
-        const x = r * Math.sin(theta) * Math.cos(phi);
-        const y = r * Math.sin(theta) * Math.sin(phi);
-        const z = r * Math.cos(theta);
-        
-        // Simple distance check without spatial grid for performance
-        let tooClose = false;
-        if (points.length < 100) { // Only check first 100 points
-          for (let i = 0; i < Math.min(points.length, 50); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
-            }
+          attempts++;
+          
+          // Generate point (keep existing generation logic)
+          let r, prob;
+          do {
+              r = scale * Math.random();
+              const rScaled = r / (scale/4);
+              prob = rScaled * rScaled * Math.exp(-2 * rScaled);
+          } while (Math.random() > prob);
+          
+          const theta = Math.acos(2 * Math.random() - 1);
+          const phi = Math.random() * Math.PI * 2;
+          
+          const x = r * Math.sin(theta) * Math.cos(phi);
+          const y = r * Math.sin(theta) * Math.sin(phi);
+          const z = r * Math.cos(theta);
+          
+          // Use spatial grid for collision detection
+          const key = getGridKey(x, y, z, minDistance);
+          const nearbyKeys = [];
+          
+          // Check only adjacent cells
+          for (let dx = -1; dx <= 1; dx++) {
+              for (let dy = -1; dy <= 1; dy++) {
+                  for (let dz = -1; dz <= 1; dz++) {
+                      nearbyKeys.push(getGridKey(
+                          x + dx * minDistance,
+                          y + dy * minDistance,
+                          z + dz * minDistance,
+                          minDistance
+                      ));
+                  }
+              }
           }
-        }
-        
-        if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
-        }
+          
+          let tooClose = false;
+          for (const checkKey of nearbyKeys) {
+              const nearbyPoints = spatialGrid.get(checkKey) || [];
+              for (const p of nearbyPoints) {
+                  const dist = Math.sqrt(
+                      Math.pow(x - p.x, 2) + 
+                      Math.pow(y - p.y, 2) + 
+                      Math.pow(z - p.z, 2)
+                  );
+                  if (dist < minDistance) {
+                      tooClose = true;
+                      break;
+                  }
+              }
+              if (tooClose) break;
+          }
+          
+          if (!tooClose) {
+              const point = new THREE.Vector3(x, y, z);
+              points.push(point);
+              
+              // Add to spatial grid
+              if (!spatialGrid.has(key)) {
+                  spatialGrid.set(key, []);
+              }
+              spatialGrid.get(key).push(point);
+          }
       }
       
       return points;
@@ -472,6 +510,7 @@ export default function QuantumPlayground() {
     function generate2sPoints(count, scale) {
       const points = [];
       const minDistance = scale * 0.06; // Increased for less overlap
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -494,34 +533,60 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        // Simple distance check for less overlap
-        let tooClose = false;
-        if (points.length < 50) { // Check fewer points for outer shells
-          for (let i = 0; i < Math.min(points.length, 25); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     function generate2pzPoints(count, scale) {
       const points = [];
       const minDistance = scale * 0.06; // Increased for less overlap
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -546,34 +611,60 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        // Simple distance check for less overlap
-        let tooClose = false;
-        if (points.length < 50) { // Check fewer points for outer shells
-          for (let i = 0; i < Math.min(points.length, 25); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     function generate3sPoints(count, scale) {
       const points = [];
       const minDistance = scale * 0.04; // Less restrictive for outer shells
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -596,34 +687,60 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        // Simple distance check for less overlap
-        let tooClose = false;
-        if (points.length < 50) { // Check fewer points for outer shells
-          for (let i = 0; i < Math.min(points.length, 25); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     function generate3pzPoints(count, scale) {
       const points = [];
       const minDistance = scale * 0.04; // Less restrictive for outer shells
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -650,34 +767,60 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        // Simple distance check for less overlap
-        let tooClose = false;
-        if (points.length < 100) { // Check first 100 points
-          for (let i = 0; i < Math.min(points.length, 50); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     function generate3dz2Points(count, scale) {
       const points = [];
       const minDistance = scale * 0.04; // Less restrictive for outer shells
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -702,34 +845,60 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        // Simple distance check for less overlap
-        let tooClose = false;
-        if (points.length < 100) { // Check first 100 points
-          for (let i = 0; i < Math.min(points.length, 50); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     function generate4sPoints(count, scale) {
       const points = [];
       const minDistance = scale * 0.03;
+      spatialGrid.clear();
       let attempts = 0;
       const maxAttempts = count * 3;
       
@@ -753,29 +922,55 @@ export default function QuantumPlayground() {
         const y = r * Math.sin(theta) * Math.sin(phi);
         const z = r * Math.cos(theta);
         
-        let tooClose = false;
-        if (points.length < 50) {
-          for (let i = 0; i < Math.min(points.length, 25); i++) {
-            const p = points[i];
-            const dist = Math.sqrt(
-              Math.pow(x - p.x, 2) + 
-              Math.pow(y - p.y, 2) + 
-              Math.pow(z - p.z, 2)
-            );
-            if (dist < minDistance) {
-              tooClose = true;
-              break;
+         // Use spatial grid for collision detection
+        const key = getGridKey(x, y, z, minDistance);
+        const nearbyKeys = [];
+        
+        // Check only adjacent cells
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    nearbyKeys.push(getGridKey(
+                        x + dx * minDistance,
+                        y + dy * minDistance,
+                        z + dz * minDistance,
+                        minDistance
+                    ));
+                }
             }
-          }
+        }
+        
+        let tooClose = false;
+        for (const checkKey of nearbyKeys) {
+            const nearbyPoints = spatialGrid.get(checkKey) || [];
+            for (const p of nearbyPoints) {
+                const dist = Math.sqrt(
+                    Math.pow(x - p.x, 2) + 
+                    Math.pow(y - p.y, 2) + 
+                    Math.pow(z - p.z, 2)
+                );
+                if (dist < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) break;
         }
         
         if (!tooClose) {
-          points.push(new THREE.Vector3(x, y, z));
+            const point = new THREE.Vector3(x, y, z);
+            points.push(point);
+            
+            // Add to spatial grid
+            if (!spatialGrid.has(key)) {
+                spatialGrid.set(key, []);
+            }
+            spatialGrid.get(key).push(point);
         }
-      }
-      
-      return points;
     }
+    
+    return points;
+}
 
     // Function to initialize the 3D scene
     function init() {
@@ -873,8 +1068,10 @@ export default function QuantumPlayground() {
       window.addEventListener('resize', onWindowResize);
 
       // Animation loop
+      let frameCounter = 0;
       let animate = function() {
         requestAnimationFrame(animate);
+        frameCounter++;
         
         const deltaTime = 1/60;
         updatePhoton(deltaTime);
@@ -899,17 +1096,22 @@ export default function QuantumPlayground() {
           }
         }
         
+        // Update orbitals with frame skipping for non-primary
         for (const type in orbitalGroups) {
-          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
-            // Only update time for visible orbitals or those with decent opacity
-            const opacity = orbitalGroups[type].material.uniforms.u_opacity.value;
-            if (opacity > 0.01) {
-              orbitalGroups[type].material.uniforms.u_time.value = time;
-              orbitalGroups[type].material.uniforms.viewMatrix.value = camera.matrixWorldInverse;
-              
-              // Update camera position for culling
-              orbitalGroups[type].material.uniforms.u_cameraPosition.value = camera.position;
-              
+            if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+                const opacity = orbitalGroups[type].material.uniforms.u_opacity.value;
+                const isPrimary = type === currentOrbital;
+                
+                // Skip frames for low-opacity secondary orbitals
+                const shouldUpdate = isPrimary || 
+                                      opacity > 0.1 || 
+                                      frameCounter % 2 === 0;
+                
+                if (shouldUpdate && opacity > 0.01) {
+                    orbitalGroups[type].material.uniforms.u_time.value = time;
+                    orbitalGroups[type].material.uniforms.viewMatrix.value = camera.matrixWorldInverse;
+                    orbitalGroups[type].material.uniforms.u_cameraPosition.value = camera.position;
+                  
               if (orbitalGroups[type].material.uniforms.u_waveHeight) {
                 orbitalGroups[type].material.uniforms.u_waveHeight.value = waveHeight;
               }
@@ -1325,34 +1527,6 @@ export default function QuantumPlayground() {
       crossSectionSection.appendChild(crossSectionMarkers);
       guiContainer.appendChild(crossSectionSection);
 
-      // Wave type toggle
-      const waveTypeToggle = document.createElement('button');
-      waveTypeToggle.id = 'waveTypeToggleBtn';
-      waveTypeToggle.textContent = 'Wave Type: Point';
-      waveTypeToggle.className = 'w-full p-2 rounded border transition-all';
-      waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-      waveTypeToggle.style.borderColor = 'rgba(80, 80, 80, 0.8)';
-      waveTypeToggle.style.color = 'rgba(220, 220, 220, 0.9)';
-      waveTypeToggle.style.fontSize = '14px';
-      waveTypeToggle.style.margin = '10px 0';
-
-      waveTypeToggle.addEventListener('click', () => {
-        if (waveType === 'linear') {
-          waveType = 'circular';
-          waveTypeToggle.textContent = 'Wave Type: Circular';
-          waveTypeToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-        } else {
-          waveType = 'linear';
-          waveTypeToggle.textContent = 'Wave Type: Point';
-          waveTypeToggle.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-        }
-      });
-
-      const waveTypeSection = document.createElement('div');
-      waveTypeSection.style.marginTop = '10px';
-      waveTypeSection.appendChild(waveTypeToggle);
-      guiContainer.appendChild(waveTypeSection);
-
       // Emit button
       const emitSection = document.createElement('div');
       emitSection.style.marginTop = '15px';
@@ -1411,6 +1585,41 @@ export default function QuantumPlayground() {
       // Scale to match our coordinate system where K-shell is 0.3 units
       photonWavelength *= 0.8;
     }
+
+    // Calculate angular radiation pattern based on transition type
+  function getRadiationPattern(fromOrbital, toOrbital, theta, phi) {
+      // Extract orbital types (s, p, d)
+      const fromType = fromOrbital.charAt(1); // '1s' -> 's'
+      const toType = toOrbital.charAt(1);
+      
+      // s->s forbidden, return 0
+      if (fromType === 's' && toType === 's') return 0;
+      
+      // p->s or s->p: sin²θ pattern (dipole)
+      if ((fromType === 'p' && toType === 's') || (fromType === 's' && toType === 'p')) {
+          return Math.pow(Math.sin(theta), 2);
+      }
+      
+      // d->p or p->d: four-lobed pattern
+      if ((fromType === 'd' && toType === 'p') || (fromType === 'p' && toType === 'd')) {
+          // Simple four-lobe: sin²θ * cos²φ
+          return Math.pow(Math.sin(theta), 2) * Math.pow(Math.cos(2 * phi), 2);
+      }
+      
+      // d->s: quadrupole pattern
+      if (fromType === 'd' && toType === 's') {
+          // 3cos²θ - 1 pattern
+          const cosTheta = Math.cos(theta);
+          return Math.pow(3 * cosTheta * cosTheta - 1, 2) * 0.25;
+      }
+      
+      // Default: uniform emission
+      return 1.0;
+  }
+
+  // Store transition info when absorption happens
+  let transitionFromOrbital = null;
+  let transitionToOrbital = null;
 
     // More function implementations
     function createOrbital(orbitalType) {
@@ -1780,6 +1989,32 @@ export default function QuantumPlayground() {
                             absorptionActive = true;
                             absorptionFrequency = 0.8 / photonWavelength;
                             absorptionPhase = waveTime * 6.28;
+                            
+                            // Store transition info for radiation pattern
+                            transitionFromOrbital = currentOrbital;
+
+                            // Find valid transition based on selection rules (Δl = ±1)
+                            const orbitalType = currentOrbital.charAt(1); // s, p, or d
+                            let validTransition = null;
+
+                            if (orbitalType === 's') {
+                                // s-orbitals can only transition to p-orbitals
+                                validTransition = ['2p1/2', '2p3/2', '3p'].find(orbital => 
+                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
+                                );
+                            } else if (orbitalType === 'p') {
+                                // p-orbitals can transition to s or d orbitals
+                                validTransition = ['1s', '2s', '3s', '3d'].find(orbital => 
+                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
+                                );
+                            } else if (orbitalType === 'd') {
+                                // d-orbitals can transition to p orbitals
+                                validTransition = ['2p1/2', '2p3/2', '3p'].find(orbital => 
+                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
+                                );
+                            }
+
+                            transitionToOrbital = validTransition || '2p1/2';
                         }
                     } else if (absorptionStrength > 0.01) {
                         // Partial interaction
@@ -1802,9 +2037,14 @@ export default function QuantumPlayground() {
                 reemissionTime += deltaTime;
             }
             
+            // Dynamic LOD based on camera distance
+            const cameraDistToOrigin = camera.position.length();
+            const lodFactor = Math.min(1, 5 / cameraDistToOrigin); // Reduce particles when far
+            const skipFactor = Math.max(1, Math.floor(1 / lodFactor));
+
             // Always update all particles - whether wave is active or not
-            for (let i = 0; i < gridSize; i++) {
-                for (let j = 0; j < gridSize; j++) {
+            for (let i = 0; i < gridSize; i += skipFactor) {
+                for (let j = 0; j < gridSize; j += skipFactor) {
                     const index = i * gridSize + j;
                     
                     // Position in a grid on the x-z plane
@@ -1842,90 +2082,56 @@ export default function QuantumPlayground() {
                                     }
                                 }
                             }
-                        } else { // circular wave
-                          // Start from the left side
-                          const waveOriginX = -8;
-                          const waveOriginZ = 0;
                           
-                          // Calculate the current radius of the expanding circle
-                          const expandingRadius = Math.max(0, (wavePosition - waveOriginX) * 0.8);
-                          
-                          // Calculate distance from origin
-                          const dx = x - waveOriginX;
-                          const dz = z - waveOriginZ;
-                          const distanceFromOrigin = Math.sqrt(dx * dx + dz * dz);
-                          
-                          // Calculate angle from the origin
-                          const angle = Math.atan2(dz, dx);
-                          
-                          // Ripple effect - starts from a point and expands
-                          const rippleFadeIn = Math.min(1.0, expandingRadius / 2.0); // Fade in effect
-                          
-                          // Narrower angle that expands slightly
-                          const expansionFactor = Math.min(1.0, expandingRadius / 20.0);
-                          const maxAngle = Math.PI * 0.03 + (Math.PI * 0.1 * expansionFactor); // 5.4° to 24° spread
-                          
-                          // Only process points within the angle range
-                          if (Math.abs(angle) <= maxAngle) {
-                              // Ring thickness - starts very thin
-                              const baseThickness = 0.3 + (1.0 * expansionFactor);
-                              const ringThickness = baseThickness * photonWavelength;
-                              
-                              // Calculate distance from the expanding circle edge
-                              const distanceFromRing = Math.abs(distanceFromOrigin - expandingRadius);
-                              
-                              // Wave effect with ripple fade-in
-                              if (distanceFromRing < ringThickness && expandingRadius > 0.05) {
-                                  const heightFactor = 1.0 - (distanceFromRing / ringThickness);
-                                  
-                                  // Amplitude decreases as wave expands
-                                  const distanceFactor = Math.max(0.2, 1.0 / (1.0 + expandingRadius * 0.08));
-                                  
-                                  // Smooth edge fading
-                                  const angleFactor = Math.cos(angle / maxAngle * (Math.PI/2));
-                                  
-                                  const waveHeight = waveConfig.waveHeight * photonWavelength * 
-                                                    Math.pow(heightFactor, 2) * distanceFactor * 
-                                                    angleFactor * rippleFadeIn;
-                                  
-                                  if (waveHeight > height) {
-                                      height = waveHeight;
-                                      // Color intensity varies with ripple
-                                      colorIntensity = 0.3 + Math.min(0.7, (height / (waveConfig.waveHeight * photonWavelength)) * rippleFadeIn);
-                                  }
-                              }
-                          }
                       }
                     }
 
                     // Handle reemission waves
                     if (waveAbsorbed && absorptionStrength > 0.1) {
-                        // Calculate distance from origin (electron cloud center)
                         const distFromCenter = Math.sqrt(x * x + z * z);
+                        
+                        // Calculate spherical angles for radiation pattern
+                        const r = Math.sqrt(x * x + z * z);
+                        const theta = Math.atan2(r, 0); // angle from y-axis
+                        const phi = Math.atan2(z, x); // azimuthal angle
+                        
+                        // Get radiation pattern intensity
+                        const patternIntensity = getRadiationPattern(
+                            transitionFromOrbital, 
+                            transitionToOrbital, 
+                            theta, 
+                            phi
+                        );
                         
                         // Reemission wave parameters
                         const energyBoost = photonEnergy > 5000 ? 2.0 : 1.0;
-                        const reemissionWavelength = photonWavelength * 1.1; // Slightly longer wavelength
+                        const reemissionWavelength = photonWavelength * 1.1;
                         const reemissionSpeed = 1.2 * energyBoost;
                         
-                        // Calculate expanding ring radius based on time since absorption
                         const reemissionRadius = reemissionTime * reemissionSpeed * 2.0;
-                        
-                        // Calculate distance from expanding ring
                         const distFromRing = Math.abs(distFromCenter - reemissionRadius);
                         const ringThickness = reemissionWavelength * 1.5;
                         
-                        // Only apply effect near the ring
-                        if (distFromRing < ringThickness && reemissionRadius < 20) { // Limit propagation distance
+                        if (distFromRing < ringThickness && reemissionRadius < 20) {
                             const heightFactor = 1.0 - (distFromRing / ringThickness);
                             const distanceFactor = Math.max(0.3, 1.0 / (1.0 + reemissionRadius * 0.1));
-                            const reemissionIntensity = Math.pow(heightFactor, 1.5) * absorptionStrength * distanceFactor;
-                            const reemissionHeight = waveConfig.waveHeight * 0.6 * reemissionIntensity * energyBoost;
+                            
+                            // Apply angular pattern to both intensity and height
+                            const angularModulation = patternIntensity;
+                            const reemissionIntensity = Math.pow(heightFactor, 1.5) * 
+                                                      absorptionStrength * 
+                                                      distanceFactor * 
+                                                      angularModulation;
+                            
+                            const reemissionHeight = waveConfig.waveHeight * 0.6 * 
+                                                    reemissionIntensity * 
+                                                    energyBoost * 
+                                                    (0.3 + 0.7 * angularModulation); // Height varies with pattern
                             
                             if (reemissionHeight > height) {
                                 height = reemissionHeight;
-                                // Slightly different color for reemitted wave
-                                colorIntensity = 0.5 + Math.min(0.5, reemissionIntensity * 0.8);
+                                // Brighter color for high-probability directions
+                                colorIntensity = 0.3 + Math.min(0.7, reemissionIntensity * 1.2);
                             }
                         }
                     }
@@ -1962,6 +2168,17 @@ export default function QuantumPlayground() {
                         }
                     }
 
+                    // Quick frustum check
+                    const worldX = x;
+                    const worldZ = z;
+                    const screenPos = new THREE.Vector3(worldX, 0, worldZ);
+                    screenPos.project(camera);
+
+                    // Skip particles outside screen
+                    if (Math.abs(screenPos.x) > 1.5 || Math.abs(screenPos.y) > 1.5) {
+                        continue;
+                    }
+
                     // Also check for reemission visibility
                     if (waveAbsorbed && absorptionStrength > 0.1) {
                         const distFromCenter = Math.sqrt(x * x + z * z);
@@ -1988,8 +2205,8 @@ export default function QuantumPlayground() {
                     dummy.updateMatrix();
                     waveParticles.setMatrixAt(index, dummy.matrix);
                                     }
-            }
-            
+            }                  
+
             // Clean up if reemission has propagated far enough
             if (waveAbsorbed && reemissionTime > 10) {
                 waveActive = false;
