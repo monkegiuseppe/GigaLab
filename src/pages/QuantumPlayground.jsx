@@ -1,11 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './QuantumPlayground.css';
+import OrbitalSelector from '../components/OrbitalSelector';
 
 export default function QuantumPlayground() {
   const containerRef = useRef(null);
   const guiContainerRef = useRef(null);
+  const [selectedOrbital, setSelectedOrbital] = useState('3p');
+  const switchOrbitalRef = useRef(null);
+
+  // Add handler for orbital changes
+  const handleOrbitalChange = (orbitalName) => {
+    if (switchOrbitalRef.current) {
+      switchOrbitalRef.current(orbitalName);
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current || !guiContainerRef.current) return;
@@ -15,10 +25,11 @@ export default function QuantumPlayground() {
     const orbitalGroups = {}; 
     let currentOrbital = '3p';
     const particleData = {}; 
+    let absorbingOrbitalName = null;
     
     // Shell layering mode
     let layeringMode = 'focused'; // 'focused' or 'all'
-    let secondaryOpacity = 0.05; // Changed from 0.1 to 0.05 (5% instead of 10%)
+    let secondaryOpacity = 0.03; // Changed from 0.1 to 0.05 (5% instead of 10%)
     let performanceMode = 'normal'; // 'normal' or 'low'
 
     const particleCount = 45000; 
@@ -315,7 +326,7 @@ export default function QuantumPlayground() {
         rotationSpeed: 0.3,
         renderOrder: 500
       },
-      '2p1/2': {
+      "2p₁/₂": {
         name: "2p₁/₂",
         shell: "L",
         color: 0x44FFAA,
@@ -325,14 +336,14 @@ export default function QuantumPlayground() {
         scale: 0.75,
         particleCount: 10000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(3, 2.5, 1), // Less zoom-in
+        cameraPosition: new THREE.Vector3(3, 2.5, 1),
         energy: 720,
         particleScale: 1.0,
         renderMode: 'solid',
         rotationSpeed: 0.3,
         renderOrder: 400
       },
-      '2p3/2': {
+      "2p₃/₂": {
         name: "2p₃/₂",
         shell: "L",
         color: 0x44AAFF,
@@ -342,7 +353,7 @@ export default function QuantumPlayground() {
         scale: 0.85,
         particleCount: 10000,
         generatePoints: generate2pzPoints,
-        cameraPosition: new THREE.Vector3(3, 2.5, 1), // Less zoom-in
+        cameraPosition: new THREE.Vector3(3, 2.5, 1),
         energy: 707,
         particleScale: 1.0,
         renderMode: 'solid',
@@ -1081,20 +1092,28 @@ export default function QuantumPlayground() {
         }
 
         time += deltaTime * waveSpeed;
-        if (absorptionActive) {
-          const currentOrbitalGroup = orbitalGroups[currentOrbital];
-          if (currentOrbitalGroup.material && currentOrbitalGroup.material.uniforms) {
-              if (!currentOrbitalGroup.material.uniforms.u_absorptionStrength) {
-                  currentOrbitalGroup.material.uniforms.u_absorptionStrength = { value: absorptionStrength };
-                  currentOrbitalGroup.material.uniforms.u_absorptionFrequency = { value: absorptionFrequency };
-                  currentOrbitalGroup.material.uniforms.u_absorptionPhase = { value: absorptionPhase };
+
+        //reset absorption effects on all orbitals
+        for (const type in orbitalGroups) {
+          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms.u_absorptionStrength) {
+              orbitalGroups[type].material.uniforms.u_absorptionStrength.value = 0.0;
+          }
+      }
+
+        if (absorptionActive && absorbingOrbitalName) { // Ensure absorbingOrbitalName is set
+          const targetOrbitalGroup = orbitalGroups[absorbingOrbitalName]; // Use absorbingOrbitalName
+          if (targetOrbitalGroup && targetOrbitalGroup.material && targetOrbitalGroup.material.uniforms) {
+              if (!targetOrbitalGroup.material.uniforms.u_absorptionStrength) {
+                  targetOrbitalGroup.material.uniforms.u_absorptionStrength = { value: absorptionStrength };
+                  targetOrbitalGroup.material.uniforms.u_absorptionFrequency = { value: absorptionFrequency };
+                  targetOrbitalGroup.material.uniforms.u_absorptionPhase = { value: absorptionPhase };
               } else {
-                  currentOrbitalGroup.material.uniforms.u_absorptionStrength.value = absorptionStrength;
-                  currentOrbitalGroup.material.uniforms.u_absorptionFrequency.value = absorptionFrequency;
-                  currentOrbitalGroup.material.uniforms.u_absorptionPhase.value = absorptionPhase;
+                  targetOrbitalGroup.material.uniforms.u_absorptionStrength.value = absorptionStrength;
+                  targetOrbitalGroup.material.uniforms.u_absorptionFrequency.value = absorptionFrequency;
+                  targetOrbitalGroup.material.uniforms.u_absorptionPhase.value = absorptionPhase;
               }
           }
-        }
+      }
         
         // Update orbitals with frame skipping for non-primary
         for (const type in orbitalGroups) {
@@ -1226,10 +1245,11 @@ export default function QuantumPlayground() {
 
       // Title
       const title = document.createElement('h3');
-      title.textContent = 'Iron (Fe) Orbitals';
+      title.textContent = 'Controls';
       title.style.margin = '0 0 15px 0';
       title.style.textAlign = 'center';
       guiContainer.appendChild(title);
+
 
       // Layering mode toggle
       const layeringSection = document.createElement('div');
@@ -1305,133 +1325,6 @@ export default function QuantumPlayground() {
 
       layeringSection.appendChild(performanceToggle);
       guiContainer.appendChild(layeringSection);
-
-      // Shell selector with previews
-      const shellSection = document.createElement('div');
-      shellSection.style.marginBottom = '15px';
-      
-      const shells = {
-        'K': ['1s'],
-        'L': ['2s', '2p1/2', '2p3/2'],
-        'M': ['3s', '3p', '3d'],
-        'N': ['4s']
-      };
-
-      const energyExplanation = document.createElement('div');
-      energyExplanation.style.fontSize = '12px';
-      energyExplanation.style.color = 'rgba(180, 180, 180, 0.9)';
-      energyExplanation.style.marginBottom = '10px';
-      energyExplanation.style.fontStyle = 'italic';
-      energyExplanation.textContent = 'Energy values show the binding energy (ionization potential) in eV';
-      guiContainer.appendChild(energyExplanation);
-
-      for (const [shell, orbitals] of Object.entries(shells)) {
-        const shellDiv = document.createElement('div');
-        shellDiv.style.marginBottom = '10px';
-        shellDiv.style.borderRadius = '4px';
-        shellDiv.style.overflow = 'hidden';
-        
-        const shellHeader = document.createElement('div');
-        shellHeader.style.padding = '8px';
-        shellHeader.style.backgroundColor = 'rgba(60, 60, 60, 0.8)';
-        shellHeader.style.cursor = 'pointer';
-        shellHeader.style.fontWeight = 'bold';
-        shellHeader.textContent = `${shell}-shell`;
-        
-        const orbitalList = document.createElement('div');
-        orbitalList.style.display = 'none';
-        orbitalList.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
-        
-        shellHeader.onclick = () => {
-          orbitalList.style.display = orbitalList.style.display === 'none' ? 'block' : 'none';
-        };
-        
-        orbitals.forEach(orbital => {
-          const orbitalBtn = document.createElement('div');
-          orbitalBtn.style.padding = '8px 15px';
-          orbitalBtn.style.cursor = 'pointer';
-          orbitalBtn.style.display = 'flex';
-          orbitalBtn.style.alignItems = 'center';
-          orbitalBtn.style.justifyContent = 'space-between';
-          orbitalBtn.className = 'orbital-btn';
-          
-          const labelSpan = document.createElement('span');
-          labelSpan.textContent = orbitalParams[orbital].name;
-          
-          const energySpan = document.createElement('span');
-          energySpan.style.fontSize = '12px';
-          energySpan.style.color = 'rgba(150, 150, 150, 0.9)';
-          energySpan.textContent = `${orbitalParams[orbital].energy} eV`;
-          
-          orbitalBtn.appendChild(labelSpan);
-          orbitalBtn.appendChild(energySpan);
-          
-          orbitalBtn.onclick = () => {
-            switchOrbital(orbital);
-            document.querySelectorAll('.orbital-btn').forEach(btn => {
-              btn.style.backgroundColor = '';
-            });
-            orbitalBtn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-
-            const energyInput   = document.getElementById('photonEnergyInput');
-            const energyDisplay = document.getElementById('photonEnergyDisplay');
-            const eV = orbitalParams[orbital].energy;
-            energyInput.value = eV;
-            updatePhotonWavelength(eV);
-            energyDisplay.textContent = `Wavelength: ${(1239.84 / eV).toFixed(2)} nm`;
-          };
-          
-          if (orbital === currentOrbital) {
-            orbitalBtn.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-            orbitalList.style.display = 'block'; // Auto-expand current shell
-          }
-          
-          orbitalList.appendChild(orbitalBtn);
-        });
-        
-        shellDiv.appendChild(shellHeader);
-        shellDiv.appendChild(orbitalList);
-        shellSection.appendChild(shellDiv);
-      }
-      
-      guiContainer.appendChild(shellSection);
-
-      // Opacity slider for secondary orbitals
-      const opacitySection = document.createElement('div');
-      opacitySection.className = 'glass';
-      opacitySection.style.padding = '15px';
-      opacitySection.style.borderRadius = '8px';
-      opacitySection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-      opacitySection.style.marginBottom = '15px';
-      
-      const opacityLabel = document.createElement('label');
-      opacityLabel.textContent = 'Secondary Opacity:';
-      opacityLabel.style.fontWeight = 'bold';
-      opacityLabel.style.display = 'block';
-      opacityLabel.style.marginBottom = '10px';
-      
-      const opacitySlider = document.createElement('input');
-      opacitySlider.type = 'range';
-      opacitySlider.min = '0';
-      opacitySlider.max = '30'; // Max 30% for secondary orbitals
-      opacitySlider.value = '5'; // Default 5% instead of 10%
-      opacitySlider.style.width = '100%';
-      opacitySlider.style.accentColor = 'rgb(220, 40, 40)';
-      
-      const opacityDisplay = document.createElement('span');
-      opacityDisplay.style.fontSize = '12px';
-      opacityDisplay.textContent = '5%'; // Updated default display
-      
-      opacitySlider.oninput = (e) => {
-        secondaryOpacity = e.target.value / 100;
-        opacityDisplay.textContent = `${e.target.value}%`;
-        updateLayeringMode();
-      };
-      
-      opacitySection.appendChild(opacityLabel);
-      opacitySection.appendChild(opacitySlider);
-      opacitySection.appendChild(opacityDisplay);
-      guiContainer.appendChild(opacitySection);
 
       // Photon controls
       const photonSection = document.createElement('div');
@@ -1784,7 +1677,17 @@ export default function QuantumPlayground() {
       }
       
       currentOrbital = orbitalType;
+      setSelectedOrbital(orbitalType);
       
+      // Auto-update photon energy input
+      const energyInput = document.getElementById('photonEnergyInput');
+      if (energyInput && orbitalParams[orbitalType]) {
+        const newEnergy = orbitalParams[orbitalType].energy;
+        energyInput.value = newEnergy;
+        // Trigger input event to update wavelength display and internal values
+        energyInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
       // Update camera position based on the selected orbital
       if (orbitalParams[orbitalType].cameraPosition) {
         const targetPos = orbitalParams[orbitalType].cameraPosition;
@@ -1808,7 +1711,8 @@ export default function QuantumPlayground() {
         
         updateCameraPosition();
       }
-      
+
+      switchOrbitalRef.current = switchOrbital;
       // Apply enhanced visibility for inner orbitals
       updateInnerOrbitalVisibility();
     }
@@ -1957,79 +1861,97 @@ export default function QuantumPlayground() {
                     waveActive = false;
                 }
                 
-                // Check if wave is interacting with the electron cloud
-                const cloudRadius = orbitalParams[currentOrbital].scale;
-                const distanceToCenter = Math.abs(wavePosition);
-                
-                // Only interact when wave is near the electron cloud (origin)
-                if (distanceToCenter < cloudRadius * 1.5) { // Increased interaction range
-                    // Get photon energy from input
-                    const energyInput = document.getElementById('photonEnergyInput');
-                    const photonEnergy = parseFloat(energyInput.value) || 100;
-                    const orbitalEnergy = orbitalParams[currentOrbital].energy;
-                    
-                    // Smoother energy matching with wider acceptance range
-                    const energyDifference = Math.abs(photonEnergy - orbitalEnergy) / orbitalEnergy;
-                    const energyMatch = Math.exp(-Math.pow(energyDifference, 2) * 5); // Reduced from 10 for smoother matching
-                    
-                    // Smoother distance-based interaction
-                    const normalizedDistance = distanceToCenter / (cloudRadius * 1.5);
-                    const distanceEffect = Math.pow(1 - Math.min(normalizedDistance, 1), 2);
-                    
-                    // Gradual absorption buildup
-                    const targetAbsorptionStrength = distanceEffect * energyMatch * 0.8;
-                    absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05; // Smooth interpolation
-                    
-                    // Check for full absorption with lower threshold for smoother transition
-                    const absorptionThreshold = photonEnergy > 5000 ? 0.15 : 0.3;
-                    if (energyMatch > 0.5 && distanceToCenter < cloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
-                        if (!waveAbsorbed) { // Only trigger once
-                            waveAbsorbed = true;
-                            reemissionTime = 0;
-                            absorptionActive = true;
-                            absorptionFrequency = 0.8 / photonWavelength;
-                            absorptionPhase = waveTime * 6.28;
-                            
-                            // Store transition info for radiation pattern
-                            transitionFromOrbital = currentOrbital;
+                // Check for interaction with ANY orbital
+                  let bestMatchOrbitalInfo = null;
+                  let maxCombinedEffect = -1;
+                  const distanceToCenter = Math.abs(wavePosition); // Distance of wave front from origin
 
-                            // Find valid transition based on selection rules (Δl = ±1)
-                            const orbitalType = currentOrbital.charAt(1); // s, p, or d
-                            let validTransition = null;
+                  Object.entries(orbitalParams).forEach(([orbitalName, params]) => {
+                      const cloudRadiusForCheck = params.scale;
+                      const orbitalEnergyForCheck = params.energy;
 
-                            if (orbitalType === 's') {
-                                // s-orbitals can only transition to p-orbitals
-                                validTransition = ['2p1/2', '2p3/2', '3p'].find(orbital => 
-                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
-                                );
-                            } else if (orbitalType === 'p') {
-                                // p-orbitals can transition to s or d orbitals
-                                validTransition = ['1s', '2s', '3s', '3d'].find(orbital => 
-                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
-                                );
-                            } else if (orbitalType === 'd') {
-                                // d-orbitals can transition to p orbitals
-                                validTransition = ['2p1/2', '2p3/2', '3p'].find(orbital => 
-                                    orbitalParams[orbital] && orbitalParams[orbital].energy < orbitalParams[currentOrbital].energy
-                                );
-                            }
+                      if (distanceToCenter < cloudRadiusForCheck * 1.5) { // Wave is near this orbital
+                          const normalizedDistanceLocal = distanceToCenter / (cloudRadiusForCheck * 1.5);
+                          const distanceEffectLocal = Math.pow(1 - Math.min(normalizedDistanceLocal, 1), 2);
 
-                            transitionToOrbital = validTransition || '2p1/2';
-                        }
-                    } else if (absorptionStrength > 0.01) {
-                        // Partial interaction
-                        absorptionActive = true;
-                        absorptionFrequency = 0.8 / photonWavelength;
-                        absorptionPhase = waveTime * 6.28;
-                    }
-                } else {
-                    // Gradually decrease absorption strength when wave moves away
-                    absorptionStrength *= 0.96; // Slower decay for smoother transition
-                    if (absorptionStrength < 0.01) {
-                        absorptionActive = false;
-                        absorptionStrength = 0;
-                    }
-                }
+                          const energyDifferenceLocal = Math.abs(photonEnergy - orbitalEnergyForCheck) / orbitalEnergyForCheck;
+                          const energyMatchLocal = Math.exp(-Math.pow(energyDifferenceLocal, 2) * 5);
+                          
+                          const combinedEffect = distanceEffectLocal * energyMatchLocal;
+
+                          if (combinedEffect > maxCombinedEffect) {
+                              maxCombinedEffect = combinedEffect;
+                              bestMatchOrbitalInfo = {
+                                  name: orbitalName,
+                                  params: params,
+                                  distanceEffect: distanceEffectLocal,
+                                  energyMatch: energyMatchLocal,
+                                  cloudRadius: cloudRadiusForCheck
+                              };
+                          }
+                      }
+                  });
+
+                  if (bestMatchOrbitalInfo) {
+                      const { name: matchedOrbitalName, params: matchedOrbitalParams, distanceEffect, energyMatch, cloudRadius: matchedCloudRadius } = bestMatchOrbitalInfo;
+                      
+                      const targetAbsorptionStrength = distanceEffect * energyMatch * 0.8;
+                      absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05;
+
+                      const absorptionThreshold = photonEnergy > 5000 ? 0.15 : 0.3;
+                      if (energyMatch > 0.5 && distanceToCenter < matchedCloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
+                          if (!waveAbsorbed) {
+                              waveAbsorbed = true;
+                              reemissionTime = 0;
+                              absorptionActive = true;
+                              absorbingOrbitalName = matchedOrbitalName; // Store the absorbing orbital
+                              absorptionFrequency = 0.8 / photonWavelength;
+                              absorptionPhase = waveTime * 6.28;
+                              
+                              transitionFromOrbital = matchedOrbitalName;
+
+                              const orbitalType = matchedOrbitalName.charAt(1);
+                              let validTransition = null;
+                              if (orbitalType === 's') {
+                                  validTransition = ['2p₁/₂', '2p₃/₂', '3p'].find(orbital => 
+                                      orbitalParams[orbital] && orbitalParams[orbital].energy < matchedOrbitalParams.energy
+                                  );
+                              } else if (orbitalType === 'p') {
+                                  validTransition = ['1s', '2s', '3s', '3d'].find(orbital => 
+                                      orbitalParams[orbital] && orbitalParams[orbital].energy < matchedOrbitalParams.energy
+                                  );
+                              } else if (orbitalType === 'd') {
+                                  validTransition = ['2p₁/₂', '2p₃/₂', '3p'].find(orbital => 
+                                      orbitalParams[orbital] && orbitalParams[orbital].energy < matchedOrbitalParams.energy
+                                  );
+                              }
+                              transitionToOrbital = validTransition || (Object.keys(orbitalParams).find(o => o !== matchedOrbitalName && orbitalParams[o].energy < matchedOrbitalParams.energy) || '2p₁/₂');
+                          }
+                      } else if (absorptionStrength > 0.01) {
+                          absorptionActive = true;
+                          absorbingOrbitalName = matchedOrbitalName; // Still interacting with this one
+                          absorptionFrequency = 0.8 / photonWavelength;
+                          absorptionPhase = waveTime * 6.28;
+                      }
+                  } else {
+                      // Gradually decrease absorption strength if no orbital is interacting
+                      absorptionStrength *= 0.96;
+                      if (absorptionStrength < 0.01) {
+                          absorptionActive = false;
+                          absorptionStrength = 0;
+                          absorbingOrbitalName = null; // Clear absorbing orbital
+                      }
+                  }
+
+                  // This existing 'else' handles when wave moves away entirely
+                  if (!(distanceToCenter < (bestMatchOrbitalInfo ? bestMatchOrbitalInfo.cloudRadius * 1.5 : 0))) {
+                      absorptionStrength *= 0.96; 
+                      if (absorptionStrength < 0.01) {
+                          absorptionActive = false;
+                          absorptionStrength = 0;
+                          absorbingOrbitalName = null; 
+                      }
+                  }
             }
             
             // Update reemission time if wave was absorbed
@@ -2213,8 +2135,17 @@ export default function QuantumPlayground() {
                 waveAbsorbed = false;
                 absorptionStrength = 0;
                 absorptionActive = false;
+                absorbingOrbitalName = null;
             }
 
+            if (!waveActive && !waveAbsorbed && absorptionStrength > 0) {
+              absorptionStrength *= 0.9; // Fade out any residual absorption
+              if (absorptionStrength < 0.01) {
+                  absorptionStrength = 0;
+                  absorptionActive = false;
+                  absorbingOrbitalName = null;
+              }
+          }
             waveParticles.instanceMatrix.needsUpdate = true;
             waveParticles.instanceColor.needsUpdate = true;
         }
@@ -2293,17 +2224,35 @@ export default function QuantumPlayground() {
     };
     }, []);
     return (
-        <div className="quantum-container" style={{position: 'relative', width: '100%', height: '100vh'}}>
-          <div ref={containerRef} className="renderer-container" style={{width: '100%', height: '100%'}}></div>
-          <div ref={guiContainerRef} className="gui-container" style={{
-            position: 'absolute', 
-            top: '20px', 
-            left: '20px', 
-            zIndex: 10, 
-            backgroundColor: 'rgba(40,40,40,0.85)',
-            padding: '15px',
-            width: '280px'
-          }}></div>
+      <div className="quantum-container" style={{position: 'relative', width: '100%', height: '100vh'}}>
+        <div ref={containerRef} className="renderer-container" style={{width: '100%', height: '100%'}}></div>
+        
+        {/* Add Orbital Selector */}
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 20,
+          width: '600px',
+          height: '600px',
+          pointerEvents: 'auto'
+        }}>
+          <OrbitalSelector 
+            currentOrbital={selectedOrbital} 
+            onOrbitalChange={handleOrbitalChange} 
+          />
         </div>
-      );
+        
+        {/* Move GUI container to the right */}
+        <div ref={guiContainerRef} className="gui-container" style={{
+          position: 'absolute', 
+          top: '20px', 
+          right: '20px',  // Changed from left to right
+          zIndex: 10, 
+          backgroundColor: 'rgba(40,40,40,0.85)',
+          padding: '15px',
+          width: '280px'
+        }}></div>
+      </div>
+    );
     }
