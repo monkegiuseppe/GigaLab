@@ -26,6 +26,7 @@
     "three": "^0.176.0"
   },
   "devDependencies": {
+    "@types/react": "^19.1.6",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "cross-env": "^7.0.3",

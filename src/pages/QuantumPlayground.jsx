@@ -3,12 +3,20 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './QuantumPlayground.css';
 import OrbitalSelector from '../components/OrbitalSelector';
+import ControlsSection from '../components/ControlsSection';
 
 export default function QuantumPlayground() {
   const containerRef = useRef(null);
-  const guiContainerRef = useRef(null);
   const [selectedOrbital, setSelectedOrbital] = useState('3p');
   const switchOrbitalRef = useRef(null);
+  const [controlsReady, setControlsReady] = useState(false);
+  const sceneControlsRef = useRef({
+    toggleMode: null,
+    togglePerformance: null,
+    updatePhotonEnergy: null,
+    updateCrossSection: null,
+    emitWave: null
+  });
 
   // Add handler for orbital changes
   const handleOrbitalChange = (orbitalName) => {
@@ -18,7 +26,7 @@ export default function QuantumPlayground() {
   };
 
   useEffect(() => {
-    if (!containerRef.current || !guiContainerRef.current) return;
+    if (!containerRef.current) return;
 
     // Core variables
     let scene, camera, renderer, controls;
@@ -1000,6 +1008,8 @@ export default function QuantumPlayground() {
       // Scene
       scene = new THREE.Scene();
 
+      window.currentPhotonEnergy = 52;
+
       // Camera
       camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.01, 1000);
       camera.position.set(2, 1.5, 0.5); // Moved more to the right to see waves from left
@@ -1230,208 +1240,55 @@ export default function QuantumPlayground() {
       }
     }
 
-    // Create a React-friendly version of the GUI controls
     function createGuiControls() {
-      const guiContainer = guiContainerRef.current;
-      guiContainer.innerHTML = '';
-      guiContainer.className = 'glass';
-      guiContainer.style.padding = '20px';
-      guiContainer.style.borderRadius = '12px';
-      guiContainer.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-      guiContainer.style.width = '320px';
-      guiContainer.style.color = 'rgba(220, 220, 220, 0.9)';
-      guiContainer.style.maxHeight = '90vh';
-      guiContainer.style.overflowY = 'auto';
-
-      // Title
-      const title = document.createElement('h3');
-      title.textContent = 'Controls';
-      title.style.margin = '0 0 15px 0';
-      title.style.textAlign = 'center';
-      guiContainer.appendChild(title);
-
-
-      // Layering mode toggle
-      const layeringSection = document.createElement('div');
-      layeringSection.className = 'glass';
-      layeringSection.style.padding = '10px';
-      layeringSection.style.borderRadius = '8px';
-      layeringSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-      layeringSection.style.marginBottom = '15px';
-      
-      const layeringToggle = document.createElement('button');
-      layeringToggle.textContent = layeringMode === 'focused' ? 'Mode: Focused Shell' : 'Mode: Show All';
-      layeringToggle.style.width = '100%';
-      layeringToggle.style.padding = '8px';
-      layeringToggle.style.backgroundColor = 'rgba(70, 70, 100, 0.8)';
-      layeringToggle.style.border = '1px solid rgba(100, 100, 150, 0.8)';
-      layeringToggle.style.borderRadius = '4px';
-      layeringToggle.style.color = 'rgba(220, 220, 220, 0.9)';
-      layeringToggle.style.cursor = 'pointer';
-      
-      layeringToggle.onclick = () => {
-        layeringMode = layeringMode === 'focused' ? 'all' : 'focused';
-        layeringToggle.textContent = layeringMode === 'focused' ? 'Mode: Focused Shell' : 'Mode: Show All';
-        updateLayeringMode(); // This will now apply immediately
-      };
-      
-      layeringSection.appendChild(layeringToggle);
-      
-      // Add performance mode toggle
-      const performanceToggle = document.createElement('button');
-      performanceToggle.textContent = 'Performance: Normal';
-      performanceToggle.style.width = '100%';
-      performanceToggle.style.padding = '8px';
-      performanceToggle.style.backgroundColor = 'rgba(70, 70, 70, 0.8)';
-      performanceToggle.style.border = '1px solid rgba(100, 100, 100, 0.8)';
-      performanceToggle.style.borderRadius = '4px';
-      performanceToggle.style.color = 'rgba(220, 220, 220, 0.9)';
-      performanceToggle.style.cursor = 'pointer';
-      performanceToggle.style.marginTop = '10px';
-
-      performanceToggle.onclick = () => {
-        performanceMode = performanceMode === 'normal' ? 'low' : 'normal';
-        performanceToggle.textContent = performanceMode === 'normal' ? 'Performance: Normal' : 'Performance: Low';
-        
-        // Store original particle counts if not already stored
-        if (!orbitalParams['1s'].originalParticleCount) {
-          for (const type in orbitalParams) {
-            orbitalParams[type].originalParticleCount = orbitalParams[type].particleCount;
+      // Store references to control functions
+      sceneControlsRef.current = {
+        toggleMode: () => {
+          layeringMode = layeringMode === 'focused' ? 'all' : 'focused';
+          updateLayeringMode();
+        },
+        togglePerformance: () => {
+          performanceMode = performanceMode === 'normal' ? 'low' : 'normal';
+          
+          if (!orbitalParams['1s'].originalParticleCount) {
+            for (const type in orbitalParams) {
+              orbitalParams[type].originalParticleCount = orbitalParams[type].particleCount;
+            }
+          }
+          
+          const factor = performanceMode === 'low' ? 0.5 : 1.0;
+          for (const type in orbitalGroups) {
+            if (orbitalGroups[type]) {
+              scene.remove(orbitalGroups[type]);
+              orbitalGroups[type].geometry.dispose();
+              orbitalGroups[type].material.dispose();
+              
+              const params = orbitalParams[type];
+              const minParticles = params.shell === 'M' ? 10000 : 
+                            params.shell === 'L' ? 4000 : 3000;
+              params.particleCount = Math.max(minParticles, Math.floor(params.originalParticleCount * factor));
+              
+              orbitalGroups[type] = createOrbital(type);
+              scene.add(orbitalGroups[type]);
+            }
+          }
+          updateLayeringMode();
+        },
+        updatePhotonEnergy: (energy) => {
+          window.currentPhotonEnergy = energy;
+          updatePhotonWavelength(energy);
+        },
+        updateCrossSection: (value) => {
+          const normalizedValue = value / 10; // Convert from 0-100 to 0-10
+          for (const type in orbitalGroups) {
+            if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
+              orbitalGroups[type].material.uniforms.u_crossSectionX.value = normalizedValue;
+            }
           }
         }
-        
-        // Adjust particle counts
-        const factor = performanceMode === 'low' ? 0.5 : 1.0;
-        for (const type in orbitalGroups) {
-          if (orbitalGroups[type]) {
-            scene.remove(orbitalGroups[type]);
-            orbitalGroups[type].geometry.dispose();
-            orbitalGroups[type].material.dispose();
-            
-            // Update particle count in params
-            const params = orbitalParams[type];
-            // Keep minimum particle count for inner shells
-            const minParticles = params.shell === 'M' ? 10000 : 
-                           params.shell === 'L' ? 4000 : 3000;
-            params.particleCount = Math.max(minParticles, Math.floor(params.originalParticleCount * factor));
-            
-            // Recreate with adjusted particle count
-            orbitalGroups[type] = createOrbital(type);
-            scene.add(orbitalGroups[type]);
-          }
-        }
-        updateLayeringMode();
-      };
-
-      layeringSection.appendChild(performanceToggle);
-      guiContainer.appendChild(layeringSection);
-
-      // Photon controls
-      const photonSection = document.createElement('div');
-      photonSection.className = 'glass';
-      photonSection.style.padding = '15px';
-      photonSection.style.borderRadius = '8px';
-      photonSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-      photonSection.style.marginBottom = '15px';
-      
-      const photonLabel = document.createElement('label');
-      photonLabel.textContent = 'Photon Energy:';
-      photonLabel.style.fontWeight = 'bold';
-      photonLabel.style.display = 'block';
-      photonLabel.style.marginBottom = '10px';
-      
-      const energyInput = document.createElement('input');
-      energyInput.type = 'number';
-      energyInput.id = 'photonEnergyInput';
-      energyInput.value = '52';
-      energyInput.style.width = '60%';
-      energyInput.style.padding = '4px';
-      energyInput.style.marginRight = '5px';
-      
-      const energyUnit = document.createElement('span');
-      energyUnit.textContent = 'eV';
-      
-      // Energy display
-      const energyDisplay = document.createElement('div');
-      energyDisplay.style.backgroundColor = 'rgba(40, 40, 40, 0.8)';
-      energyDisplay.style.padding = '5px';
-      energyDisplay.style.borderRadius = '4px';
-      energyDisplay.style.marginTop = '10px';
-      energyDisplay.style.fontSize = '13px';
-      energyDisplay.style.color = 'rgba(200, 200, 200, 0.8)';
-      energyDisplay.id = 'photonEnergyDisplay';
-      energyDisplay.textContent = `Wavelength: ${(1239.84 / 100).toFixed(2)} nm`;
-      
-      energyInput.oninput = (e) => {
-        const energy = parseFloat(e.target.value) || 100;
-        updatePhotonWavelength(energy);
-        energyDisplay.textContent = `Wavelength: ${(1239.84 / energy).toFixed(2)} nm`;
       };
       
-      photonSection.appendChild(photonLabel);
-      photonSection.appendChild(energyInput);
-      photonSection.appendChild(energyUnit);
-      photonSection.appendChild(energyDisplay);
-      
-      guiContainer.appendChild(photonSection);
-
-      // Cross-section slider section - Updated to 0-10 range
-      const crossSectionSection = document.createElement('div');
-      crossSectionSection.className = 'glass';
-      crossSectionSection.style.padding = '15px';
-      crossSectionSection.style.borderRadius = '8px';
-      crossSectionSection.style.backgroundColor = 'rgba(50, 50, 50, 0.8)';
-      crossSectionSection.style.marginBottom = '15px';
-      
-      const crossSectionLabel = document.createElement('label');
-      crossSectionLabel.textContent = 'Cross-Section View:';
-      crossSectionLabel.style.fontWeight = 'bold';
-      crossSectionLabel.style.display = 'block';
-      crossSectionLabel.style.marginBottom = '10px';
-      
-      const crossSectionSlider = document.createElement('input');
-      crossSectionSlider.type = 'range';
-      crossSectionSlider.id = 'crossSectionSlider';
-      crossSectionSlider.min = '0'; // Changed from -10
-      crossSectionSlider.max = '10';
-      crossSectionSlider.value = '10'; // Start with full view
-      crossSectionSlider.step = '0.1';
-      crossSectionSlider.style.width = '100%';
-      crossSectionSlider.style.accentColor = 'rgb(220, 40, 40)';
-      
-      crossSectionSlider.addEventListener('input', (event) => {
-        const value = parseFloat(event.target.value);
-        for (const type in orbitalGroups) {
-          if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
-            orbitalGroups[type].material.uniforms.u_crossSectionX.value = value;
-          }
-        }
-      });
-      
-      crossSectionSection.appendChild(crossSectionLabel);
-      crossSectionSection.appendChild(crossSectionSlider);
-      
-      const crossSectionMarkers = document.createElement('div');
-      crossSectionMarkers.style.display = 'flex';
-      crossSectionMarkers.style.justifyContent = 'space-between';
-      crossSectionMarkers.style.fontSize = '12px';
-      crossSectionMarkers.innerHTML = '<span>50%</span><span>75%</span><span>100%</span>'; // Updated labels
-      
-      crossSectionSection.appendChild(crossSectionMarkers);
-      guiContainer.appendChild(crossSectionSection);
-
-      // Emit button
-      const emitSection = document.createElement('div');
-      emitSection.style.marginTop = '15px';
-      const emitButton = document.createElement('button');
-      emitButton.id = 'emitWaveBtn';
-      emitButton.textContent = 'Emit Photon Wave';
-      emitButton.className = 'w-full p-2 rounded border transition-all hover:bg-opacity-90';
-      emitButton.style.backgroundColor = 'rgb(220, 40, 40)';
-      emitButton.style.borderColor = 'rgb(220, 40, 40)';
-      emitButton.style.color = 'rgba(220, 220, 220, 0.9)';
-      emitSection.appendChild(emitButton);
-      guiContainer.appendChild(emitSection);
+      setControlsReady(true);
     }
 
     // Helper functions
@@ -1560,8 +1417,6 @@ export default function QuantumPlayground() {
           u_absorptionPhase: { value: 0.0 },
           u_particleScale: { value: params.particleScale || 1.0 },
           u_isWireframe: { value: false },
-          u_minSpeedAtEdge: { value: params.shell === 'K' ? 0.01 : 0.005 },
-          u_exponentialFalloffRate: { value: params.shell === 'K' ? 8 : params.shell === 'L' ? 6 : 4 },
           u_cameraPosition: { value: camera.position }, // Add camera position
           u_cameraCullDistance: { value: 0.2 }, // Distance for bulldozer effect
           u_depthCullDistance: { value: scale * 3.0 },
@@ -1679,13 +1534,10 @@ export default function QuantumPlayground() {
       currentOrbital = orbitalType;
       setSelectedOrbital(orbitalType);
       
-      // Auto-update photon energy input
-      const energyInput = document.getElementById('photonEnergyInput');
-      if (energyInput && orbitalParams[orbitalType]) {
+      // Auto-update photon energy through controls
+      if (sceneControlsRef.current.updatePhotonEnergy && orbitalParams[orbitalType]) {
         const newEnergy = orbitalParams[orbitalType].energy;
-        energyInput.value = newEnergy;
-        // Trigger input event to update wavelength display and internal values
-        energyInput.dispatchEvent(new Event('input', { bubbles: true }));
+        sceneControlsRef.current.updatePhotonEnergy(newEnergy);
       }
 
       // Update camera position based on the selected orbital
@@ -1736,7 +1588,7 @@ export default function QuantumPlayground() {
             waveMode: 'partial'
         };
         
-
+        let currentPhotonEnergy = 52;
         // Wave animation variables
         let waveActive = false;
         let waveTime = 0;
@@ -1833,9 +1685,8 @@ export default function QuantumPlayground() {
             absorptionActive = false;
             absorptionStrength = 0.0;
             
-            // Get photon energy from input
-            const energyInput = document.getElementById('photonEnergyInput');
-            const energy = parseFloat(energyInput.value) || 100;
+            // Get photon energy from stored value
+            const energy = window.currentPhotonEnergy || 52;
             
             // Update wave parameters based on energy
             updatePhotonWavelength(energy);
@@ -1847,8 +1698,7 @@ export default function QuantumPlayground() {
         function updateWave(deltaTime) {
 
           // Get photon energy at the start for use throughout the function
-          const energyInput = document.getElementById('photonEnergyInput');
-          const photonEnergy = parseFloat(energyInput.value) || 100;
+          const photonEnergy = window.currentPhotonEnergy || 52;
 
             // If active wave, update its position
             if (waveActive && !waveAbsorbed) {
@@ -2150,12 +2000,10 @@ export default function QuantumPlayground() {
             waveParticles.instanceColor.needsUpdate = true;
         }
         
-        // Connect the emitWave function to the button
-        const emitButton = document.getElementById('emitWaveBtn');
-        if (emitButton) {
-            emitButton.addEventListener('click', emitWave);
+        // Expose emitWave to controls
+        if (sceneControlsRef.current) {
+          sceneControlsRef.current.emitWave = emitWave;
         }
-        
         // Return the update function to be called in the animation loop
         return updateWave;
     }
@@ -2226,33 +2074,47 @@ export default function QuantumPlayground() {
     return (
       <div className="quantum-container" style={{position: 'relative', width: '100%', height: '100vh'}}>
         <div ref={containerRef} className="renderer-container" style={{width: '100%', height: '100%'}}></div>
-        
-        {/* Add Orbital Selector */}
+          
+        {/* Left Panel Container */}
         <div style={{
           position: 'absolute',
           top: '20px',
           left: '20px',
           zIndex: 20,
-          width: '600px',
-          height: '600px',
-          pointerEvents: 'auto'
+          width: '440px', // Fixed width for both components
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          pointerEvents: 'none' // Allow click-through except on components
         }}>
-          <OrbitalSelector 
-            currentOrbital={selectedOrbital} 
-            onOrbitalChange={handleOrbitalChange} 
-          />
+          {/* Orbital Selector */}
+          <div style={{
+            width: '100%',
+            height: '350px', // Fixed height
+            pointerEvents: 'auto'
+          }}>
+            <OrbitalSelector 
+              currentOrbital={selectedOrbital} 
+              onOrbitalChange={handleOrbitalChange} 
+            />
+          </div>
+          
+          {/* Controls Section */}
+          {controlsReady && (
+            <div style={{
+              width: '100%',
+              pointerEvents: 'auto'
+            }}>
+              <ControlsSection 
+                onModeToggle={sceneControlsRef.current.toggleMode}
+                onPerformanceToggle={sceneControlsRef.current.togglePerformance}
+                onPhotonEnergyChange={sceneControlsRef.current.updatePhotonEnergy}
+                onCrossSectionChange={sceneControlsRef.current.updateCrossSection}
+                onEmitPhoton={sceneControlsRef.current.emitWave}
+              />
+            </div>
+          )}
         </div>
-        
-        {/* Move GUI container to the right */}
-        <div ref={guiContainerRef} className="gui-container" style={{
-          position: 'absolute', 
-          top: '20px', 
-          right: '20px',  // Changed from left to right
-          zIndex: 10, 
-          backgroundColor: 'rgba(40,40,40,0.85)',
-          padding: '15px',
-          width: '280px'
-        }}></div>
       </div>
     );
-    }
+  }

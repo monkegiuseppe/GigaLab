@@ -167,9 +167,10 @@ const getElectronPositions = (currentOrbital) => {
 
 const RutherfordAtom = ({ currentOrbital }) => {
   const electronPositions = getElectronPositions(currentOrbital)
+  const scale = 0.65 // Consistent scale factor
 
   return (
-    <div className="relative w-48 h-48 mx-auto">
+    <div className="relative w-36 h-36 mx-auto"> {/* Fixed size container */}
       {/* Electron shells */}
       <div className="absolute inset-0 flex items-center justify-center">
         {[30, 50, 70, 90].map((radius, index) => (
@@ -177,14 +178,14 @@ const RutherfordAtom = ({ currentOrbital }) => {
             key={radius}
             className="absolute border border-slate-600/30 rounded-full"
             style={{
-              width: radius * 2,
-              height: radius * 2,
+              width: `${radius * 2 * scale}px`,
+              height: `${radius * 2 * scale}px`,
             }}
           />
         ))}
 
         {/* Nucleus */}
-        <div className="w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg relative z-10">
+        <div className="w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg relative z-10">
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full animate-pulse opacity-50" />
         </div>
 
@@ -192,17 +193,17 @@ const RutherfordAtom = ({ currentOrbital }) => {
         {electronPositions.map((pos, index) => (
           <motion.div
             key={index}
-            className={`absolute w-2 h-2 rounded-full transition-all duration-500 ${
+            className={`absolute w-1.5 h-1.5 rounded-full transition-all duration-500 ${
               pos.isActive
-                ? "bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/50 scale-150"
+                ? "bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/50"
                 : "bg-slate-400"
             }`}
             style={{
-              left: `calc(50% + ${pos.x}px - 4px)`,
-              top: `calc(50% + ${pos.y}px - 4px)`,
+              left: `calc(50% + ${pos.x * scale}px - 3px)`,
+              top: `calc(50% + ${pos.y * scale}px - 3px)`,
+              transform: pos.isActive ? 'scale(1.5)' : 'scale(1)',
             }}
             animate={{
-              scale: pos.isActive ? 1.5 : 1,
               boxShadow: pos.isActive ? "0 0 20px rgba(34, 211, 238, 0.6)" : "0 0 0px rgba(0, 0, 0, 0)",
             }}
             transition={{ duration: 0.3 }}
@@ -286,49 +287,17 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
         height: '100%'
       }}>
       <div className="relative w-full max-w-2xl h-[600px]">
-        {/* Shell Change Indicator */}
-        <AnimatePresence>
-          {shellChanged && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 20 }}
-              className="absolute -top-16 left-1/2 -translate-x-1/2 z-30"
-            >
-              <div
-                className={`px-6 py-3 rounded-full bg-gradient-to-r ${selectedOrbitalData.shellColor} text-white font-semibold text-sm shadow-2xl border border-white/20`}
-              >
-                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-                  {selectedOrbitalData.shell}
-                </motion.span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Navigation Hints */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-8 flex items-center gap-4 text-slate-400 text-xs z-20">
-          <div className="flex items-center gap-1">
-            <ChevronUp className="w-3 h-3" />
-            <span>{currentIndex > 0 ? orbitals[currentIndex - 1].name : "—"}</span>
-          </div>
-          <div className="w-px h-4 bg-slate-600"></div>
-          <div className="flex items-center gap-1">
-            <span>{currentIndex < orbitals.length - 1 ? orbitals[currentIndex + 1].name : "—"}</span>
-            <ChevronDown className="w-3 h-3" />
-          </div>
-        </div>
 
         {/* Card Container */}
         <div className="relative w-full h-full flex items-center justify-center">
           <AnimatePresence>
             <motion.div
               key={currentIndex}
-              className="absolute w-full max-w-lg"
+              className="absolute w-full px-2"
               initial={{
-                y: scrollDirection === "down" ? -100 : 100,
+                y: scrollDirection === "down" ? 50 : -50,
                 opacity: 0,
-                scale: 0.9,
+                scale: 0.95,
               }}
               animate={{
                 y: 0,
@@ -336,7 +305,7 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
                 scale: 1,
               }}
               exit={{
-                y: scrollDirection === "down" ? 100 : -100,
+                y: scrollDirection === "down" ? -50 : 50,
                 opacity: 0,
                 scale: 0.9,
               }}
@@ -344,7 +313,8 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
                 type: "spring",
                 stiffness: 500,
                 damping: 35,
-                duration: 0.25,
+                duration: 0.3,
+                ease: "easeInOut"
               }}
               style={{
                 zIndex: 20,
@@ -352,7 +322,6 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
             >
               <motion.div
                 className="backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden bg-slate-800/80"
-                whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
                 {/* Background Gradient */}
@@ -363,7 +332,7 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
                 />
 
                 {/* Content */}
-                <div className="relative p-8">
+                <div className="relative p-4">
                   {/* Shell Badge */}
                   <motion.div
                     className="absolute top-4 right-4"
@@ -386,9 +355,19 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2, delay: 0.1 }}
                     >
-                      <h1 className="text-5xl lg:text-6xl font-bold text-slate-100 mb-4 font-mono">
-                        {selectedOrbitalData.name}
-                      </h1>
+                      <h1 className="text-4xl font-bold text-slate-100 mb-2 font-mono">
+                      {selectedOrbitalData.name.includes('₁/₂') || selectedOrbitalData.name.includes('₃/₂') 
+                        ? (
+                          <span>
+                            {selectedOrbitalData.name.substring(0, 2)}
+                            <sub style={{ fontSize: '0.7em' }}>
+                              {selectedOrbitalData.name.substring(2)}
+                            </sub>
+                          </span>
+                        )
+                        : selectedOrbitalData.name
+                      }
+                    </h1>
                       <div className="w-16 h-1 bg-gradient-to-r from-transparent via-slate-400 to-transparent mx-auto lg:mx-0 mb-6"></div>
 
                       <div className="mb-6">
@@ -444,14 +423,6 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
               </motion.div>
             </motion.div>
           </AnimatePresence>
-        </div>
-
-        {/* Instructions */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center text-slate-500 text-xs">
-          <p>Scroll or use arrow keys to navigate through orbitals</p>
-          <p className="mt-1">
-            {currentIndex + 1} of {orbitals.length}
-          </p>
         </div>
       </div>
     </div>
