@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronUp, ChevronDown } from "lucide-react"
-
 
 const orbitals = [
   {
@@ -167,16 +165,19 @@ const getElectronPositions = (currentOrbital) => {
 
 const RutherfordAtom = ({ currentOrbital }) => {
   const electronPositions = getElectronPositions(currentOrbital)
-  const scale = 0.65 // Consistent scale factor
+  const scale = 0.6 // Increased scale for better visibility
 
   return (
-    <div className="relative w-36 h-36 mx-auto"> {/* Fixed size container */}
+    <div className="relative w-32 h-32 mx-auto">
       {/* Electron shells */}
       <div className="absolute inset-0 flex items-center justify-center">
         {[30, 50, 70, 90].map((radius, index) => (
-          <div
+          <motion.div
             key={radius}
             className="absolute border border-slate-600/30 rounded-full"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
             style={{
               width: `${radius * 2 * scale}px`,
               height: `${radius * 2 * scale}px`,
@@ -185,30 +186,56 @@ const RutherfordAtom = ({ currentOrbital }) => {
         ))}
 
         {/* Nucleus */}
-        <div className="w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg relative z-10">
+        <motion.div
+          className="w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg relative z-10"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 15,
+            delay: 0.2,
+          }}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full animate-pulse opacity-50" />
-        </div>
+        </motion.div>
 
         {/* Electrons */}
-        {electronPositions.map((pos, index) => (
-          <motion.div
-            key={index}
-            className={`absolute w-1.5 h-1.5 rounded-full transition-all duration-500 ${
-              pos.isActive
-                ? "bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/50"
-                : "bg-slate-400"
-            }`}
-            style={{
-              left: `calc(50% + ${pos.x * scale}px - 3px)`,
-              top: `calc(50% + ${pos.y * scale}px - 3px)`,
-              transform: pos.isActive ? 'scale(1.5)' : 'scale(1)',
-            }}
-            animate={{
-              boxShadow: pos.isActive ? "0 0 20px rgba(34, 211, 238, 0.6)" : "0 0 0px rgba(0, 0, 0, 0)",
-            }}
-            transition={{ duration: 0.3 }}
-          />
-        ))}
+        <AnimatePresence mode="wait">
+          {electronPositions.map((pos, index) => (
+            <motion.div
+              key={`${pos.orbital}-${index}`}
+              className={`absolute w-1.5 h-1.5 rounded-full ${
+                pos.isActive
+                  ? "bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/50"
+                  : "bg-slate-400"
+              }`}
+              style={{
+                left: `calc(50% + ${pos.x * scale}px - 3px)`,
+                top: `calc(50% + ${pos.y * scale}px - 3px)`,
+              }}
+              initial={{
+                opacity: 0,
+                scale: 0,
+              }}
+              animate={{
+                opacity: 1,
+                scale: pos.isActive ? 1.5 : 1,
+                boxShadow: pos.isActive ? "0 0 20px rgba(34, 211, 238, 0.6)" : "0 0 0px rgba(0, 0, 0, 0)",
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 15,
+                delay: index * 0.01 + 0.3,
+              }}
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   )
@@ -216,13 +243,17 @@ const RutherfordAtom = ({ currentOrbital }) => {
 
 export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
   // Find the initial index based on currentOrbital prop
-  const initialIndex = orbitals.findIndex(o => o.name === currentOrbital) || 3;
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const initialIndex =
+    orbitals.findIndex((o) => o.name === currentOrbital) !== -1
+      ? orbitals.findIndex((o) => o.name === currentOrbital)
+      : 3
+  const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isScrolling, setIsScrolling] = useState(false)
   const [shellChanged, setShellChanged] = useState(false)
   const [scrollDirection, setScrollDirection] = useState("down")
 
-  const selectedOrbitalData = orbitals[currentIndex]
+  const safeCurrentIndex = Math.max(0, Math.min(currentIndex, orbitals.length - 1))
+  const selectedOrbitalData = orbitals[safeCurrentIndex]
 
   const handleScroll = (direction) => {
     if (isScrolling) return
@@ -240,10 +271,10 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
       setTimeout(() => setShellChanged(false), 1000)
     }
 
-    setCurrentIndex(newIndex);
+    setCurrentIndex(newIndex)
     // Call the parent's callback
     if (onOrbitalChange) {
-      onOrbitalChange(orbitals[newIndex].name);
+      onOrbitalChange(orbitals[newIndex].name)
     }
 
     setTimeout(() => {
@@ -279,152 +310,183 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
   }, [currentIndex, isScrolling])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8 overflow-hidden"
-      style={{
-        background: 'transparent',
-        minHeight: 'auto',
-        width: '100%',
-        height: '100%'
-      }}>
-      <div className="relative w-full max-w-2xl h-[600px]">
+    <div className="w-full">
+      <motion.div
+        className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+        }}
+      >
+        {/* Background Gradient */}
+        <motion.div
+          className={`absolute inset-0 bg-gradient-to-br ${selectedOrbitalData.shellColor}`}
+          animate={{ opacity: 0.15 }}
+          transition={{ duration: 0.5 }}
+        />
 
-        {/* Card Container */}
-        <div className="relative w-full h-full flex items-center justify-center">
-          <AnimatePresence>
-            <motion.div
-              key={currentIndex}
-              className="absolute w-full px-2"
-              initial={{
-                y: scrollDirection === "down" ? 50 : -50,
-                opacity: 0,
-                scale: 0.95,
-              }}
-              animate={{
-                y: 0,
-                opacity: 1,
-                scale: 1,
-              }}
-              exit={{
-                y: scrollDirection === "down" ? -50 : 50,
-                opacity: 0,
-                scale: 0.9,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 35,
-                duration: 0.3,
-                ease: "easeInOut"
-              }}
+        {/* Content */}
+        <div className="relative p-5">
+          {/* Shell Badge */}
+          <motion.div
+            className="absolute top-5 right-5 z-10"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <div
+              className={`px-3 py-1 rounded-full bg-gradient-to-r ${selectedOrbitalData.shellColor} text-white text-xs font-medium shadow-lg border border-white/20`}
               style={{
-                zIndex: 20,
+                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
               }}
             >
+              {selectedOrbitalData.shell}
+            </div>
+          </motion.div>
+
+          {/* Compact Content Layout */}
+          <div className="flex items-center gap-6">
+            {/* Left side - Orbital info */}
+            <AnimatePresence mode="wait">
               <motion.div
-                className="backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden bg-slate-800/80"
-                transition={{ duration: 0.2 }}
+                key={`orbital-info-${currentIndex}`}
+                className="flex-1"
+                initial={{ opacity: 0, x: scrollDirection === "down" ? 30 : -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: scrollDirection === "down" ? -30 : 30 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                  duration: 0.4,
+                }}
               >
-                {/* Background Gradient */}
-                <motion.div
-                  className={`absolute inset-0 bg-gradient-to-br ${selectedOrbitalData.shellColor}`}
-                  animate={{ opacity: 0.15 }}
-                  transition={{ duration: 0.3 }}
-                />
+                <h1 className="text-2xl font-bold text-slate-100 mb-2 font-mono">
+                  {selectedOrbitalData.name.includes("₁/₂") || selectedOrbitalData.name.includes("₃/₂") ? (
+                    <span>
+                      {selectedOrbitalData.name.substring(0, 2)}
+                      <sub style={{ fontSize: "0.7em" }}>{selectedOrbitalData.name.substring(2)}</sub>
+                    </span>
+                  ) : (
+                    selectedOrbitalData.name
+                  )}
+                </h1>
 
-                {/* Content */}
-                <div className="relative p-4">
-                  {/* Shell Badge */}
-                  <motion.div
-                    className="absolute top-4 right-4"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.15, delay: 0.1 }}
-                  >
-                    <div
-                      className={`px-3 py-1 rounded-full bg-gradient-to-r ${selectedOrbitalData.shellColor} text-white text-xs font-medium shadow-lg`}
-                    >
-                      {selectedOrbitalData.shell}
-                    </div>
-                  </motion.div>
-
-                  {/* Full Content */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                    <motion.div
-                      className="text-center lg:text-left"
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2, delay: 0.1 }}
-                    >
-                      <h1 className="text-4xl font-bold text-slate-100 mb-2 font-mono">
-                      {selectedOrbitalData.name.includes('₁/₂') || selectedOrbitalData.name.includes('₃/₂') 
-                        ? (
-                          <span>
-                            {selectedOrbitalData.name.substring(0, 2)}
-                            <sub style={{ fontSize: '0.7em' }}>
-                              {selectedOrbitalData.name.substring(2)}
-                            </sub>
-                          </span>
-                        )
-                        : selectedOrbitalData.name
-                      }
-                    </h1>
-                      <div className="w-16 h-1 bg-gradient-to-r from-transparent via-slate-400 to-transparent mx-auto lg:mx-0 mb-6"></div>
-
-                      <div className="mb-6">
-                        <div className="text-3xl lg:text-4xl font-bold text-slate-200 mb-2">
-                          {selectedOrbitalData.energy}
-                          <span className="text-lg lg:text-xl text-slate-400 ml-2">{selectedOrbitalData.unit}</span>
-                        </div>
-                        <p className="text-slate-400 text-sm">Binding Energy</p>
-                      </div>
-
-                      <div className="text-slate-300">
-                        <p className="text-sm mb-1">Electrons in orbital:</p>
-                        <p className="text-2xl font-bold text-cyan-400">{selectedOrbitalData.electronCount}</p>
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      className="flex flex-col items-center"
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2, delay: 0.15 }}
-                    >
-                      <h3 className="text-slate-300 text-sm mb-4 font-medium">Iron Atom Model</h3>
-                      <RutherfordAtom currentOrbital={selectedOrbitalData.name} />
-                      <p className="text-xs text-slate-500 mt-4 text-center">
-                        Highlighted electrons belong to {selectedOrbitalData.name} orbital
-                      </p>
-                    </motion.div>
+                <div className="mb-3">
+                  <div className="text-xl font-bold text-slate-200">
+                    {selectedOrbitalData.energy}
+                    <span className="text-sm text-slate-400 ml-1">{selectedOrbitalData.unit}</span>
                   </div>
+                  <p className="text-slate-400 text-xs">Binding Energy</p>
+                </div>
 
-                  {/* Progress Indicator */}
-                  <motion.div
-                    className="flex justify-center mt-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, delay: 0.2 }}
-                  >
-                    <div className="flex gap-2">
-                      {orbitals.map((_, idx) => (
-                        <motion.div
-                          key={idx}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                            idx === currentIndex ? "bg-slate-300 w-8" : "bg-slate-600"
-                          }`}
-                          animate={{
-                            scale: idx === currentIndex ? 1.2 : 1,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
+                <div className="text-slate-300">
+                  <p className="text-xs mb-1">Electrons in orbital:</p>
+                  <p className="text-lg font-bold text-cyan-400">{selectedOrbitalData.electronCount}</p>
+                </div>
+
+                {/* Move Iron Atom text here */}
+                <div className="mt-4">
+                  <h3 className="text-slate-300 text-xs font-medium">Iron Atom Model</h3>
                 </div>
               </motion.div>
+            </AnimatePresence>
+
+            {/* Right side - Atom model */}
+            <div className="flex flex-col items-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`atom-model-${currentIndex}`}
+                  initial={{ opacity: 0, rotateY: -90 }}
+                  animate={{ opacity: 1, rotateY: 0 }}
+                  exit={{ opacity: 0, rotateY: 90 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25,
+                    duration: 0.5,
+                  }}
+                >
+                  <RutherfordAtom currentOrbital={selectedOrbitalData.name} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="flex justify-between items-center mt-4">
+            <motion.button
+              className="w-8 h-8 rounded-full bg-slate-700/50 flex items-center justify-center text-slate-300 hover:bg-slate-600 hover:text-white transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleScroll("up")}
+              disabled={currentIndex === 0}
+              style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m18 15-6-6-6 6" />
+              </svg>
+            </motion.button>
+
+            {/* Progress Indicator */}
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.2 }}
+            >
+              <div className="flex gap-1.5">
+                {orbitals.map((_, idx) => (
+                  <motion.div
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      idx === currentIndex ? "bg-slate-300 w-6" : "bg-slate-600"
+                    }`}
+                    animate={{
+                      scale: idx === currentIndex ? 1.2 : 1,
+                    }}
+                  />
+                ))}
+              </div>
             </motion.div>
-          </AnimatePresence>
+
+            <motion.button
+              className="w-8 h-8 rounded-full bg-slate-700/50 flex items-center justify-center text-slate-300 hover:bg-slate-600 hover:text-white transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleScroll("down")}
+              disabled={currentIndex === orbitals.length - 1}
+              style={{ opacity: currentIndex === orbitals.length - 1 ? 0.5 : 1 }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </motion.button>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

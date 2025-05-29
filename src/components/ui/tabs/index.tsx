@@ -36,25 +36,38 @@ export function Tabs({
   );
 }
 
-export function TabsList({ children }: { children: ReactNode }) {
-  return <div className="flex space-x-2">{children}</div>;
+export function TabsList({ 
+  children, 
+  className,
+  style 
+}: { 
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return <div className={className || "flex space-x-2"} style={style}>{children}</div>;
 }
 
 export function TabsTrigger({
   value,
   children,
+  style,
+  className,
 }: {
   value: string;
   children: ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
 }) {
   const ctx = useContext(TabsContext)!;
   const isActive = ctx.active === value;
   return (
     <button
       onClick={() => ctx.setActive(value)}
-      className={`px-4 py-2 rounded ${
+      className={className || `px-4 py-2 rounded ${
         isActive ? "bg-blue-600 text-white" : "bg-gray-200"
       }`}
+      style={style}
     >
       {children}
     </button>

@@ -2,29 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Zap, Settings, Activity } from "lucide-react"
+import { Zap, Settings, Activity, LineChart } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Slider } from "../components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-
-
-// Custom styles for better tab visibility
-const tabsListStyle = {
-  backgroundColor: 'rgba(51, 65, 85, 0.5)', // slate-700 with opacity
-  border: '1px solid rgba(100, 116, 139, 0.5)' // slate-500 border
-};
-
-const tabsTriggerStyle = {
-  '&[data-state="inactive"]': {
-    color: 'rgba(203, 213, 225, 0.9)', // Better contrast for inactive
-    backgroundColor: 'transparent'
-  },
-  '&[data-state="active"]': {
-    backgroundColor: 'rgba(71, 85, 105, 0.8)', // slate-600
-    color: 'white'
-  }
-};
-
 
 export default function ControlsSection({
   onModeToggle,
@@ -154,62 +135,158 @@ export default function ControlsSection({
   const scaleValues = getScaleValues()
   const excitationMarkers = getExcitationMarkers()
 
+  // Define inline styles for the tab triggers to ensure they work
+  const getTabTriggerStyle = (tabValue, isActive) => {
+    const baseStyle = {
+      height: "40px",
+      borderRadius: "12px",
+      fontWeight: "500",
+      transition: "all 0.3s ease",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: "0px",
+      borderStyle: "solid",
+      borderColor: "transparent",
+    }
+
+    if (isActive) {
+      if (tabValue === "photon") {
+        return {
+          ...baseStyle,
+          background: "linear-gradient(to right, #06b6d4, #3b82f6)",
+          color: "white",
+          boxShadow: "0 8px 25px rgba(6, 182, 212, 0.3)",
+          borderColor: "rgba(6, 182, 212, 0.3)",
+        }
+      } else if (tabValue === "data") {
+        return {
+          ...baseStyle,
+          background: "linear-gradient(to right, #22c55e, #10b981)",
+          color: "white",
+          boxShadow: "0 8px 25px rgba(34, 197, 94, 0.3)",
+          borderColor: "rgba(34, 197, 94, 0.3)",
+        }
+      } else if (tabValue === "settings") {
+        return {
+          ...baseStyle,
+          background: "linear-gradient(to right, #a855f7, #ec4899)",
+          color: "white",
+          boxShadow: "0 8px 25px rgba(168, 85, 247, 0.3)",
+          borderColor: "rgba(168, 85, 247, 0.3)",
+        }
+      }
+    } else {
+      return {
+        ...baseStyle,
+        background: "transparent",
+        color: "#cbd5e1",
+      }
+    }
+  }
+
+  const getButtonStyle = (isEmitting) => {
+    if (isEmitting) {
+      return {
+        background: "linear-gradient(to right, #eab308, #f97316)",
+        boxShadow: "0 8px 25px rgba(251, 146, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "rgba(251, 146, 60, 0.5)",
+      }
+    } else {
+      return {
+        background: "linear-gradient(to right, #06b6d4, #3b82f6)",
+        boxShadow: "0 8px 25px rgba(6, 182, 212, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "rgba(6, 182, 212, 0.3)",
+      }
+    }
+  }
+
   return (
-      <div className="w-full mx-auto" style={{ maxWidth: '440px' }}>      <motion.div
-        className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden bg-slate-800/80"
+    <div className="w-full">
+      <motion.div
+        className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
+        style={{
+          backgroundColor: "rgba(30, 41, 59, 0.8)",
+          backdropFilter: "blur(12px)",
+          borderColor: "rgba(51, 65, 85, 0.5)",
+          height: "420px", // Fixed height for the entire component
+        }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-800/20 via-slate-700/10 to-slate-900/20" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom right, rgba(30, 41, 59, 0.2), rgba(51, 65, 85, 0.1), rgba(15, 23, 42, 0.2))",
+          }}
+        />
 
-        <div className="relative p-6">
-          {/* Header with Tabs */}
-          <motion.div
-            className="flex items-center justify-between mb-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+        <div className="relative h-full flex flex-col">
+          <Tabs
+            defaultValue="photon"
+            className="w-full h-full flex flex-col"
+            value={activeTab}
+            onValueChange={setActiveTab}
           >
-            <Tabs defaultValue="photon" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList 
-                className="grid w-full grid-cols-2" 
+            {/* Header with Tabs - Fixed at top */}
+            <motion.div
+              className="flex-shrink-0 p-6 pb-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <TabsList
+                className="grid w-full grid-cols-3 h-12"
                 style={{
-                  backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                  border: '1px solid rgba(99, 102, 241, 0.3)',
-                  padding: '3px',
-                  borderRadius: '12px',
-                  boxShadow: '0 0 20px rgba(99, 102, 241, 0.1)'
+                  backgroundColor: "rgba(15, 23, 42, 0.95)",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "rgba(148, 163, 184, 0.2)",
+                  padding: "2px",
+                  borderRadius: "14px",
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
                 }}
               >
-                <TabsTrigger 
-                  value="photon"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25 data-[state=inactive]:text-slate-400 data-[state=inactive]:hover:text-slate-300 transition-all duration-300 font-medium"
-                >
-                  ⚡ Photon
+                <TabsTrigger value="photon" style={getTabTriggerStyle("photon", activeTab === "photon")}>
+                  ⚡
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="settings"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/25 data-[state=inactive]:text-slate-400 data-[state=inactive]:hover:text-slate-300 transition-all duration-300 font-medium"
-                >
-                  ⚙️ Settings
+                <TabsTrigger value="data" style={getTabTriggerStyle("data", activeTab === "data")}>
+                  📊
+                </TabsTrigger>
+                <TabsTrigger value="settings" style={getTabTriggerStyle("settings", activeTab === "settings")}>
+                  ⚙️
                 </TabsTrigger>
               </TabsList>
+            </motion.div>
 
-              <TabsContent value="photon" className="space-y-4 mt-4">
+            {/* Scrollable Content Area */}
+            <div
+              className="flex-1 overflow-y-auto px-6 pb-6 pt-4 custom-scrollbar"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "rgba(148, 163, 184, 0.3) transparent",
+              }}
+            >
+              <TabsContent value="photon" className="space-y-6 mt-0 data-[state=active]:block">
                 {/* Photon Energy Slider - Always Visible */}
                 <motion.div
-                  className="space-y-4"
+                  className="space-y-4 w-full flex flex-col items-center"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
                 >
                   <h3 className="text-slate-200 font-medium text-center">Photon Energy</h3>
-                  <div className="space-y-4">
-                    <div className="relative">
+                  <div className="space-y-4 w-full">
+                    <div className="relative w-full">
                       {/* Custom slider with gradient background */}
-                      <div className="relative h-8 flex items-center">
+                      <div className="relative h-8 flex items-center w-full">
                         {/* Background track - light gray */}
                         <div className="w-full h-1.5 bg-slate-300 rounded-full relative overflow-hidden">
                           {/* Fixed gradient background - always full width */}
@@ -287,9 +364,11 @@ export default function ControlsSection({
 
                     <div className="flex flex-col items-center gap-2">
                       <div className="flex items-center justify-center">
-                          <div className={`text-2xl font-bold transition-all duration-200 ${
+                        <div
+                          className={`text-2xl font-bold transition-colors duration-200 ${
                             isLocked ? "text-cyan-300" : "text-slate-200"
-                          }`} style={{ width: '140px', textAlign: 'center' }}
+                          }`}
+                          style={{ width: "140px", textAlign: "center" }}
                         >
                           {photonEnergy[0] >= 1000
                             ? `${(photonEnergy[0] / 1000).toFixed(1)} keV`
@@ -313,20 +392,17 @@ export default function ControlsSection({
                 <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-500 to-transparent my-4" />
 
                 {/* Emit Photon Wave Button - Always Visible */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  style={{ height: '56px' }} // Fixed height container
+                  style={{ height: "56px" }} // Fixed height container
                 >
                   <Button
                     onClick={handleEmitPhoton}
                     disabled={isEmitting}
-                    className={`w-full h-full text-white font-semibold rounded-lg transition-all duration-300 ${
-                      isEmitting
-                        ? "bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg shadow-orange-500/50"
-                        : "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/50"
-                    }`}
+                    className="w-full h-full text-white font-semibold rounded-xl transition-all duration-300"
+                    style={getButtonStyle(isEmitting)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Zap className={`w-5 h-5 ${isEmitting ? "animate-spin" : ""}`} />
@@ -336,8 +412,98 @@ export default function ControlsSection({
                 </motion.div>
               </TabsContent>
 
-              <TabsContent value="settings" className="space-y-6 mt-4">
+              <TabsContent value="data" className="space-y-6 mt-0 data-[state=active]:block">
+                <motion.div
+                  className="space-y-5"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <div className="flex items-center gap-2 text-slate-300 text-sm mb-4">
+                    <LineChart className="w-4 h-4" />
+                    <span>Absorption Spectrum</span>
+                  </div>
 
+                  {/* Graph Container */}
+                  <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+                    <div className="w-full h-full relative">
+                      {/* Graph Background Grid */}
+                      <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+                        {/* Grid lines */}
+                        <defs>
+                          <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
+                            <path
+                              d="M 30 0 L 0 0 0 15"
+                              fill="none"
+                              stroke="rgba(148, 163, 184, 0.1)"
+                              strokeWidth="0.5"
+                            />
+                          </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+
+                        {/* Axes */}
+                        <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                        <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+
+                        {/* Sample absorption peaks */}
+                        <path
+                          d="M 30 130 Q 60 120 80 90 Q 100 60 120 80 Q 140 100 160 70 Q 180 40 200 60 Q 220 80 240 50 Q 260 30 280 40"
+                          fill="none"
+                          stroke="url(#gradient1)"
+                          strokeWidth="2"
+                        />
+
+                        {/* Gradient definition */}
+                        <defs>
+                          <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#06b6d4" />
+                            <stop offset="50%" stopColor="#8b5cf6" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                          </linearGradient>
+                        </defs>
+
+                        {/* Peak markers */}
+                        <circle cx="80" cy="90" r="3" fill="#06b6d4" opacity="0.8" />
+                        <circle cx="160" cy="70" r="3" fill="#8b5cf6" opacity="0.8" />
+                        <circle cx="240" cy="50" r="3" fill="#ec4899" opacity="0.8" />
+
+                        {/* Labels */}
+                        <text x="80" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                          1s
+                        </text>
+                        <text x="160" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                          2p
+                        </text>
+                        <text x="240" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                          3d
+                        </text>
+
+                        <text
+                          x="15"
+                          y="25"
+                          textAnchor="middle"
+                          fill="rgba(148, 163, 184, 0.6)"
+                          fontSize="8"
+                          transform="rotate(-90, 15, 25)"
+                        >
+                          Intensity
+                        </text>
+                        <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                          Energy (eV)
+                        </text>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Placeholder notice */}
+                  <div className="text-xs text-slate-400 italic text-center">
+                    This visualization is a placeholder for demonstration purposes
+                  </div>
+                </motion.div>
+              </TabsContent>
+
+              <TabsContent value="settings" className="space-y-8 mt-0 data-[state=active]:block">
                 {/* Cross-Section View  */}
                 <motion.div
                   className="space-y-4"
@@ -367,7 +533,7 @@ export default function ControlsSection({
                   </div>
                 </motion.div>
 
-                <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-slate-600 to-transparent" />    
+                <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
 
                 {/* Mode Toggle */}
                 <motion.div
@@ -381,14 +547,23 @@ export default function ControlsSection({
                     <span>Mode:</span>
                   </div>
                   <motion.button
-                    className="w-full p-3 rounded-lg bg-gradient-to-r from-slate-700 to-slate-600 text-slate-200 shadow-lg transition-all duration-300 hover:from-slate-600 hover:to-slate-500 border border-slate-600/50"
+                    className="w-full p-3 rounded-xl text-slate-200 shadow-lg transition-all duration-300"
                     onClick={toggleMode}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    style={{
+                      background: "linear-gradient(to right, rgba(51, 65, 85, 1), rgba(71, 85, 105, 1))",
+                      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderColor: "rgba(71, 85, 105, 0.3)",
+                    }}
                   >
                     {mode}
                   </motion.button>
                 </motion.div>
+
+                <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
 
                 {/* Performance Toggle */}
                 <motion.div
@@ -402,18 +577,51 @@ export default function ControlsSection({
                     <span>Performance:</span>
                   </div>
                   <motion.button
-                    className="w-full p-3 rounded-lg bg-gradient-to-r from-slate-700 to-slate-600 text-slate-200 shadow-lg transition-all duration-300 hover:from-slate-600 hover:to-slate-500 border border-slate-600/50"
+                    className="w-full p-3 rounded-xl text-slate-200 shadow-lg transition-all duration-300"
                     onClick={togglePerformance}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    style={{
+                      background: "linear-gradient(to right, rgba(51, 65, 85, 1), rgba(71, 85, 105, 1))",
+                      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+                      borderWidth: "1px",
+                      borderStyle: "solid",
+                      borderColor: "rgba(71, 85, 105, 0.3)",
+                    }}
                   >
                     {performance}
                   </motion.button>
                 </motion.div>
               </TabsContent>
-            </Tabs>
-          </motion.div>
+            </div>
+          </Tabs>
         </div>
+
+        {/* Custom Scrollbar Styles */}
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 3px;
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, rgba(6, 182, 212, 0.6), rgba(59, 130, 246, 0.6));
+            border-radius: 3px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, rgba(6, 182, 212, 0.8), rgba(59, 130, 246, 0.8));
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-corner {
+            background: transparent;
+          }
+        `}</style>
       </motion.div>
     </div>
   )

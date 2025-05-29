@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './QuantumPlayground.css';
 import OrbitalSelector from '../components/OrbitalSelector';
 import ControlsSection from '../components/ControlsSection';
+import './QuantumPlayground.css';
 
 export default function QuantumPlayground() {
   const containerRef = useRef(null);
@@ -1022,7 +1023,7 @@ export default function QuantumPlayground() {
       });
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
-      renderer.setClearColor(0x333333);
+      renderer.setClearColor(0x1a1a1a);
       renderer.sortObjects = true; // Enable proper sorting
       renderer.setScissorTest(false); // Disable scissor test
       containerRef.current.appendChild(renderer.domElement);
@@ -2072,40 +2073,22 @@ export default function QuantumPlayground() {
     };
     }, []);
     return (
-      <div className="quantum-container" style={{position: 'relative', width: '100%', height: '100vh'}}>
-        <div ref={containerRef} className="renderer-container" style={{width: '100%', height: '100%'}}></div>
-          
-        {/* Left Panel Container */}
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          zIndex: 20,
-          width: '440px', // Fixed width for both components
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          pointerEvents: 'none' // Allow click-through except on components
-        }}>
-          {/* Orbital Selector */}
-          <div style={{
-            width: '100%',
-            height: '350px', // Fixed height
-            pointerEvents: 'auto'
-          }}>
-            <OrbitalSelector 
-              currentOrbital={selectedOrbital} 
-              onOrbitalChange={handleOrbitalChange} 
+      <div className="relative w-full h-screen overflow-hidden">
+        {/* 3D Renderer - Full Background */}
+        <div ref={containerRef} className="absolute inset-0 w-full h-full"></div>
+        
+        {/* Floating UI Overlays */}
+        <div className="absolute top-6 left-6 flex flex-col gap-6 z-10 pointer-events-none w-[420px] max-w-[420px] min-w-[420px] quantum-overlay">
+          <div className="pointer-events-auto w-full">
+            <OrbitalSelector
+              currentOrbital={selectedOrbital}
+              onOrbitalChange={handleOrbitalChange}
             />
           </div>
           
-          {/* Controls Section */}
           {controlsReady && (
-            <div style={{
-              width: '100%',
-              pointerEvents: 'auto'
-            }}>
-              <ControlsSection 
+            <div className="pointer-events-auto w-full">
+              <ControlsSection
                 onModeToggle={sceneControlsRef.current.toggleMode}
                 onPerformanceToggle={sceneControlsRef.current.togglePerformance}
                 onPhotonEnergyChange={sceneControlsRef.current.updatePhotonEnergy}
