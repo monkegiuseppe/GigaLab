@@ -263,10 +263,10 @@ export default function ControlsSection({
     switch (currentToolData.name) {
       case "Absorption Spectrum":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
               {/* Graph Background Grid */}
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
                 {/* Grid lines */}
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
@@ -276,8 +276,8 @@ export default function ControlsSection({
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 {/* Axes */}
-                <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
                 {/* Sample absorption peaks */}
                 <path
@@ -302,13 +302,13 @@ export default function ControlsSection({
                 <circle cx="240" cy="50" r="3" fill="#ec4899" opacity="0.8" />
 
                 {/* Labels */}
-                <text x="80" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                <text x="80" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
                   1s
                 </text>
-                <text x="160" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                <text x="160" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
                   2p
                 </text>
-                <text x="240" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
+                <text x="240" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
                   3d
                 </text>
 
@@ -322,7 +322,7 @@ export default function ControlsSection({
                 >
                   Intensity
                 </text>
-                <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Energy (eV)
                 </text>
               </svg>
@@ -332,9 +332,9 @@ export default function ControlsSection({
 
       case "Dipole Spectrum":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
@@ -343,8 +343,8 @@ export default function ControlsSection({
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 {/* Axes */}
-                <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
                 {/* Harmonic peaks */}
                 {[1, 3, 5, 7, 9, 11, 13, 15].map((harmonic, i) => {
@@ -377,7 +377,7 @@ export default function ControlsSection({
                 >
                   Intensity
                 </text>
-                <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Harmonic Order
                 </text>
               </svg>
@@ -387,9 +387,9 @@ export default function ControlsSection({
 
       case "Density Visualization":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative flex items-center justify-center">
-              <div className="relative w-32 h-32">
+              <div className="relative w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32">
                 {/* Electron density visualization */}
                 <div className="absolute inset-0 rounded-full bg-gradient-radial from-emerald-400/80 via-emerald-500/40 to-transparent animate-pulse"></div>
                 <div className="absolute inset-4 rounded-full bg-gradient-radial from-emerald-300/90 via-emerald-400/30 to-transparent"></div>
@@ -405,9 +405,9 @@ export default function ControlsSection({
 
       case "Expectation Values":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
@@ -416,8 +416,8 @@ export default function ControlsSection({
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 {/* Axes */}
-                <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
                 {/* Energy expectation value */}
                 <path
@@ -445,7 +445,7 @@ export default function ControlsSection({
                 >
                   Value
                 </text>
-                <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Time (fs)
                 </text>
 
@@ -465,9 +465,9 @@ export default function ControlsSection({
 
       case "Photoelectron Spectrum":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
@@ -480,8 +480,8 @@ export default function ControlsSection({
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 {/* Axes */}
-                <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
                 {/* Photoelectron peaks */}
                 {[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5].map((energy, i) => {
@@ -511,7 +511,7 @@ export default function ControlsSection({
                 >
                   Yield
                 </text>
-                <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Energy (eV)
                 </text>
               </svg>
@@ -521,9 +521,9 @@ export default function ControlsSection({
 
       case "Ionization Yield":
         return (
-          <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48">
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 150">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
@@ -532,8 +532,8 @@ export default function ControlsSection({
                 <rect width="100%" height="100%" fill="url(#grid)" />
 
                 {/* Axes */}
-                <line x1="30" y1="130" x2="280" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="130" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
                 {/* Ionization curve */}
                 <path
@@ -560,7 +560,7 @@ export default function ControlsSection({
                 >
                   Ionization
                 </text>
-                <text x="155" y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Intensity (W/cm²)
                 </text>
               </svg>
@@ -580,15 +580,17 @@ export default function ControlsSection({
   }
 
   return (
-    <div className="w-full">
-      <motion.div
-        className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
-        style={{
-          backgroundColor: "rgba(30, 41, 59, 0.8)",
-          backdropFilter: "blur(12px)",
-          borderColor: "rgba(51, 65, 85, 0.5)",
-          height: "480px", // Increased height for the entire component
-        }}
+  <div className="w-full max-h-[calc(100vh-120px)] md:max-h-none">
+    <motion.div
+      className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
+      style={{
+        backgroundColor: "rgba(30, 41, 59, 0.8)",
+        backdropFilter: "blur(12px)",
+        borderColor: "rgba(51, 65, 85, 0.5)",
+        height: "auto",
+        minHeight: window.innerHeight < 768 ? "auto" : "420px",
+        maxHeight: window.innerHeight < 768 ? "calc(100vh - 120px)" : "calc(100vh - 200px)",
+      }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -611,7 +613,7 @@ export default function ControlsSection({
           >
             {/* Header with Tabs - Fixed at top */}
             <motion.div
-              className="flex-shrink-0 p-6 pb-0"
+              className="flex-shrink-0 p-4 md:p-6 pb-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -642,10 +644,11 @@ export default function ControlsSection({
 
             {/* Scrollable Content Area */}
             <div
-              className="flex-1 overflow-y-auto px-6 pb-6 pt-4 custom-scrollbar"
+              className="flex-1 overflow-y-auto px-4 md:px-6 pb-4 md:pb-6 pt-3 md:pt-4 custom-scrollbar"
               style={{
                 scrollbarWidth: "thin",
                 scrollbarColor: "rgba(148, 163, 184, 0.3) transparent",
+                maxHeight: "calc(100% - 60px)", // Account for tab header
               }}
             >
               <TabsContent value="photon" className="space-y-6 mt-0 data-[state=active]:block">
@@ -656,7 +659,7 @@ export default function ControlsSection({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <h3 className="text-slate-200 font-medium text-center">Photon Energy</h3>
+                  <h3 className="text-slate-200 font-medium text-center text-sm md:text-base">Photon Energy</h3>
                   <div className="space-y-4 w-full">
                     <div className="relative w-full">
                       {/* Custom slider with gradient background */}
@@ -739,7 +742,7 @@ export default function ControlsSection({
                     <div className="flex flex-col items-center gap-2">
                       <div className="flex items-center justify-center">
                         <div
-                          className={`text-2xl font-bold transition-colors duration-200 ${
+                          className={`text-xl md:text-2xl font-bold transition-colors duration-200 ${
                             isLocked ? "text-cyan-300" : "text-slate-200"
                           }`}
                           style={{ width: "140px", textAlign: "center" }}
@@ -788,7 +791,7 @@ export default function ControlsSection({
 
               <TabsContent value="data" className="space-y-6 mt-0 data-[state=active]:block">
                 <motion.div
-                  className="space-y-5"
+                  className="space-y-3 md:space-y-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
@@ -803,7 +806,7 @@ export default function ControlsSection({
                     />
 
                     {/* Content */}
-                    <div className="relative p-5">
+                    <div className="relative p-3 md:p-4">
                       {/* Tool Info */}
                       <AnimatePresence mode="wait">
                         <motion.div

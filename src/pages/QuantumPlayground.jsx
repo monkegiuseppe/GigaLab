@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './QuantumPlayground.css';
 import OrbitalSelector from '../components/OrbitalSelector';
 import ControlsSection from '../components/ControlsSection';
-import './QuantumPlayground.css';
+
 
 export default function QuantumPlayground() {
   const containerRef = useRef(null);
@@ -1091,10 +1091,21 @@ export default function QuantumPlayground() {
 
       // Animation loop
       let frameCounter = 0;
+      let lastFrameTime = 0;
+      const targetFPS = 60; 
+
       let animate = function() {
         requestAnimationFrame(animate);
-        frameCounter++;
         
+        // Frame rate limiting
+        const currentTime = performance.now();
+        if (performanceMode === 'low' && currentTime - lastFrameTime < (1000 / targetFPS)) {
+          return;
+        }
+        lastFrameTime = currentTime;
+        
+        frameCounter++;
+
         const deltaTime = 1/60;
         updatePhoton(deltaTime);
 
@@ -1597,11 +1608,11 @@ export default function QuantumPlayground() {
         let waveAbsorbed = false; // Track if wave was absorbed
         let reemissionTime = 0; // Separate time for reemission
         
-        // Create a grid of particles for the wave - LARGER GRID
-        const gridSize = 100;      
-        const gridSpacing = 0.15;  
+        // Create a grid of particles for the wave - Adaptive grid
+        const gridSize = performanceMode === 'low' ? 50 : 100;      
+        const gridSpacing = performanceMode === 'low' ? 0.3 : 0.15;  
         const totalParticles = gridSize * gridSize;
-     
+            
         
         // Consistent default particle appearance
         const defaultColor = new THREE.Color(0x00BFFF); // Cyan-blue color
@@ -2077,9 +2088,9 @@ export default function QuantumPlayground() {
         {/* 3D Renderer - Full Background */}
         <div ref={containerRef} className="absolute inset-0 w-full h-full"></div>
         
-        {/* Floating UI Overlays */}
-        <div className="absolute top-6 left-6 flex flex-col gap-6 z-10 pointer-events-none w-[420px] max-w-[420px] min-w-[420px] quantum-overlay">
-          <div className="pointer-events-auto w-full">
+        {/* Floating UI Overlays - Responsive */}
+        <div className="absolute top-2 md:top-6 left-2 md:left-6 flex flex-col gap-3 md:gap-6 z-10 pointer-events-none w-[calc(100vw-16px)] md:w-[420px] max-w-[420px] quantum-overlay">
+          <div className="pointer-events-auto w-full max-h-[40vh] md:max-h-none overflow-y-auto">
             <OrbitalSelector
               currentOrbital={selectedOrbital}
               onOrbitalChange={handleOrbitalChange}
@@ -2087,7 +2098,7 @@ export default function QuantumPlayground() {
           </div>
           
           {controlsReady && (
-            <div className="pointer-events-auto w-full">
+            <div className="pointer-events-auto w-full max-h-[40vh] md:max-h-none overflow-y-auto">
               <ControlsSection
                 onModeToggle={sceneControlsRef.current.toggleMode}
                 onPerformanceToggle={sceneControlsRef.current.togglePerformance}

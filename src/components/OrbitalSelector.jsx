@@ -165,10 +165,10 @@ const getElectronPositions = (currentOrbital) => {
 
 const RutherfordAtom = ({ currentOrbital }) => {
   const electronPositions = getElectronPositions(currentOrbital)
-  const scale = 0.6 // Increased scale for better visibility
+  const scale = window.innerWidth < 768 ? 0.5 : 0.6 // Responsive scale
 
   return (
-    <div className="relative w-32 h-32 mx-auto">
+    <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto">
       {/* Electron shells */}
       <div className="absolute inset-0 flex items-center justify-center">
         {[30, 50, 70, 90].map((radius, index) => (
@@ -328,7 +328,7 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
         />
 
         {/* Content */}
-        <div className="relative p-5">
+        <div className="relative p-3 md:p-5">
           {/* Shell Badge */}
           <motion.div
             className="absolute top-5 right-5 z-10"
@@ -363,7 +363,7 @@ export default function OrbitalSelector({ currentOrbital, onOrbitalChange }) {
                   duration: 0.4,
                 }}
               >
-                <h1 className="text-2xl font-bold text-slate-100 mb-2 font-mono">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-100 mb-1 md:mb-2 font-mono">
                   {selectedOrbitalData.name.includes("₁/₂") || selectedOrbitalData.name.includes("₃/₂") ? (
                     <span>
                       {selectedOrbitalData.name.substring(0, 2)}
