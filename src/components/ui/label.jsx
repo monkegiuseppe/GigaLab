@@ -1,15 +1,16 @@
-import React from 'react';
+import * as React from "react"
+import * as LabelPrimitive from "@radix-ui/react-label"
+import { cva } from "class-variance-authority";
 
-export function Label({ className, ...props }) {
-  // Combine a default style with any custom classes passed in
-  const defaultClasses = "text-sm font-medium leading-none text-slate-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
-  
-  const combinedClassName = [defaultClasses, className].filter(Boolean).join(' ');
+import { cn } from "@/lib/utils"
 
-  return (
-    <label
-      className={combinedClassName}
-      {...props}
-    />
-  );
-}
+const labelVariants = cva(
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+)
+
+const Label = React.forwardRef(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
+))
+Label.displayName = LabelPrimitive.Root.displayName
+
+export { Label }
