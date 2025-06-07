@@ -9,20 +9,31 @@ import ControlsSection from '../components/ControlsSection';
 export default function QuantumPlayground() {
   const containerRef = useRef(null);
   const [selectedOrbital, setSelectedOrbital] = useState('3p');
+  const [photonEnergy, setPhotonEnergy] = useState(52); // Source of truth for photon energy
+  const [orbitalDataForControls, setOrbitalDataForControls] = useState(null); // Data for graphs
   const switchOrbitalRef = useRef(null);
+  const updatePhotonWavelengthRef = useRef(null);
   const [controlsReady, setControlsReady] = useState(false);
   const sceneControlsRef = useRef({
     toggleMode: null,
     togglePerformance: null,
-    updatePhotonEnergy: null,
     updateCrossSection: null,
     emitWave: null
   });
 
-  // Add handler for orbital changes
+  // Handler for orbital changes from UI
   const handleOrbitalChange = (orbitalName) => {
     if (switchOrbitalRef.current) {
+      // The switchOrbital function will now also handle setting the photon energy
       switchOrbitalRef.current(orbitalName);
+    }
+  };
+
+  // Handler for photon energy changes from ControlsSection
+  const handlePhotonEnergyChange = (energy) => {
+    setPhotonEnergy(energy);
+    if (updatePhotonWavelengthRef.current) {
+      updatePhotonWavelengthRef.current(energy);
     }
   };
 
@@ -1009,7 +1020,14 @@ export default function QuantumPlayground() {
       // Scene
       scene = new THREE.Scene();
 
-      window.currentPhotonEnergy = 52;
+      // Set up data for controls
+      const dataForControls = Object.fromEntries(
+        Object.entries(orbitalParams).map(([name, params]) => [
+            name, { energy: params.energy, shell: params.shell, color: params.color, name: params.name }
+        ])
+      );
+      setOrbitalDataForControls(dataForControls);
+
 
       // Camera
       camera = new THREE.PerspectiveCamera(75, containerRef.current.clientWidth / containerRef.current.clientHeight, 0.01, 1000);
@@ -1110,7 +1128,7 @@ export default function QuantumPlayground() {
         updatePhoton(deltaTime);
 
         if (typeof updatePhotonWave === 'function') {
-          updatePhotonWave(deltaTime);
+          updatePhotonWave(photonEnergy, deltaTime);
         }
 
         time += deltaTime * waveSpeed;
@@ -1286,10 +1304,6 @@ export default function QuantumPlayground() {
           }
           updateLayeringMode();
         },
-        updatePhotonEnergy: (energy) => {
-          window.currentPhotonEnergy = energy;
-          updatePhotonWavelength(energy);
-        },
         updateCrossSection: (value) => {
           const normalizedValue = value / 10; // Convert from 0-100 to 0-10
           for (const type in orbitalGroups) {
@@ -1347,6 +1361,7 @@ export default function QuantumPlayground() {
       // Scale to match our coordinate system where K-shell is 0.3 units
       photonWavelength *= 0.8;
     }
+    updatePhotonWavelengthRef.current = updatePhotonWavelength;
 
     // Calculate angular radiation pattern based on transition type
   function getRadiationPattern(fromOrbital, toOrbital, theta, phi) {
@@ -1489,9 +1504,6 @@ export default function QuantumPlayground() {
                   orbitalGroups[typeToReset].material.uniforms.directionalLightColor1.value.copy(scene.userData.directionalLight1.color);
                   orbitalGroups[typeToReset].material.uniforms.directionalLightColor2.value.copy(scene.userData.directionalLight2.color);
               }
-              // if (scene.userData.ambientLightColor) { // If ambient light color could also be per-orbital or modified
-              //     orbitalGroups[typeToReset].material.uniforms.ambientLightColor.value.copy(scene.userData.ambientLightColor);
-              // }
           }
       }
 
@@ -1546,10 +1558,10 @@ export default function QuantumPlayground() {
       currentOrbital = orbitalType;
       setSelectedOrbital(orbitalType);
       
-      // Auto-update photon energy through controls
-      if (sceneControlsRef.current.updatePhotonEnergy && orbitalParams[orbitalType]) {
+      // Auto-update photon energy to match the binding energy of the selected orbital
+      if (orbitalParams[orbitalType]) {
         const newEnergy = orbitalParams[orbitalType].energy;
-        sceneControlsRef.current.updatePhotonEnergy(newEnergy);
+        setPhotonEnergy(newEnergy); // This updates the state, which is passed to ControlsSection
       }
 
       // Update camera position based on the selected orbital
@@ -1600,7 +1612,6 @@ export default function QuantumPlayground() {
             waveMode: 'partial'
         };
         
-        let currentPhotonEnergy = 52;
         // Wave animation variables
         let waveActive = false;
         let waveTime = 0;
@@ -1697,8 +1708,8 @@ export default function QuantumPlayground() {
             absorptionActive = false;
             absorptionStrength = 0.0;
             
-            // Get photon energy from stored value
-            const energy = window.currentPhotonEnergy || 52;
+            // Get photon energy from the component's state
+            const energy = photonEnergy;
             
             // Update wave parameters based on energy
             updatePhotonWavelength(energy);
@@ -1707,11 +1718,7 @@ export default function QuantumPlayground() {
         }
         
         // Function to update wave animation
-        function updateWave(deltaTime) {
-
-          // Get photon energy at the start for use throughout the function
-          const photonEnergy = window.currentPhotonEnergy || 52;
-
+        function updateWave(currentPhotonEnergy, deltaTime) {
             // If active wave, update its position
             if (waveActive && !waveAbsorbed) {
                 // Update time and position - moving right (positive X direction)
@@ -1736,7 +1743,7 @@ export default function QuantumPlayground() {
                           const normalizedDistanceLocal = distanceToCenter / (cloudRadiusForCheck * 1.5);
                           const distanceEffectLocal = Math.pow(1 - Math.min(normalizedDistanceLocal, 1), 2);
 
-                          const energyDifferenceLocal = Math.abs(photonEnergy - orbitalEnergyForCheck) / orbitalEnergyForCheck;
+                          const energyDifferenceLocal = Math.abs(currentPhotonEnergy - orbitalEnergyForCheck) / orbitalEnergyForCheck;
                           const energyMatchLocal = Math.exp(-Math.pow(energyDifferenceLocal, 2) * 5);
                           
                           const combinedEffect = distanceEffectLocal * energyMatchLocal;
@@ -1760,7 +1767,7 @@ export default function QuantumPlayground() {
                       const targetAbsorptionStrength = distanceEffect * energyMatch * 0.8;
                       absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05;
 
-                      const absorptionThreshold = photonEnergy > 5000 ? 0.15 : 0.3;
+                      const absorptionThreshold = currentPhotonEnergy > 5000 ? 0.15 : 0.3;
                       if (energyMatch > 0.5 && distanceToCenter < matchedCloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
                           if (!waveAbsorbed) {
                               waveAbsorbed = true;
@@ -1888,7 +1895,7 @@ export default function QuantumPlayground() {
                         );
                         
                         // Reemission wave parameters
-                        const energyBoost = photonEnergy > 5000 ? 2.0 : 1.0;
+                        const energyBoost = currentPhotonEnergy > 5000 ? 2.0 : 1.0;
                         const reemissionWavelength = photonWavelength * 1.1;
                         const reemissionSpeed = 1.2 * energyBoost;
                         
@@ -2082,6 +2089,7 @@ export default function QuantumPlayground() {
         }
         }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
       <div className="relative w-full h-screen overflow-hidden">
@@ -2097,14 +2105,16 @@ export default function QuantumPlayground() {
             />
           </div>
           
-          {controlsReady && (
+          {controlsReady && orbitalDataForControls && (
             <div className="pointer-events-auto w-full max-h-[40vh] md:max-h-none overflow-y-auto">
               <ControlsSection
                 onModeToggle={sceneControlsRef.current.toggleMode}
                 onPerformanceToggle={sceneControlsRef.current.togglePerformance}
-                onPhotonEnergyChange={sceneControlsRef.current.updatePhotonEnergy}
+                onPhotonEnergyChange={handlePhotonEnergyChange}
                 onCrossSectionChange={sceneControlsRef.current.updateCrossSection}
                 onEmitPhoton={sceneControlsRef.current.emitWave}
+                photonEnergyProp={photonEnergy}
+                orbitalData={orbitalDataForControls}
               />
             </div>
           )}

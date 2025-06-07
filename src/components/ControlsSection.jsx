@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Zap, Settings, Activity, LineChart, BarChart3, Waves, Box, Atom, TrendingUp, Gauge } from "lucide-react"
+import * as THREE from "three"
 import { Button } from "../components/ui/button"
 import { Slider } from "../components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
@@ -13,10 +14,13 @@ export default function ControlsSection({
   onPhotonEnergyChange,
   onCrossSectionChange,
   onEmitPhoton,
+  photonEnergyProp,
+  orbitalData,
 }) {
   const [mode, setMode] = useState("Focused Shell")
   const [performance, setPerformance] = useState("Normal")
-  const [photonEnergy, setPhotonEnergy] = useState([1])
+  // Internal state for immediate UI feedback, synced with prop
+  const [photonEnergy, setPhotonEnergy] = useState([photonEnergyProp])
   const [sliderValue, setSliderValue] = useState([0]) // 0-100 for logarithmic mapping
   const [crossSection, setCrossSection] = useState([100]) // Start at 100%
   const [isEmitting, setIsEmitting] = useState(false)
@@ -32,6 +36,12 @@ export default function ControlsSection({
       icon: <LineChart className="w-5 h-5" />,
       description: "Visualize absorption peaks across energy levels",
       color: "from-cyan-500 to-blue-600",
+    },
+    {
+      name: "Photoelectron Spectrum",
+      icon: <BarChart3 className="w-5 h-5" />,
+      description: "Analyze energy distribution of ejected electrons",
+      color: "from-rose-500 to-red-600",
     },
     {
       name: "Dipole Spectrum",
@@ -50,12 +60,6 @@ export default function ControlsSection({
       icon: <TrendingUp className="w-5 h-5" />,
       description: "Track observables like ⟨r⟩(t) and ⟨H⟩(t) over time",
       color: "from-amber-500 to-orange-600",
-    },
-    {
-      name: "Photoelectron Spectrum",
-      icon: <BarChart3 className="w-5 h-5" />,
-      description: "Analyze energy distribution of ejected electrons",
-      color: "from-rose-500 to-red-600",
     },
     {
       name: "Ionization Yield",
@@ -82,6 +86,7 @@ export default function ControlsSection({
 
   // Convert energy value to slider position (0-100)
   const energyToSlider = (energy) => {
+    if (energy <= 0) return 0
     const minLog = Math.log10(minEnergy)
     const maxLog = Math.log10(maxEnergy)
     const energyLog = Math.log10(energy)
@@ -90,7 +95,6 @@ export default function ControlsSection({
 
   // Get clean logarithmic scale labels
   const getScaleValues = () => {
-    // Clean logarithmic values: 0.1, 1, 10, 100, 1k, 10k
     const cleanValues = [0.1, 1, 10, 100, 1000, 8000]
     return cleanValues.map((energy) => ({
       energy,
@@ -107,10 +111,11 @@ export default function ControlsSection({
     }))
   }
 
-  // Initialize slider position based on initial energy
+  // Sync internal state with prop from parent
   useEffect(() => {
-    setSliderValue([energyToSlider(photonEnergy[0])])
-  }, [])
+    setPhotonEnergy([photonEnergyProp])
+    setSliderValue([energyToSlider(photonEnergyProp)])
+  }, [photonEnergyProp])
 
   // Check if current energy is close to an excitation level
   useEffect(() => {
@@ -141,11 +146,10 @@ export default function ControlsSection({
 
   const handleSliderChange = (value) => {
     const newSliderValue = value[0]
-    const newEnergy = sliderToEnergy(newSliderValue)
+    let newEnergy = sliderToEnergy(newSliderValue)
 
-    // Enhanced snap-to behavior with extremely sticky lock-in and "magnetic" stickiness
-    const snapThreshold = 0.02 // Increased from 0.015 for initial lock
-    const stickyThreshold = 0.35 // Increased from 0.25 for wider "magnetic" area (35%!)
+    const snapThreshold = 0.02
+    const stickyThreshold = 0.35
     let snappedEnergy = newEnergy
     let foundLock = false
 
@@ -153,21 +157,18 @@ export default function ControlsSection({
       const tolerance = level * snapThreshold
       const stickyTolerance = level * stickyThreshold
 
-      // If we're already locked and within the much wider sticky range, stay locked
       if (isLocked && Math.abs(newEnergy - level) < stickyTolerance) {
         snappedEnergy = level
         foundLock = true
         break
-      }
-      // Otherwise, normal snap behavior with tighter tolerance
-      else if (!isLocked && Math.abs(newEnergy - level) < tolerance) {
+      } else if (!isLocked && Math.abs(newEnergy - level) < tolerance) {
         snappedEnergy = level
         foundLock = true
         break
       }
     }
 
-    // Update both energy and slider position simultaneously for perfect sync
+    // Update both local state for immediate feedback and parent state via callback
     const finalSliderValue = energyToSlider(snappedEnergy)
     setPhotonEnergy([snappedEnergy])
     setSliderValue([finalSliderValue])
@@ -258,77 +259,169 @@ export default function ControlsSection({
 
   // Render the appropriate visualization based on the current tool
   const renderToolVisualization = () => {
+    if (!orbitalData) {
+      return (
+        <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48 flex items-center justify-center">
+          <p className="text-slate-400">Loading analytics data...</p>
+        </div>
+      )
+    }
+
     const currentToolData = diagnosticTools[currentTool]
+    const currentPhotonEnergy = photonEnergy[0]
+
+    // Graph constants
+    const graphWidth = 250
+    const graphHeight = 80
+    const xStart = 30
+    const yBaseline = 100
+    const yTop = 20
 
     switch (currentToolData.name) {
-      case "Absorption Spectrum":
+      case "Absorption Spectrum": {
+        const minLog = Math.log10(minEnergy)
+        const maxLog = Math.log10(maxEnergy)
+
+        const energyToX = (e) => {
+          if (e <= 0) return xStart
+          const logE = Math.log10(e)
+          return xStart + graphWidth * ((logE - minLog) / (maxLog - minLog))
+        }
+
+        // Generate a spectral curve by summing Lorentzian functions for each orbital
+        const spectralLine = (e, center, width) => {
+          const halfWidth = width / 2
+          return (halfWidth * halfWidth) / (Math.pow(e - center, 2) + halfWidth * halfWidth)
+        }
+
+        let pathD = `M ${xStart} ${yBaseline} `
+        for (let i = 0; i <= graphWidth; i++) {
+          const x = xStart + i
+          const currentLogE = minLog + (i / graphWidth) * (maxLog - minLog)
+          const currentE = Math.pow(10, currentLogE)
+
+          let totalIntensity = 0
+          for (const orb of Object.values(orbitalData)) {
+            const lineWidth = orb.energy * 0.1 // Line width proportional to energy
+            totalIntensity += spectralLine(currentE, orb.energy, lineWidth)
+          }
+
+          const y = yBaseline - Math.min(graphHeight - 5, totalIntensity * 60)
+          pathD += `L ${x} ${y} `
+        }
+
+        const currentEnergyX = energyToX(currentPhotonEnergy)
+
         return (
           <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative">
-              {/* Graph Background Grid */}
               <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
-                {/* Grid lines */}
                 <defs>
                   <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
                   </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-
-                {/* Axes */}
-                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {/* Sample absorption peaks */}
-                <path
-                  d="M 30 130 Q 60 120 80 90 Q 100 60 120 80 Q 140 100 160 70 Q 180 40 200 60 Q 220 80 240 50 Q 260 30 280 40"
-                  fill="none"
-                  stroke="url(#gradient1)"
-                  strokeWidth="2"
-                />
-
-                {/* Gradient definition */}
-                <defs>
                   <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#06b6d4" />
                     <stop offset="50%" stopColor="#8b5cf6" />
                     <stop offset="100%" stopColor="#ec4899" />
                   </linearGradient>
                 </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                
+                <path d={pathD} fill="none" stroke="url(#gradient1)" strokeWidth="2" />
 
-                {/* Peak markers */}
-                <circle cx="80" cy="90" r="3" fill="#06b6d4" opacity="0.8" />
-                <circle cx="160" cy="70" r="3" fill="#8b5cf6" opacity="0.8" />
-                <circle cx="240" cy="50" r="3" fill="#ec4899" opacity="0.8" />
+                {/* Marker for current photon energy */}
+                <line x1={currentEnergyX} y1={yTop} x2={currentEnergyX} y2={yBaseline} stroke={isLocked ? "#06b6d4" : "#f59e0b"} strokeWidth="1.5" strokeDasharray="3 3"/>
+                <circle cx={currentEnergyX} cy={yTop} r="3" fill={isLocked ? "#06b6d4" : "#f59e0b"} />
 
-                {/* Labels */}
-                <text x="80" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
-                  1s
-                </text>
-                <text x="160" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
-                  2p
-                </text>
-                <text x="240" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">
-                  3d
-                </text>
+                {/* X-axis labels */}
+                {getScaleValues().map(v => (
+                    <text key={v.energy} x={energyToX(v.energy)} y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">{v.label}</text>
+                ))}
 
-                <text
-                  x="15"
-                  y="25"
-                  textAnchor="middle"
-                  fill="rgba(148, 163, 184, 0.6)"
-                  fontSize="8"
-                  transform="rotate(-90, 15, 25)"
-                >
-                  Intensity
-                </text>
                 <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Energy (eV)
+                </text>
+                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
+                  Absorption
                 </text>
               </svg>
             </div>
           </div>
         )
+      }
+
+      case "Photoelectron Spectrum": {
+        const photoelectronPeaks = Object.values(orbitalData)
+          .filter(o => currentPhotonEnergy > o.energy)
+          .map(o => ({
+            ke: currentPhotonEnergy - o.energy,
+            yield: o.shell === "K" ? 1 : o.shell === "L" ? 0.8 : 0.6,
+            color: `#${new THREE.Color(o.color).getHexString()}`,
+            name: o.name,
+          }))
+
+        const maxKE = Math.max(...photoelectronPeaks.map(p => p.ke), 1)
+        const keToX = (ke) => xStart + (ke / maxKE) * graphWidth
+
+        return (
+          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
+            <div className="w-full h-full relative">
+              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
+                <defs>
+                  <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+
+                {photoelectronPeaks.length === 0 ? (
+                  <text x="155" y="65" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="12">
+                    Photon energy too low for ionization
+                  </text>
+                ) : (
+                  <g>
+                    {photoelectronPeaks.map((peak, i) => {
+                      const x = keToX(peak.ke)
+                      const barWidth = 12
+                      const barHeight = peak.yield * graphHeight
+                      return (
+                        <rect
+                          key={i}
+                          x={x - barWidth / 2}
+                          y={yBaseline - barHeight}
+                          width={barWidth}
+                          height={barHeight}
+                          fill={peak.color}
+                          opacity="0.9"
+                          rx="2"
+                        />
+                      )
+                    })}
+                  </g>
+                )}
+                
+                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                  Kinetic Energy (eV)
+                </text>
+                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
+                  Yield
+                </text>
+                {photoelectronPeaks.length > 0 && (
+                  <>
+                    <text x={xStart} y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="10">0</text>
+                    <text x={xStart + graphWidth} y="115" textAnchor="end" fill="rgba(148, 163, 184, 0.6)" fontSize="10">{maxKE.toFixed(1)}</text>
+                  </>
+                )}
+              </svg>
+            </div>
+          </div>
+        )
+      }
 
       case "Dipole Spectrum":
         return (
@@ -341,40 +434,32 @@ export default function ControlsSection({
                   </pattern>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
+                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
-                {/* Axes */}
-                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {/* Harmonic peaks */}
-                {[1, 3, 5, 7, 9, 11, 13, 15].map((harmonic, i) => {
-                  const x = 30 + (harmonic / 15) * 250
-                  const height = harmonic === 1 ? 100 : 130 - Math.max(20, 110 * Math.exp(-harmonic / 8))
+                {[1, 3, 5, 7, 9, 11, 13].map((harmonic) => {
+                  const x = xStart + (harmonic / 13) * (graphWidth - 10)
+                  const intensity = Math.exp(-harmonic / 5)
+                  const barHeight = (harmonic === 1 ? 0.9 : intensity * 0.7) * graphHeight
                   return (
                     <g key={harmonic}>
-                      <line
-                        x1={x}
-                        y1="130"
-                        x2={x}
-                        y2={height}
-                        stroke={`hsl(${280 - harmonic * 15}, 80%, 60%)`}
-                        strokeWidth="2"
+                      <rect
+                        x={x - 4}
+                        y={yBaseline - barHeight}
+                        width="8"
+                        height={barHeight}
+                        fill={`hsl(${280 - harmonic * 15}, 80%, 60%)`}
+                        rx="2"
+                        opacity="0.8"
                       />
-                      <text x={x} y="145" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                        {harmonic}
+                      <text x={x} y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
+                        {harmonic}ω
                       </text>
                     </g>
                   )
                 })}
 
-                <text
-                  x="15"
-                  y="25"
-                  textAnchor="middle"
-                  fill="rgba(148, 163, 184, 0.6)"
-                  fontSize="8"
-                  transform="rotate(-90, 15, 25)"
-                >
+                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
                   Intensity
                 </text>
                 <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
@@ -384,13 +469,14 @@ export default function ControlsSection({
             </div>
           </div>
         )
-
+      
+      // ... Rest of the cases with placeholder or decorative visualizations
+      
       case "Density Visualization":
         return (
           <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
             <div className="w-full h-full relative flex items-center justify-center">
               <div className="relative w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32">
-                {/* Electron density visualization */}
                 <div className="absolute inset-0 rounded-full bg-gradient-radial from-emerald-400/80 via-emerald-500/40 to-transparent animate-pulse"></div>
                 <div className="absolute inset-4 rounded-full bg-gradient-radial from-emerald-300/90 via-emerald-400/30 to-transparent"></div>
                 <div className="absolute inset-8 rounded-full bg-gradient-radial from-emerald-200 via-emerald-300/20 to-transparent"></div>
@@ -414,42 +500,30 @@ export default function ControlsSection({
                   </pattern>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
+                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
-                {/* Axes */}
-                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {/* Energy expectation value */}
                 <path
-                  d="M 30 80 L 50 82 L 70 85 L 90 90 L 110 70 L 130 75 L 150 80 L 170 85 L 190 90 L 210 70 L 230 75 L 250 80 L 270 85"
+                  d="M 30 80 C 50 82, 70 85, 90 90 C 110 70, 130 75, 150 80 C 170 85, 190 90, 210 70 C 230 75, 250 80, 280 85"
                   fill="none"
                   stroke="#f59e0b"
                   strokeWidth="2"
                 />
 
-                {/* Position expectation value */}
                 <path
-                  d="M 30 90 L 50 85 L 70 80 L 90 75 L 110 95 L 130 90 L 150 85 L 170 80 L 190 75 L 210 95 L 230 90 L 250 85 L 270 80"
+                  d="M 30 90 C 50 85, 70 80, 90 75 C 110 95, 130 90, 150 85 C 170 80, 190 75, 210 95 C 230 90, 250 85, 280 80"
                   fill="none"
                   stroke="#3b82f6"
                   strokeWidth="2"
                 />
 
-                <text
-                  x="15"
-                  y="25"
-                  textAnchor="middle"
-                  fill="rgba(148, 163, 184, 0.6)"
-                  fontSize="8"
-                  transform="rotate(-90, 15, 25)"
-                >
+                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
                   Value
                 </text>
                 <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
                   Time (fs)
                 </text>
 
-                {/* Legend */}
                 <circle cx="40" cy="30" r="3" fill="#f59e0b" />
                 <text x="50" y="33" fill="rgba(148, 163, 184, 0.8)" fontSize="8">
                   ⟨H⟩(t)
@@ -457,62 +531,6 @@ export default function ControlsSection({
                 <circle cx="80" cy="30" r="3" fill="#3b82f6" />
                 <text x="90" y="33" fill="rgba(148, 163, 184, 0.8)" fontSize="8">
                   ⟨r⟩(t)
-                </text>
-              </svg>
-            </div>
-          </div>
-        )
-
-      case "Photoelectron Spectrum":
-        return (
-          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
-            <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
-                <defs>
-                  <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
-                    <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
-                  </pattern>
-                  <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#e11d48" />
-                    <stop offset="100%" stopColor="#be123c" />
-                  </linearGradient>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-
-                {/* Axes */}
-                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {/* Photoelectron peaks */}
-                {[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5].map((energy, i) => {
-                  const x = 30 + (energy / 7) * 250
-                  const width = 15
-                  const height = 130 - Math.max(20, 90 * Math.exp(-Math.pow(energy - 2.5, 2) / 3))
-                  return (
-                    <rect
-                      key={i}
-                      x={x - width / 2}
-                      y={height}
-                      width={width}
-                      height={130 - height}
-                      fill="url(#barGradient)"
-                      opacity="0.8"
-                    />
-                  )
-                })}
-
-                <text
-                  x="15"
-                  y="25"
-                  textAnchor="middle"
-                  fill="rgba(148, 163, 184, 0.6)"
-                  fontSize="8"
-                  transform="rotate(-90, 15, 25)"
-                >
-                  Yield
-                </text>
-                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                  Energy (eV)
                 </text>
               </svg>
             </div>
@@ -530,34 +548,17 @@ export default function ControlsSection({
                   </pattern>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#grid)" />
+                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
+                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
 
-                {/* Axes */}
-                <line x1="30" y1="100" x2="280" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1="30" y1="20" x2="30" y2="100" stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {/* Ionization curve */}
                 <path
-                  d="M 30 130 Q 60 128 90 125 Q 120 120 150 100 Q 180 70 210 40 Q 240 30 270 25"
+                  d="M 30 100 C 90 98, 120 95, 150 80 C 180 60, 210 30, 280 25"
                   fill="none"
                   stroke="#7c3aed"
                   strokeWidth="2"
                 />
-
-                {/* Data points */}
-                {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-                  const x = 30 + i * 40
-                  const y = 130 - i * (i < 3 ? 5 : 20)
-                  return <circle key={i} cx={x} cy={y} r="3" fill="#7c3aed" opacity="0.8" />
-                })}
-
-                <text
-                  x="15"
-                  y="25"
-                  textAnchor="middle"
-                  fill="rgba(148, 163, 184, 0.6)"
-                  fontSize="8"
-                  transform="rotate(-90, 15, 25)"
-                >
+                
+                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
                   Ionization
                 </text>
                 <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
@@ -567,7 +568,6 @@ export default function ControlsSection({
             </div>
           </div>
         )
-
       default:
         return (
           <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48 flex items-center justify-center">
