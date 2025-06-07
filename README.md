@@ -7,4 +7,5 @@ Enter the website: https://monkegiuseppe.github.io/GigaLab/
 ![image](https://github.com/user-attachments/assets/30b65d0c-becc-408c-9ea3-e5d757014037)
 
 
-![image](https://github.com/user-attachments/assets/310ff52b-f023-48ec-afd9-f8e619728229)
+![image](https://github.com/user-attachments/assets/d4a7f716-be2e-4575-8be6-f39d6ebe31c3)
+
