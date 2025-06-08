@@ -104,7 +104,7 @@ export default function GraphingTab({
         isPlaying: true,
         functionId: func.id,
         currentT: func.tMin,
-        duration: 5,
+        duration: 8,
       })
     }
   }
@@ -751,31 +751,36 @@ export default function GraphingTab({
               {/* Render Tracing Dot for Parametric Animation */}
               {animationState.isPlaying && (() => {
                 const animFunc = memoizedPlotData.find(fd => fd.id === animationState.functionId);
-                if (animFunc && animFunc.points.length > 0) {
-                  const lastPoint = animFunc.points[animFunc.points.length - 1];
-                  const { x: svgX, y: svgY } = toSVGCoords(lastPoint.x, lastPoint.y);
-                  
-                  // Check if the dot is on screen before rendering
-                  if (svgX >= 0 && svgX <= SVG_WIDTH && svgY >= 0 && svgY <= SVG_HEIGHT) {
-                    return (
-                      <g>
-                        <circle cx={svgX} cy={svgY} r="5" fill={animFunc.color} stroke="white" strokeWidth="1.5" />
-                        <text
-                          x={svgX}
-                          y={svgY - 10}
-                          textAnchor="middle"
-                          fill="white"
-                          fontSize="10"
-                          fontFamily="monospace"
-                          style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.7)", strokeWidth: "2px", strokeLinejoin: "round" }}
-                        >
-                          t = {animationState.currentT.toFixed(2)}
-                        </text>
-                      </g>
-                    );
-                  }
-                }
-                return null;
+                if (!animFunc) return null; // If no animated function is found, render nothing.
+
+                const lastPoint = animFunc.points.length > 0 ? animFunc.points[animFunc.points.length - 1] : null;
+
+                return (
+                  <>
+                    {/* Render the moving dot (only if it's on screen) */}
+                    {lastPoint && (() => {
+                      const { x: svgX, y: svgY } = toSVGCoords(lastPoint.x, lastPoint.y);
+                      if (svgX >= 0 && svgX <= SVG_WIDTH && svgY >= 0 && svgY <= SVG_HEIGHT) {
+                        return <circle cx={svgX} cy={svgY} r="5" fill={animFunc.color} stroke="white" strokeWidth="1.5" />;
+                      }
+                      return null;
+                    })()}
+
+                    {/* Render the stationary t-value text in the top-left corner */}
+                    <text
+                      x={15}
+                      y={25}
+                      textAnchor="start"
+                      fill={animFunc.color}
+                      fontSize="14"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                      style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.8)", strokeWidth: "3px", strokeLinejoin: "round" }}
+                    >
+                      t = {animationState.currentT.toFixed(2)}
+                    </text>
+                  </>
+                );
               })()}
 
               {/* Hover Tooltip and Marker */}

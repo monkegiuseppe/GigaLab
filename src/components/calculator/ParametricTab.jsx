@@ -105,12 +105,12 @@ export default function ParametricTab({
       color: "from-orange-500 to-red-500",
     },
     {
-      name: "Cycloid",
+      name: "McDonalds",
       x: "t - sin(t)",
       y: "1 - cos(t)",
       tMin: 0,
       tMax: 12.56,
-      description: "Cycloid curve",
+      description: "McDonalds curve",
       color: "from-indigo-500 to-purple-500",
     },
     {
