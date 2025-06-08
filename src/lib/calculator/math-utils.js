@@ -100,54 +100,86 @@ export class MathParser {
   }
 
   /**
-   * Finds a root of a function using the Newton-Raphson method.
+   * FIXED: Finds a root of a function using the Newton-Raphson method. Returns NaN on failure.
    * @param {ParsedFunction} f - The function.
    * @param {number} [x0=0] - The initial guess for the root.
    * @param {number} [maxIterations=50] - The maximum number of iterations.
-   * @param {number} [tolerance=1e-10] - The desired precision.
+   * @param {number} [tolerance=1e-7] - The desired precision.
    * @returns {number} The estimated root, or NaN if not found.
    */
-  static findRoot(f, x0 = 0, maxIterations = 50, tolerance = 1e-10) {
+  static findRoot(f, x0 = 0, maxIterations = 50, tolerance = 1e-7) {
     try {
       let x = x0;
       for (let i = 0; i < maxIterations; i++) {
         const fx = f(x);
         const fpx = MathParser.derivative(f, x);
         if (Math.abs(fx) < tolerance) return x;
-        if (Math.abs(fpx) < tolerance) break;
+        if (Math.abs(fpx) < 1e-15) break; // Avoid division by zero, method fails
         const newX = x - fx / fpx;
+        if (!isFinite(newX)) break; // Stop if we get NaN or Infinity
         if (Math.abs(newX - x) < tolerance) return newX;
         x = newX;
       }
-      return x;
+      // If loop finishes, it means we didn't converge to a root.
+      return Number.NaN;
     } catch {
       return Number.NaN;
     }
   }
 
   /**
-   * Finds multiple roots of a function within a given interval by seeding the Newton-Raphson method.
+   * FIXED: Finds multiple roots of a function within a given interval. More robust and accurate.
    * @param {ParsedFunction} f - The function.
    * @param {number} [xMin=-10] - The minimum x value of the search interval.
    * @param {number} [xMax=10] - The maximum x value of the search interval.
-   * @param {number} [numSeeds=20] - The number of starting points to try.
+   * @param {number} [numSeeds=40] - The number of starting points to try.
    * @returns {number[]} An array of unique roots found in the interval.
    */
-  static findRoots(f, xMin = -10, xMax = 10, numSeeds = 20) {
-    const roots = [];
+  static findRoots(f, xMin = -10, xMax = 10, numSeeds = 40) {
+    const roots = new Set();
     const step = (xMax - xMin) / numSeeds;
-    for (let i = 0; i < numSeeds; i++) {
-      const seed = xMin + i * step;
-      const root = MathParser.findRoot(f, seed);
-      if (!isNaN(root) && isFinite(root) && root >= xMin && root <= xMax) {
-        if (!roots.some((r) => Math.abs(r - root) < 1e-6)) {
-          roots.push(root);
+    
+    for (let i = 0; i <= numSeeds; i++) { // Loop to numSeeds inclusive to check both ends
+        const seed = xMin + i * step;
+        const root = MathParser.findRoot(f, seed);
+        
+        // Verify the found root is valid, within bounds, and actually a root.
+        if (isFinite(root) && root >= xMin && root <= xMax && Math.abs(f(root)) < 1e-5) {
+            // Round to a certain precision to help with de-duplication
+            roots.add(parseFloat(root.toFixed(6)));
         }
-      }
     }
-    return roots.sort((a, b) => a - b);
+    // Convert Set to a sorted array
+    return Array.from(roots).sort((a, b) => a - b);
   }
-}
+
+  /**
+     * @param {ParsedFunction} f - The function.
+     * @param {number} xMin - The minimum x value of the search interval.
+     * @param {number} xMax - The maximum x value of the search interval.
+     * @returns {number[]} An array of x-values where local extrema occur.
+     */
+    static findExtrema(f, xMin, xMax) {
+      const derivativeFunc = (x) => MathParser.derivative(f, x);
+      derivativeFunc.originalExpression = `derivative_of_${f.originalExpression}`;
+      return MathParser.findRoots(derivativeFunc, xMin, xMax, 50); // Use more seeds for derivative
+    }
+
+    /**
+     * NEW: Finds intersection points of two functions in an interval.
+     * @param {ParsedFunction} f1 - The first function.
+     * @param {ParsedFunction} f2 - The second function.
+     * @param {number} xMin - The minimum x value of the search interval.
+     * @param {number} xMax - The maximum x value of the search interval.
+     * @returns {number[]} An array of x-values where the functions intersect.
+     */
+    static findIntersections(f1, f2, xMin, xMax) {
+      if (!f1 || !f2) return [];
+      const differenceFunc = (x) => f1(x) - f2(x);
+      differenceFunc.originalExpression = `(${f1.originalExpression || "f1"}) - (${f2.originalExpression || "f2"})`;
+      return MathParser.findRoots(differenceFunc, xMin, xMax, 40);
+    }
+  }
 
 export const derivativeCache = new Map();
 

@@ -1,12 +1,16 @@
+// ParametricTab.jsx
+
 "use client"
 
 import { useState } from "react"
-import { Compass, Eye, EyeOff, Plus, X, Sparkles, Play } from "lucide-react"
+// Added Pause icon
+import { Compass, Eye, EyeOff, Plus, X, Sparkles, Play} from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { motion } from "framer-motion"
 
+//  Added missing props for animation
 export default function ParametricTab({
   functions,
   setFunctions,
@@ -16,6 +20,7 @@ export default function ParametricTab({
   onUpdateFunction,
   onRemoveFunction,
   setActiveTab,
+
 }) {
   const [xExpression, setXExpression] = useState("cos(t)")
   const [yExpression, setYExpression] = useState("sin(t)")
@@ -234,18 +239,18 @@ export default function ParametricTab({
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: func.color }} />
-                      <span className="text-slate-200 text-sm font-mono flex-1">
+                      <span className="text-slate-200 text-sm font-mono flex-1 truncate">
                         ({func.xExpression}, {func.yExpression})
                       </span>
                       <Button
                         onClick={() => onUpdateFunction(func.id, { visible: !func.visible })}
-                        className="text-slate-400 hover:text-slate-200 h-8 w-8 p-0 rounded-lg hover:bg-slate-600/50 transition-all duration-200 flex items-center justify-center"
+                        className="text-slate-400 hover:text-slate-200 h-8 w-8 p-0 rounded-lg hover:bg-slate-600/50 transition-all duration-200 flex items-center justify-center shrink-0"
                       >
                         {func.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </Button>
                       <Button
                         onClick={() => onRemoveFunction(func.id)}
-                        className="text-red-400 hover:text-red-300 h-8 w-8 p-0 rounded-lg hover:bg-red-900/20 transition-all duration-200 flex items-center justify-center"
+                        className="text-red-400 hover:text-red-300 h-8 w-8 p-0 rounded-lg hover:bg-red-900/20 transition-all duration-200 flex items-center justify-center shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </Button>

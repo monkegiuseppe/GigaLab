@@ -2,7 +2,8 @@
 
 "use client"
 import { useCallback, useMemo, useRef, useState, useEffect } from "react"
-import { Eye, EyeOff, Plus, X } from "lucide-react"
+// UPDATED: Added Target, Asterisk, and GitMerge icons
+import { Eye, EyeOff, Plus, X, Target, Asterisk, GitMerge, Play, Pause } from "lucide-react"
 
 // USER'S COMPONENTS
 import { Button } from "../ui/button"
@@ -13,6 +14,13 @@ import { MathParser, derivativeCache, throttle } from "../../lib/calculator/math
 
 const SVG_WIDTH = 400
 const SVG_HEIGHT = 300
+const AUTOFIT_DEFAULT_X_RANGE = { min: -10, max: 10 };
+const POI_COLORS = {
+  root: '#fde047',       // A bright yellow
+  extremum: '#a78bfa',   // A soft purple
+  intersection: '#60a5fa', // A clear blue
+};
+
 
 export default function GraphingTab({
   functions,
@@ -38,14 +46,68 @@ export default function GraphingTab({
   onAddIntegral,
   onUpdateFunction,
   onRemoveFunction,
+  animationState,
+  setAnimationState,
 }) {
   const [hoverPoint, setHoverPoint] = useState(null)
   const [autoFit, setAutoFit] = useState(true)
   const [isDragging, setIsDragging] = useState(false)
 
+  const [showPOI, setShowPOI] = useState(true)
+  const [selectedPoint, setSelectedPoint] = useState(null)
+
   const svgRef = useRef(null)
   const dragStartRef = useRef({ svgX: 0, svgY: 0, minX: 0, maxX: 0, minY: 0, maxY: 0 })
   const currentBounds = useMemo(() => ({ minX: xMin, maxX: xMax, minY: yMin, maxY: yMax }), [xMin, xMax, yMin, yMax])
+
+  const autoFitPlotData = useMemo(() => {
+    return functions
+      .filter((f) => f.visible)
+      .map((func) => {
+        if (func.type === "parametric") {
+          if (!func.parsedXFunc || !func.parsedYFunc) return { ...func, points: [] };
+          const points = [];
+          const numPoints = 200;
+          const tStep = (func.tMax - func.tMin) / numPoints;
+          for (let i = 0; i <= numPoints; i++) {
+            const t = func.tMin + i * tStep;
+            const x = func.parsedXFunc(t);
+            const y = func.parsedYFunc(t);
+            if (isFinite(x) && isFinite(y)) points.push({ x, y });
+          }
+          return { ...func, points };
+        } else { // Standard y=f(x) functions
+          if (!func.parsedFunc) return { ...func, points: [] };
+          const points = [];
+          // Use the fixed default range for consistent auto-fitting
+          const step = (AUTOFIT_DEFAULT_X_RANGE.max - AUTOFIT_DEFAULT_X_RANGE.min) / 400;
+          for (let xVal = AUTOFIT_DEFAULT_X_RANGE.min; xVal <= AUTOFIT_DEFAULT_X_RANGE.max; xVal += step) {
+            const yVal = func.parsedFunc(xVal);
+            if (isFinite(yVal)) points.push({ x: xVal, y: yVal });
+          }
+          return { ...func, points };
+        }
+      });
+  }, [functions]);
+
+  const handlePlayAnimation = (funcId) => {
+    const func = functions.find((f) => f.id === funcId)
+    if (!func) return
+    setAutoFit(false);
+
+    if (animationState.isPlaying && animationState.functionId === funcId) {
+      // Pause the current animation
+      setAnimationState((prev) => ({ ...prev, isPlaying: false }))
+    } else {
+      // Start a new animation
+      setAnimationState({
+        isPlaying: true,
+        functionId: func.id,
+        currentT: func.tMin,
+        duration: 5,
+      })
+    }
+  }
 
   const calculateDerivativeWithCache = useCallback((f, x) => {
     const cacheKey = `${f.originalExpression}-${x.toFixed(4)}`
@@ -69,25 +131,28 @@ export default function GraphingTab({
         const numPoints = 200
         const tStep = (func.tMax - func.tMin) / numPoints
 
-        for (let i = 0; i <= numPoints; i++) {
-          const t = func.tMin + i * tStep
-          const x = func.parsedXFunc(t)
-          const y = func.parsedYFunc(t)
+        const isAnimating = animationState.isPlaying && animationState.functionId === func.id;
+        const tEnd = isAnimating ? animationState.currentT : func.tMax;
+
+        // Only generate points up to the current animation time `tEnd`
+        for (let t = func.tMin; t <= tEnd + tStep; t += tStep) {
+          const currentT = Math.min(t, tEnd);
+          const x = func.parsedXFunc(currentT)
+          const y = func.parsedYFunc(currentT)
           if (isFinite(x) && isFinite(y)) {
             functionPoints.push({ x, y })
           }
+          if (t >= tEnd) break;
         }
         plotData.push({ ...func, points: functionPoints, integralPoints: [] })
       } else {
         if (!func.parsedFunc) return
-
         const functionPoints = []
-        const step = (xMax - xMin) / 400 // Increased resolution
+        const step = (xMax - xMin) / 400
         for (let xVal = xMin; xVal <= xMax; xVal += step) {
           const yVal = func.parsedFunc(xVal)
           if (isFinite(yVal)) functionPoints.push({ x: xVal, y: yVal })
         }
-
         const integralAreaPoints = []
         if (
           showIntegralArea &&
@@ -107,59 +172,108 @@ export default function GraphingTab({
     })
 
     return plotData
-  }, [functions, xMin, xMax, integralBounds, showIntegralArea])
+  }, [functions, xMin, xMax, integralBounds, showIntegralArea, animationState])
 
+  const pointsOfInterest = useMemo(() => {
+    if (!showPOI) return [];
+    
+    const points = [];
+    const visibleFuncs = functions.filter(f => f.visible && f.type !== 'parametric' && f.parsedFunc);
+    
+    visibleFuncs.forEach(func => {
+      // Roots
+      const roots = MathParser.findRoots(func.parsedFunc, xMin, xMax);
+      // Use POI_COLORS.root
+      roots.forEach(x => points.push({ x, y: 0, type: 'root', color: POI_COLORS.root, funcId: func.id }));
+      
+      // Extrema
+      const extrema = MathParser.findExtrema(func.parsedFunc, xMin, xMax);
+      extrema.forEach(x => {
+        const y = func.parsedFunc(x);
+        if (isFinite(y)) {
+            // Use POI_COLORS.extremum
+            points.push({ x, y, type: 'extremum', color: POI_COLORS.extremum, funcId: func.id });
+        }
+      });
+    });
+
+    for (let i = 0; i < visibleFuncs.length; i++) {
+        for (let j = i + 1; j < visibleFuncs.length; j++) {
+            const f1 = visibleFuncs[i];
+            const f2 = visibleFuncs[j];
+            const intersections = MathParser.findIntersections(f1.parsedFunc, f2.parsedFunc, xMin, xMax);
+            intersections.forEach(x => {
+                const y = f1.parsedFunc(x);
+                if(isFinite(y)) {
+                    //Use POI_COLORS.intersection
+                    points.push({ x, y, type: 'intersection', color: POI_COLORS.intersection, funcId1: f1.id, funcId2: f2.id });
+                }
+            });
+        }
+    }
+    return points;
+  }, [functions, xMin, xMax, showPOI]);
+
+  // useEffect for autoFit 
   useEffect(() => {
     if (autoFit) {
-      let dataYMin = Number.POSITIVE_INFINITY,
-        dataYMax = Number.NEGATIVE_INFINITY
-      let dataXMin = Number.POSITIVE_INFINITY,
-        dataXMax = Number.NEGATIVE_INFINITY
+      const visibleFunctions = autoFitPlotData.filter((fd) => fd.points.length > 0);
+      if (visibleFunctions.length === 0) {
+        setXMin(-10); setXMax(10); setYMin(-10); setYMax(10);
+        return;
+      }
 
-      memoizedPlotData.forEach((fd) =>
+      let dataYMin = Number.POSITIVE_INFINITY, dataYMax = Number.NEGATIVE_INFINITY;
+      let dataXMin = Number.POSITIVE_INFINITY, dataXMax = Number.NEGATIVE_INFINITY;
+      
+      const hasParametric = visibleFunctions.some((f) => f.type === 'parametric');
+
+      visibleFunctions.forEach((fd) =>
         fd.points.forEach((p) => {
-          if (isFinite(p.y) && isFinite(p.x)) {
-            dataYMin = Math.min(dataYMin, p.y)
-            dataYMax = Math.max(dataYMax, p.y)
-            dataXMin = Math.min(dataXMin, p.x)
-            dataXMax = Math.max(dataXMax, p.x)
+          if (isFinite(p.y)) {
+            dataYMin = Math.min(dataYMin, p.y);
+            dataYMax = Math.max(dataYMax, p.y);
+          }
+          // Only consider x-bounds from parametric functions, as they define their own domain.
+          if (hasParametric && fd.type === 'parametric' && isFinite(p.x)) {
+            dataXMin = Math.min(dataXMin, p.x);
+            dataXMax = Math.max(dataXMax, p.x);
           }
         }),
-      )
+      );
 
-      let hasParametric = functions.some((f) => f.visible && f.type === "parametric")
-      let hasPlottableData = dataXMin !== Number.POSITIVE_INFINITY
-
-      if (hasPlottableData) {
-        if (hasParametric) {
-          const xPadding = (dataXMax - dataXMin) * 0.1 || 1
-          setXMin(dataXMin - xPadding)
-          setXMax(dataXMax + xPadding)
-        } else {
-          // Keep user-defined x-range for standard functions
-          // unless it was reset
-          if (xMin === -10 && xMax === 10) {
-             const xPadding = (dataXMax - dataXMin) * 0.1 || 1
-             if (dataXMin !== Number.POSITIVE_INFINITY) {
-                setXMin(dataXMin - xPadding);
-                setXMax(dataXMax + xPadding);
-             }
-          }
-        }
-
-        const yPadding = (dataYMax - dataYMin) * 0.1 || 1
-        setYMin(dataYMin - yPadding)
-        setYMax(dataYMax + yPadding)
-      } else {
-        // No data, reset to default view
-        setXMin(-10)
-        setXMax(10)
-        setYMin(-10)
-        setYMax(10)
+      if (!isFinite(dataYMin)) { // If no valid points, reset to default
+          setXMin(-10); setXMax(10); setYMin(-10); setYMax(10);
+          return;
       }
-    }
-  }, [autoFit, memoizedPlotData, functions, setXMin, setXMax, setYMin, setYMax, xMin, xMax])
 
+      let finalXMin, finalXMax;
+
+      if (hasParametric && isFinite(dataXMin)) {
+          // If parametric exists, its bounds dictate the X-view
+          finalXMin = dataXMin;
+          finalXMax = dataXMax;
+      } else {
+          // Otherwise, use the default X range
+          finalXMin = AUTOFIT_DEFAULT_X_RANGE.min;
+          finalXMax = AUTOFIT_DEFAULT_X_RANGE.max;
+      }
+
+      let finalYMin = dataYMin;
+      let finalYMax = dataYMax;
+
+      if (finalYMin === finalYMax) { finalYMin -= 5; finalYMax += 5; }
+      if (finalXMin === finalXMax) { finalXMin -= 5; finalXMax += 5; }
+
+      const xPadding = (finalXMax - finalXMin) * 0.1 || 1;
+      const yPadding = (finalYMax - finalYMin) * 0.1 || 1;
+      
+      setXMin(finalXMin - xPadding);
+      setXMax(finalXMax + xPadding);
+      setYMin(finalYMin - yPadding);
+      setYMax(finalYMax + yPadding);
+    }
+}, [autoFit, autoFitPlotData, setXMin, setXMax, setYMin, setYMax]);
 
   const toSVGCoords = useCallback(
     (dataX, dataY) => {
@@ -197,6 +311,7 @@ export default function GraphingTab({
 
       setAutoFit(false)
       setIsDragging(true)
+      setSelectedPoint(null) // Clear selected point when starting a drag
       dragStartRef.current = {
         svgX: point.x,
         svgY: point.y,
@@ -211,11 +326,12 @@ export default function GraphingTab({
 
   const handleWheel = useCallback(
     (event) => {
-      event.preventDefault()
-      const point = getSVGPoint(event)
-      if (!point) return
+      event.preventDefault(); // This is now safe to call
+      const point = getSVGPoint(event);
+      if (!point) return;
 
       setAutoFit(false)
+      setSelectedPoint(null); // Clear selected point on zoom
       const zoomFactor = event.deltaY < 0 ? 1.15 : 1 / 1.15
       const mouseDataCoords = fromSVGCoords(point.x, point.y)
 
@@ -228,6 +344,13 @@ export default function GraphingTab({
   )
 
   useEffect(() => {
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
+    // Attach wheel listener with passive: false to fix console warning
+    svgElement.addEventListener('wheel', handleWheel, { passive: false });
+
+    // Drag and drop listeners
     const handleDrag = (event) => {
       if (!isDragging) return
       event.preventDefault()
@@ -246,21 +369,24 @@ export default function GraphingTab({
       setYMin(start.minY - deltaY)
       setYMax(start.maxY - deltaY)
     }
-
     const handleMouseUp = () => setIsDragging(false)
-
-    window.addEventListener("mousemove", handleDrag)
-    window.addEventListener("mouseup", handleMouseUp)
+    
+    window.addEventListener("mousemove", handleDrag);
+    window.addEventListener("mouseup", handleMouseUp);
+    
     return () => {
-      window.removeEventListener("mousemove", handleDrag)
-      window.removeEventListener("mouseup", handleMouseUp)
+      svgElement.removeEventListener('wheel', handleWheel);
+      window.removeEventListener("mousemove", handleDrag);
+      window.removeEventListener("mouseup", handleMouseUp);
     }
-  }, [isDragging, getSVGPoint, fromSVGCoords, setXMin, setXMax, setYMin, setYMax])
+  }, [isDragging, getSVGPoint, handleWheel, fromSVGCoords, setXMin, setXMax, setYMin, setYMax]);
 
   const handleGraphHover = useCallback(
     (event) => {
-      if (isDragging || !svgRef.current) return
-
+      if (isDragging || !svgRef.current) {
+        setHoverPoint(null);
+        return;
+      }
       const point = getSVGPoint(event)
       if (!point) {
         setHoverPoint(null)
@@ -269,6 +395,34 @@ export default function GraphingTab({
 
       const cursorSvgX = point.x
       const cursorSvgY = point.y
+      
+      // ---  MAGNETIC POI CHECK ---
+      let closestPOI = null;
+      let minPOIDist = 15; // Snap radius in pixels
+
+      pointsOfInterest.forEach(p => {
+          const poiSvg = toSVGCoords(p.x, p.y);
+          const dist = Math.sqrt(Math.pow(poiSvg.x - cursorSvgX, 2) + Math.pow(poiSvg.y - cursorSvgY, 2));
+          if (dist < minPOIDist) {
+              minPOIDist = dist;
+              closestPOI = p;
+          }
+      });
+      
+      if (closestPOI) {
+          const markerPos = toSVGCoords(closestPOI.x, closestPOI.y);
+          setHoverPoint({
+              ...closestPOI, // Includes x, y, type, color
+              dataX: closestPOI.x,
+              dataY: closestPOI.y,
+              markerSvgX: markerPos.x,
+              markerSvgY: markerPos.y,
+              tooltipSvgX: cursorSvgX,
+              tooltipSvgY: cursorSvgY,
+          });
+          return; // Stop here if we snapped to a POI
+      }
+
       const cursorDataX = fromSVGCoords(cursorSvgX, cursorSvgY).x
 
       let closestFuncData = null
@@ -324,21 +478,21 @@ export default function GraphingTab({
         setHoverPoint(null)
       }
     },
-    [isDragging, getSVGPoint, fromSVGCoords, toSVGCoords, memoizedPlotData, calculateDerivativeWithCache],
+    [isDragging, getSVGPoint, fromSVGCoords, toSVGCoords, memoizedPlotData, calculateDerivativeWithCache, pointsOfInterest],
   )
-
   
   const throttledHover = useMemo(() => throttle(handleGraphHover, 50), [handleGraphHover])
   const handleMouseLeave = useCallback(() => {
       if (!isDragging) setHoverPoint(null);
   }, [isDragging])
 
-  // Tooltip positioning logic (unchanged)
+  // Tooltip positioning logic
   let tooltipX = 0, tooltipY = 0
   const tooltipWidth = 125
   let tooltipActualHeight = 40
   if (hoverPoint) {
-    tooltipActualHeight = hoverPoint.slope !== null ? 55 : 40
+    // If it's a POI (has a .type) or a curve with a slope, use the taller tooltip.
+    tooltipActualHeight = (hoverPoint.type || (hoverPoint.slope !== null && !hoverPoint.isParametric)) ? 55 : 40;
     tooltipX = hoverPoint.tooltipSvgX + 15
     tooltipY = hoverPoint.tooltipSvgY - tooltipActualHeight - 15
     if (tooltipX + tooltipWidth > SVG_WIDTH) tooltipX = hoverPoint.tooltipSvgX - tooltipWidth - 15
@@ -350,7 +504,23 @@ export default function GraphingTab({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="space-y-6">
-        {/* ... (Function list and other controls remain the same) ... */}
+        {/* Analysis Points panel  */}
+        <div className="backdrop-blur-xl bg-slate-800/40 border border-slate-600/30 rounded-2xl p-4 shadow-lg">
+          <div className="flex items-center justify-between">
+            <h4 className="text-slate-200 font-medium">Analysis Points</h4>
+            <Button
+              onClick={() => setShowPOI(!showPOI)}
+              className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${
+                showPOI
+                  ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                  : "border border-slate-600 text-slate-300 hover:bg-slate-700/50"
+              }`}
+            >
+              {showPOI ? "On" : "Off"}
+            </Button>
+          </div>
+           <p className="text-xs text-slate-400 mt-2">Show roots, extrema, and intersections.</p>
+        </div>
         <h3 className="text-xl font-semibold text-white">Functions</h3>
         <div className="backdrop-blur-xl bg-slate-800/40 border border-slate-600/30 rounded-2xl p-4 shadow-lg">
           <div className="flex items-center justify-between mb-4">
@@ -477,10 +647,24 @@ export default function GraphingTab({
                 </div>
               )}
               {func.type === "parametric" && (
-                <div className="text-xs text-slate-400">
-                  Parametric: t ∈ [{func.tMin}, {func.tMax}]
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => handlePlayAnimation(func.id)}
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-xs h-7 px-3 py-1 rounded-xl transition-all duration-200 hover:shadow-md flex items-center"
+                  >
+                    {animationState.isPlaying && animationState.functionId === func.id ? (
+                      <Pause className="w-3 h-3 mr-1" />
+                    ) : (
+                      <Play className="w-3 h-3 mr-1" />
+                    )}
+                    {animationState.isPlaying && animationState.functionId === func.id ? "Pause" : "Play"}
+                  </Button>
+                  <div className="text-xs text-slate-400">
+                    t ∈ [{func.tMin}, {func.tMax}]
+                  </div>
                 </div>
               )}
+
               {func.type !== "function" && func.type !== "parametric" && (
                 <div className="text-xs text-slate-400">
                   {func.type === "derivative" ? "Derivative" : "Integral"} of f{func.parentId}
@@ -513,7 +697,7 @@ export default function GraphingTab({
               onMouseDown={handleMouseDown}
               onMouseMove={throttledHover}
               onMouseLeave={handleMouseLeave}
-              onWheel={handleWheel}
+              onClick={(e) => { if (e.target.tagName === 'svg' || e.target.tagName === 'rect') setSelectedPoint(null) } }
               style={{ 
                 backgroundColor: "rgba(15, 23, 42, 0.5)",
                 cursor: isDragging ? 'grabbing' : 'grab' 
@@ -551,19 +735,97 @@ export default function GraphingTab({
                 </g>
               ))}
 
+              {/* Render Points of Interest */}
+              {pointsOfInterest.map((p, i) => {
+                const { x: svgX, y: svgY } = toSVGCoords(p.x, p.y);
+                if (svgX < 0 || svgX > SVG_WIDTH || svgY < 0 || svgY > SVG_HEIGHT) return null;
+
+                return (
+                  <g key={i} transform={`translate(${svgX}, ${svgY})`} onClick={(e) => { e.stopPropagation(); setSelectedPoint(p); }} style={{ cursor: 'pointer' }}>
+                    <circle r="6" fill={p.color} fillOpacity="0.3" />
+                    <circle r="3" fill={p.color} />
+                  </g>
+                )
+              })}
+
+              {/* Render Tracing Dot for Parametric Animation */}
+              {animationState.isPlaying && (() => {
+                const animFunc = memoizedPlotData.find(fd => fd.id === animationState.functionId);
+                if (animFunc && animFunc.points.length > 0) {
+                  const lastPoint = animFunc.points[animFunc.points.length - 1];
+                  const { x: svgX, y: svgY } = toSVGCoords(lastPoint.x, lastPoint.y);
+                  
+                  // Check if the dot is on screen before rendering
+                  if (svgX >= 0 && svgX <= SVG_WIDTH && svgY >= 0 && svgY <= SVG_HEIGHT) {
+                    return (
+                      <g>
+                        <circle cx={svgX} cy={svgY} r="5" fill={animFunc.color} stroke="white" strokeWidth="1.5" />
+                        <text
+                          x={svgX}
+                          y={svgY - 10}
+                          textAnchor="middle"
+                          fill="white"
+                          fontSize="10"
+                          fontFamily="monospace"
+                          style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.7)", strokeWidth: "2px", strokeLinejoin: "round" }}
+                        >
+                          t = {animationState.currentT.toFixed(2)}
+                        </text>
+                      </g>
+                    );
+                  }
+                }
+                return null;
+              })()}
+
               {/* Hover Tooltip and Marker */}
               {hoverPoint && !isDragging && (
                 <>
                   <circle cx={hoverPoint.markerSvgX} cy={hoverPoint.markerSvgY} r="4" fill={hoverPoint.color} stroke="#fff" strokeWidth="1.5" />
                   <g transform={`translate(${tooltipX}, ${tooltipY})`}>
                     <rect width={tooltipWidth} height={tooltipActualHeight} rx="8" fill="rgba(15,23,42,0.95)" stroke={hoverPoint.color} strokeWidth="1" />
-                    <text x="8" y="15" fill="#fff" fontSize="10" fontFamily="monospace">x: {hoverPoint.dataX.toFixed(3)}</text>
-                    <text x="8" y="30" fill="#fff" fontSize="10" fontFamily="monospace">y: {hoverPoint.dataY.toFixed(3)}</text>
-                    {hoverPoint.slope !== null && !hoverPoint.isParametric && (
-                      <text x="8" y="45" fill={hoverPoint.color} fontSize="10" fontFamily="monospace">m: {hoverPoint.slope.toFixed(2)}</text>
+                    {hoverPoint.type ? (
+                        // POI Tooltip
+                        <>
+                            <text x="8" y="15" fill={hoverPoint.color} fontSize="11" fontWeight="bold" textTransform="capitalize">{hoverPoint.type}</text>
+                            <text x="8" y="32" fill="#fff" fontSize="10" fontFamily="monospace">x: {hoverPoint.dataX.toFixed(3)}</text>
+                            <text x="8" y="47" fill="#fff" fontSize="10" fontFamily="monospace">y: {hoverPoint.dataY.toFixed(3)}</text>
+                        </>
+                    ) : (
+                        // Regular Curve Tooltip
+                        <>
+                            <text x="8" y="15" fill="#fff" fontSize="10" fontFamily="monospace">x: {hoverPoint.dataX.toFixed(3)}</text>
+                            <text x="8" y="30" fill="#fff" fontSize="10" fontFamily="monospace">y: {hoverPoint.dataY.toFixed(3)}</text>
+                            {hoverPoint.slope !== null && !hoverPoint.isParametric && (
+                              <text x="8" y="45" fill={hoverPoint.color} fontSize="10" fontFamily="monospace">m: {hoverPoint.slope.toFixed(2)}</text>
+                            )}
+                        </>
                     )}
                   </g>
                 </>
+              )}
+
+              {/* Selected Point Tooltip */}
+              {selectedPoint && !isDragging && (
+                (() => {
+                  const { x: svgX, y: svgY } = toSVGCoords(selectedPoint.x, selectedPoint.y);
+                  const tipHeight = 55;
+                  const tipWidth = 120;
+                  let tipX = svgX + 15;
+                  let tipY = svgY - tipHeight - 15;
+                  if (tipX + tipWidth > SVG_WIDTH) tipX = svgX - tipWidth - 15;
+                  if (tipY < 5) tipY = svgY + 15;
+
+                  return (
+                    <g transform={`translate(${tipX}, ${tipY})`}>
+                      <rect width={tipWidth} height={tipHeight} rx="8" fill="rgba(15,23,42,0.95)" stroke={selectedPoint.color} strokeWidth="1" />
+                      {/* Apply color to the title text */}
+                      <text x="8" y="15" fill={selectedPoint.color} fontSize="11" fontWeight="bold" textTransform="capitalize">{selectedPoint.type}</text>
+                      <text x="8" y="32" fill="#fff" fontSize="10" fontFamily="monospace">x: {selectedPoint.x.toFixed(3)}</text>
+                      <text x="8" y="47" fill="#fff" fontSize="10" fontFamily="monospace">y: {selectedPoint.y.toFixed(3)}</text>
+                    </g>
+                  );
+                })()
               )}
 
               {/* Axis Labels and Bounds */}
@@ -575,7 +837,7 @@ export default function GraphingTab({
           </div>
         </div>
 
-        {/* Results section (unchanged) */}
+        {/* Results section */}
         <div className="backdrop-blur-xl bg-slate-800/40 border border-slate-600/30 rounded-2xl p-6 shadow-lg">
           <h4 className="text-slate-200 font-medium mb-4">Results</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">

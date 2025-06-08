@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react" // UPDATED: import useRef
 import { motion } from "framer-motion"
 
 // Adjust import paths based on your actual file structure
@@ -56,11 +56,20 @@ export default function CalculatorPage() {
 
   const [xMin, setXMin] = useState(-10)
   const [xMax, setXMax] = useState(10)
-  const [yMin, setYMin] = useState(-10) // New state for Y-min
-  const [yMax, setYMax] = useState(10) // New state for Y-max
+  const [yMin, setYMin] = useState(-10)
+  const [yMax, setYMax] = useState(10)
 
   const [integralBounds, setIntegralBounds] = useState({ a: -2, b: 2, functionId: 1 })
   const [showIntegralArea, setShowIntegralArea] = useState(true)
+
+  // ADDED: State for parametric animation. This was missing.
+  const [animationState, setAnimationState] = useState({
+    isPlaying: false,
+    functionId: null,
+    currentT: 0,
+    duration: 5, // Animation duration in seconds
+  })
+  const animationFrameRef = useRef() // ADDED: Ref for animation loop
 
   const mathSymbols = [
     { symbol: "π", value: "pi" },
@@ -127,8 +136,14 @@ export default function CalculatorPage() {
     )
   }, [])
 
+  // UPDATED: handleRemoveFunction now stops animation if the function is removed
   const handleRemoveFunction = useCallback(
     (idToRemove) => {
+      // Stop animation if the removed function was being animated
+      if (animationState.functionId === idToRemove) {
+        setAnimationState({ isPlaying: false, functionId: null, currentT: 0, duration: 5 })
+      }
+
       setFunctions((prevFuncs) => {
         const newFuncs = prevFuncs.filter((f) => f.id !== idToRemove && f.parentId !== idToRemove)
         if (integralBounds.functionId === idToRemove) {
@@ -138,14 +153,13 @@ export default function CalculatorPage() {
           } else if (newFuncs.length > 0) {
             setIntegralBounds((prev) => ({ ...prev, functionId: newFuncs[0].id }))
           } else {
-            // No functions left, reset integral bounds
-            setIntegralBounds({ a: -2, b: 2, functionId: -1 }) // Indicate no valid function
+            setIntegralBounds({ a: -2, b: 2, functionId: -1 })
           }
         }
         return newFuncs
       })
     },
-    [integralBounds.functionId],
+    [integralBounds.functionId, animationState.functionId], // UPDATED: Add dependency
   )
 
   const handleAddDerivative = useCallback(
@@ -240,6 +254,45 @@ export default function CalculatorPage() {
   useEffect(() => {
     if (functions.length === 0) derivativeCache.clear()
   }, [functions])
+
+  // Animation loop for parametric tracing
+  useEffect(() => {
+    const animate = () => {
+      if (!animationState.isPlaying) return
+
+      const func = functions.find((f) => f.id === animationState.functionId)
+      if (!func || func.type !== "parametric") {
+        setAnimationState((prev) => ({ ...prev, isPlaying: false }))
+        return
+      }
+
+      // Calculate time step for the animation
+      const tRange = func.tMax - func.tMin
+      const tStep = tRange / (animationState.duration * 60) // Assuming 60fps
+
+      setAnimationState((prev) => {
+        const newT = prev.currentT + tStep
+        if (newT >= func.tMax) {
+          // End animation
+          return { ...prev, currentT: func.tMax, isPlaying: false }
+        }
+        // Continue animation
+        return { ...prev, currentT: newT }
+      })
+
+      animationFrameRef.current = requestAnimationFrame(animate)
+    }
+
+    if (animationState.isPlaying) {
+      animationFrameRef.current = requestAnimationFrame(animate)
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [animationState, functions])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0f172a" }}>
@@ -348,6 +401,8 @@ export default function CalculatorPage() {
                     onAddIntegral={handleAddIntegral}
                     onUpdateFunction={handleUpdateFunction}
                     onRemoveFunction={handleRemoveFunction}
+                    animationState={animationState}
+                    setAnimationState={setAnimationState}
                   />
                 </TabsContent>
                 <TabsContent value="calculus">
