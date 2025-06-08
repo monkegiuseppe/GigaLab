@@ -327,6 +327,7 @@ export default function GraphingTab({
     [isDragging, getSVGPoint, fromSVGCoords, toSVGCoords, memoizedPlotData, calculateDerivativeWithCache],
   )
 
+  
   const throttledHover = useMemo(() => throttle(handleGraphHover, 50), [handleGraphHover])
   const handleMouseLeave = useCallback(() => {
       if (!isDragging) setHoverPoint(null);

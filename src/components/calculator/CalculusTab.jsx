@@ -168,7 +168,7 @@ export default function CalculusTab({
                   disabled={!parsedFunction}
                   className="bg-green-600 hover:bg-green-700 text-white text-xs h-6 px-2 py-1 rounded"
                 >
-                  <TrendingUp className="w-3 h-3 mr-1" />+ f'(x)
+                  <TrendingUp className="w-3 h-3 mr-1 inline-flex" />+ f'(x)
                 </Button>
               </div>
               <div className="text-xl font-mono text-green-300">{calcResults.derivative}</div>
@@ -183,7 +183,7 @@ export default function CalculusTab({
                   disabled={!parsedFunction}
                   className="bg-purple-600 hover:bg-purple-700 text-white text-xs h-6 px-2 py-1 rounded"
                 >
-                  <TrendingUp className="w-3 h-3 mr-1" />+ ∫f(x)
+                  <TrendingUp className="w-3 h-3 mr-1 inline-flex" />+ ∫f(x)
                 </Button>
               </div>
               <div className="text-xl font-mono text-purple-300">{calcResults.integral}</div>
