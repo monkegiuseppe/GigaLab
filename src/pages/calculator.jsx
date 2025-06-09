@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
+import 'katex/dist/katex.min.css';
 
 // Adjust import paths based on your actual file structure
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
@@ -42,6 +43,7 @@ const initialFunctions = [
   {
     id: 1,
     expression: "x^2",
+    originalExpression: "x^2",
     color: "#06b6d4",
     visible: true,
     type: "function",
@@ -89,6 +91,7 @@ export default function CalculatorPage() {
       const newFunc = {
         id: newId,
         expression: newFunctionInput,
+        originalExpression: newFunctionInput,
         color: colors[newId % colors.length],
         visible: true,
         type: "function",
@@ -113,9 +116,9 @@ export default function CalculatorPage() {
           const updatedFunc = { ...f, ...updates }
           if (updates.expression && updates.expression !== f.expression) {
             updatedFunc.compiled = MathParser.parseFunction(updates.expression)
+            updatedFunc.originalExpression = updates.expression;
             // Clear derivative cache related to the old expression
             derivativeCache.delete(`derivative_of_${f.expression}`)
-            derivativeCache.delete(`derivative_of_derivative_of_${f.expression}`)
           }
           return updatedFunc
         }
@@ -161,7 +164,7 @@ export default function CalculatorPage() {
       const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
       const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
 
-      const derivativeExpression = MathParser.derivativeToString(parentFunc.expression, "x")
+      const { simplified: derivativeExpression } = MathParser.derivativeToLatex(parentFunc.originalExpression, "x")
       const compiledDerivative = MathParser.parseFunction(derivativeExpression)
 
       const displayExpr = `d/dx(${parentFunc.expression.substring(0, 10) + (parentFunc.expression.length > 10 ? "..." : "")})`
@@ -191,13 +194,16 @@ export default function CalculatorPage() {
       const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
       const displayExpr = `∫(${parentFunc.expression.substring(0, 10) + (parentFunc.expression.length > 10 ? "..." : "")})dx`
 
-      const integralFunc = MathParser.antiderivative(parentFunc.compiled, xMin)
+      const { simplified: integralExpression } = MathParser.symbolicIntegralToLatex(parentFunc.originalExpression, "x")
+      
+      const integralFunc = MathParser.antiderivative(parentFunc.compiled, 0)
 
       setFunctions((prev) => [
         ...prev,
         {
           id: newId,
           expression: displayExpr,
+          originalExpression: integralExpression,
           color: colors[newId % colors.length],
           visible: true,
           type: "integral",
@@ -219,7 +225,6 @@ export default function CalculatorPage() {
 
       if (!compiledX || !compiledY) {
         console.error("Error parsing parametric functions.")
-        // You could add user-facing error feedback here
         return
       }
 
@@ -227,7 +232,7 @@ export default function CalculatorPage() {
         ...prev,
         {
           id: newId,
-          expression: `(x(t), y(t))`, // Display expression
+          expression: `(${xExpr.length > 5 ? xExpr.substring(0,5)+'...' : xExpr}, ${yExpr.length > 5 ? yExpr.substring(0,5)+'...' : yExpr})`,
           xExpression: xExpr,
           yExpression: yExpr,
           color: colors[newId % colors.length],

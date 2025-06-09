@@ -6,7 +6,7 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { MathParser } from "../../lib/calculator/math-utils"
 import { useState, useMemo } from "react"
-import KatexDisplay from "./KatexDisplay"
+import KatexDisplay from "./KatexDisplay" // Import the new component
 
 export default function CalculusTab({
   setActiveTab,
@@ -110,6 +110,7 @@ export default function CalculusTab({
           <Calculator className="w-5 h-5" />
           Calculus Analysis
         </h3>
+        {/* Input section remains the same */}
         <div className="bg-slate-700/30 rounded-lg p-3 border border-slate-600/30">
           <Label className="text-slate-300 text-sm mb-2 block">Quick Symbols</Label>
           <div className="grid grid-cols-4 gap-1">
@@ -132,6 +133,7 @@ export default function CalculusTab({
           <div><Label className="text-slate-200">Integral b</Label><Input type="number" value={integralB} onChange={(e) => setIntegralB(Number(e.target.value))} className="bg-slate-700/50 border-slate-600 text-slate-200"/></div>
         </div>
 
+        {/* Numerical Results Section */}
         {calcResults.error ? (<div className="text-red-400 p-2 bg-red-900/30 rounded">{calcResults.error}</div>) : (
           <div className="space-y-3">
             <h4 className="text-slate-200 font-medium">Numerical Results</h4>
@@ -165,8 +167,9 @@ export default function CalculusTab({
               </div>
             </div>
         </div>
-
       </div>
+
+      {/* Equation Solver Column remains the same */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2"><Target className="w-5 h-5" />Equation Solver</h3>
         <div className="space-y-3"><Label className="text-slate-200">Equation Format</Label><select value={equationFormat} onChange={(e) => setEquationFormat(e.target.value)} className="w-full h-10 bg-slate-700/50 border border-slate-600 text-slate-200 rounded-md px-3"><option value="equals-zero">f(x) = 0</option><option value="equals-value">f(x) = c</option></select></div>

@@ -1,4 +1,3 @@
-// GraphingTab.jsx
 
 "use client"
 import { useCallback, useMemo, useRef, useState, useEffect } from "react"
@@ -103,20 +102,28 @@ export default function GraphingTab({
     }
   }
 
+  // --- START OF FIX ---
   const getCompiledDerivative = useCallback((func) => {
-    // Use the parsable expression
     const expr = func.originalExpression || func.expression;
+    // Prevent trying to parse non-mathematical display strings
+    if (!expr || expr.includes('∫') || expr.includes('d/dx')) return null;
+
     const cacheKey = `derivative_of_${expr}`;
     if (derivativeCache.has(cacheKey)) {
         return derivativeCache.get(cacheKey);
     }
-    const derivativeExpr = MathParser.derivativeToString(expr, 'x');
+    
+    // CORRECTED: Call the renamed function and get the simplified string
+    const { simplified: derivativeExpr } = MathParser.derivativeToLatex(expr, 'x');
+    if (derivativeExpr.includes('Error')) return null;
+
     const compiledDerivative = MathParser.parseFunction(derivativeExpr);
     if (compiledDerivative) {
         derivativeCache.set(cacheKey, compiledDerivative);
     }
     return compiledDerivative;
   }, []);
+  // --- END OF FIX ---
 
   const memoizedPlotData = useMemo(() => {
     const plotData = []
@@ -182,10 +189,8 @@ export default function GraphingTab({
     const visibleFuncs = functions.filter(f => f.visible && f.type !== 'parametric' && f.compiled);
     
     visibleFuncs.forEach(func => {
-      // Use the parsable expression, falling back to the display one if needed.
       const expr = func.originalExpression || func.expression;
       
-      // Prevent trying to parse non-mathematical display strings
       if (expr.includes('∫') || expr.includes('d/dx')) return;
 
       const roots = MathParser.findRoots(expr, xMin, xMax);
