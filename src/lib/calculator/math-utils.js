@@ -1,6 +1,8 @@
 // lib/calculator/math-utils.js
 
 import { create, all } from 'mathjs';
+import nerdamer from 'nerdamer/nerdamer.core.js';
+import 'nerdamer/Calculus.js';
 
 const math = create(all);
 
@@ -17,8 +19,6 @@ export const derivativeCache = new Map();
 export class MathParser {
   /**
    * Parses and compiles a mathematical expression string.
-   * @param {string} expression - The mathematical expression (e.g., "x^2 + sin(x)").
-   * @returns {CompiledExpression | null} A compiled expression object or null on error.
    */
   static parseFunction(expression) {
     try {
@@ -36,87 +36,120 @@ export class MathParser {
   }
 
   /**
-   * Calculates the symbolic derivative of an expression and returns it as a simplified string.
-   * @param {string} expression - The expression to differentiate.
-   * @param {string} [variable='x'] - The variable to differentiate with respect to.
-   * @returns {string} The derivative expression as a string.
+   * Calculates the symbolic derivative and returns it as a LaTeX string.
+   * @returns {{latex: string, simplified: string}}
    */
-  static derivativeToString(expression, variable = 'x') {
+  static derivativeToLatex(expression, variable = 'x') {
     try {
-      // Use math.simplify for a cleaner output
-      return math.simplify(math.derivative(expression, variable)).toString();
+      const derivativeNode = math.derivative(expression, variable);
+      return {
+        latex: derivativeNode.toTex(),
+        simplified: derivativeNode.toString(),
+      };
     } catch (e) {
       console.error(`Error taking derivative of "${expression}":`, e);
-      return 'Error';
+      return { latex: 'Error', simplified: 'Error' };
     }
   }
 
   /**
-   * Attempts to find the symbolic integral of a basic expression.
-   * @param {string} expression - The expression to integrate.
-   * @param {string} [variable='x'] - The variable to integrate with respect to.
-   * @returns {string} The antiderivative expression as a string, or a message if not found.
+   * NEW: A more robust symbolic integrator that outputs LaTeX.
+   * This is a "best-effort" implementation for common cases.
+   * @returns {{latex: string, simplified: string}}
    */
-  static symbolicIntegralToString(expression, variable = 'x') {
-    if (variable !== 'x') return "Integration only supported for 'x'.";
+  static symbolicIntegralToLatex(expression, variable = 'x') {
+    if (variable !== 'x') return { latex: "\\text{Integration only for 'x'}", simplified: "" };
+    
     try {
         const node = math.simplify(expression);
         
         const integrateNode = (n) => {
             if (n.isSymbolNode) {
-                if (n.name === 'x') return `(1/2) * x^2`;
-                return `${n.toString()} * x`;
+                if (n.name === 'x') return math.parse('1/2 * x^2');
+                return math.parse(`${n.toString()} * x`);
             }
             if (n.isConstantNode) {
-                if (n.value === 0) return '0';
-                return `${n.value} * x`;
+                if (n.value === 0) return math.parse('0');
+                return math.parse(`${n.value} * x`);
             }
             if (n.isOperatorNode) {
                 const op = n.op;
                 const args = n.args;
-                if (op === '+') return `${integrateNode(args[0])} + ${integrateNode(args[1])}`;
-                if (op === '-') return `${integrateNode(args[0])} - ${integrateNode(args[1])}`;
+                if (op === '+') return new math.OperatorNode('+', 'add', [integrateNode(args[0]), integrateNode(args[1])]);
+                if (op === '-') return new math.OperatorNode('-', 'subtract', [integrateNode(args[0]), integrateNode(args[1])]);
+                
                 if (op === '*') {
-                    if (args[0].isConstantNode) { // c * f(x)
-                        return `${args[0].toString()} * (${integrateNode(args[1])})`;
-                    }
-                    if (args[1].isConstantNode) { // f(x) * c
-                        return `(${integrateNode(args[0])}) * ${args[1].toString()}`;
-                    }
+                    if (args[0].isConstantNode) return new math.OperatorNode('*', 'multiply', [args[0], integrateNode(args[1])]);
+                    if (args[1].isConstantNode) return new math.OperatorNode('*', 'multiply', [integrateNode(args[0]), args[1]]);
                 }
+                
                 if (op === '^' && args[0].isSymbolNode && args[0].name === 'x' && args[1].isConstantNode) {
                     const power = args[1].value;
-                    if (power === -1) return `ln(abs(x))`;
+                    if (power === -1) return math.parse('ln(abs(x))');
                     const newPower = power + 1;
-                    return `(1/${newPower}) * x^${newPower}`;
+                    return math.parse(`(1/${newPower}) * x^${newPower}`);
                 }
             }
             if (n.isFunctionNode) {
                 const func = n.name;
                 const arg = n.args[0];
                 if (arg.isSymbolNode && arg.name === 'x') {
-                    if (func === 'sin') return '-cos(x)';
-                    if (func === 'cos') return 'sin(x)';
-                    if (func === 'exp') return 'exp(x)';
-                    if (func === 'tan') return 'ln(abs(sec(x)))';
+                    if (func === 'sin') return math.parse('-cos(x)');
+                    if (func === 'cos') return math.parse('sin(x)');
+                    if (func === 'exp') return math.parse('exp(x)');
+                    if (func === 'tan') return math.parse('ln(abs(sec(x)))');
+                    if (func === 'sec') return math.parse('ln(abs(sec(x)+tan(x)))');
                 }
             }
-            throw new Error("No elementary integral found for this expression.");
+            throw new Error("No elementary integral found.");
         };
 
-        const integral = integrateNode(node);
-        return `${math.simplify(integral).toString()} + C`;
+        const integralNode = integrateNode(node);
+        const simplifiedNode = math.simplify(integralNode);
+
+        return {
+            latex: `${simplifiedNode.toTex()} + C`,
+            simplified: `${simplifiedNode.toString()}`,
+        };
 
     } catch (e) {
-        return e.message.includes("No elementary integral") 
-            ? "No elementary integral found." 
-            : "Cannot integrate complex expression.";
+        return { 
+            latex: `\\text{${e.message.includes("No elementary") ? "No elementary integral found" : "Cannot integrate"}}`,
+            simplified: ""
+        };
     }
   }
 
   /**
-   * Calculates the numerical integral of a function over an interval using the trapezoidal rule.
+   * Uses Nerdamer for robust symbolic integration.
+   * @returns {{latex: string, simplified: string}}
    */
+  static symbolicIntegralToLatex(expression, variable = 'x') {
+      try {
+          // Nerdamer can throw an error on very complex/unsolvable integrals
+          const integral = nerdamer(`integrate(${expression}, ${variable})`);
+          
+          // Check if nerdamer failed to integrate (it often returns the original integral expression)
+          if (integral.toString().includes('integrate')) {
+              throw new Error("No elementary integral found.");
+          }
+
+          const simplifiedString = integral.toString();
+          const latexString = `${integral.toTeX()} + C`;
+
+          return {
+              latex: latexString,
+              simplified: simplifiedString,
+          };
+      } catch (e) {
+          console.error(`Nerdamer integration error for "${expression}":`, e);
+          return { 
+              latex: `\\text{No elementary integral found}`,
+              simplified: "" 
+          };
+      }
+  }
+
   static integrate(compiledFunc, a, b, variable = 'x', n = 1000) {
     if (!compiledFunc || typeof compiledFunc.evaluate !== 'function' || !isFinite(a) || !isFinite(b)) return Number.NaN;
     if (a === b) return 0;
@@ -135,10 +168,6 @@ export class MathParser {
     const result = h * sum;
     return isFinite(result) ? result : Number.NaN;
   }
-
-  /**
-   * Creates a function that represents the numerical antiderivative.
-   */
   static antiderivative(compiledFunc, x0 = 0, variable = 'x') {
     const antiDeriv = (scope) => {
       const x = scope[variable];
@@ -154,20 +183,14 @@ export class MathParser {
       originalExpression: `∫(${compiledFunc.originalExpression})dx from ${x0}`,
     };
   }
-
-  /**
-   * Finds a root of a function using the Newton-Raphson method.
-   */
   static findRoot(f, df, x0, variable = 'x', maxIterations = 50, tolerance = 1e-7) {
     let x = x0;
     for (let i = 0; i < maxIterations; i++) {
       const scope = { [variable]: x };
       const fx = f.evaluate(scope);
       const dfx = df.evaluate(scope);
-
       if (Math.abs(fx) < tolerance) return x;
       if (Math.abs(dfx) < 1e-15) break;
-
       const newX = x - fx / dfx;
       if (!isFinite(newX)) break;
       if (Math.abs(newX - x) < tolerance) return newX;
@@ -175,48 +198,34 @@ export class MathParser {
     }
     return Number.NaN;
   }
-
-  /**
-   * Finds multiple roots of a function within a given interval.
-   */
   static findRoots(expression, xMin, xMax, numSeeds = 40) {
     const f = this.parseFunction(expression);
-    if (!f) return [];
-
+    if (!f || !f.originalExpression || f.originalExpression.includes('NaN')) return [];
+    
     const derivativeKey = `derivative_of_${expression}`;
     let df = derivativeCache.get(derivativeKey);
     if (!df) {
-      const df_expr = this.derivativeToString(expression, 'x');
+      const { simplified: df_expr } = this.derivativeToLatex(expression, 'x');
       df = this.parseFunction(df_expr);
       if (df) derivativeCache.set(derivativeKey, df);
     }
-    if (!df) return [];
+    if (!df || !df.originalExpression || df.originalExpression.includes('NaN')) return [];
 
     const roots = new Set();
     const step = (xMax - xMin) / numSeeds;
-
     for (let i = 0; i <= numSeeds; i++) {
       const seed = xMin + i * step;
       const root = this.findRoot(f, df, seed, 'x');
-
       if (isFinite(root) && root >= xMin && root <= xMax && Math.abs(f.evaluate({ x: root })) < 1e-5) {
         roots.add(parseFloat(root.toFixed(6)));
       }
     }
     return Array.from(roots).sort((a, b) => a - b);
   }
-
-  /**
-   * Finds x-values of local extrema for a function in an interval.
-   */
   static findExtrema(expression, xMin, xMax) {
-    const derivativeExpr = this.derivativeToString(expression, 'x');
+    const { simplified: derivativeExpr } = this.derivativeToLatex(expression, 'x');
     return this.findRoots(derivativeExpr, xMin, xMax, 50);
   }
-
-  /**
-   * Finds intersection points of two functions in an interval.
-   */
   static findIntersections(expr1, expr2, xMin, xMax) {
     if (!expr1 || !expr2) return [];
     const differenceExpr = `(${expr1}) - (${expr2})`;
@@ -224,9 +233,6 @@ export class MathParser {
   }
 }
 
-/**
- * Creates a throttled function that only invokes `func` at most once per every `limit` milliseconds.
- */
 export function throttle(func, limit) {
   let lastFunc;
   let lastRan;
