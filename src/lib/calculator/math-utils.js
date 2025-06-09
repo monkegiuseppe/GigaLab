@@ -28,7 +28,6 @@ export class MathParser {
       return code;
     } catch (e) {
       console.error(`Error parsing expression "${expression}":`, e);
-      // Return an object that always evaluates to NaN, maintaining a consistent structure
       return {
         evaluate: () => Number.NaN,
         originalExpression: expression,
@@ -37,28 +36,86 @@ export class MathParser {
   }
 
   /**
-   * Calculates the symbolic derivative of an expression and returns it as a string.
+   * Calculates the symbolic derivative of an expression and returns it as a simplified string.
    * @param {string} expression - The expression to differentiate.
    * @param {string} [variable='x'] - The variable to differentiate with respect to.
    * @returns {string} The derivative expression as a string.
    */
   static derivativeToString(expression, variable = 'x') {
     try {
-      return math.derivative(expression, variable).toString();
+      // Use math.simplify for a cleaner output
+      return math.simplify(math.derivative(expression, variable)).toString();
     } catch (e) {
       console.error(`Error taking derivative of "${expression}":`, e);
-      return 'NaN'; // An expression that will evaluate to NaN
+      return 'Error';
+    }
+  }
+
+  /**
+   * Attempts to find the symbolic integral of a basic expression.
+   * @param {string} expression - The expression to integrate.
+   * @param {string} [variable='x'] - The variable to integrate with respect to.
+   * @returns {string} The antiderivative expression as a string, or a message if not found.
+   */
+  static symbolicIntegralToString(expression, variable = 'x') {
+    if (variable !== 'x') return "Integration only supported for 'x'.";
+    try {
+        const node = math.simplify(expression);
+        
+        const integrateNode = (n) => {
+            if (n.isSymbolNode) {
+                if (n.name === 'x') return `(1/2) * x^2`;
+                return `${n.toString()} * x`;
+            }
+            if (n.isConstantNode) {
+                if (n.value === 0) return '0';
+                return `${n.value} * x`;
+            }
+            if (n.isOperatorNode) {
+                const op = n.op;
+                const args = n.args;
+                if (op === '+') return `${integrateNode(args[0])} + ${integrateNode(args[1])}`;
+                if (op === '-') return `${integrateNode(args[0])} - ${integrateNode(args[1])}`;
+                if (op === '*') {
+                    if (args[0].isConstantNode) { // c * f(x)
+                        return `${args[0].toString()} * (${integrateNode(args[1])})`;
+                    }
+                    if (args[1].isConstantNode) { // f(x) * c
+                        return `(${integrateNode(args[0])}) * ${args[1].toString()}`;
+                    }
+                }
+                if (op === '^' && args[0].isSymbolNode && args[0].name === 'x' && args[1].isConstantNode) {
+                    const power = args[1].value;
+                    if (power === -1) return `ln(abs(x))`;
+                    const newPower = power + 1;
+                    return `(1/${newPower}) * x^${newPower}`;
+                }
+            }
+            if (n.isFunctionNode) {
+                const func = n.name;
+                const arg = n.args[0];
+                if (arg.isSymbolNode && arg.name === 'x') {
+                    if (func === 'sin') return '-cos(x)';
+                    if (func === 'cos') return 'sin(x)';
+                    if (func === 'exp') return 'exp(x)';
+                    if (func === 'tan') return 'ln(abs(sec(x)))';
+                }
+            }
+            throw new Error("No elementary integral found for this expression.");
+        };
+
+        const integral = integrateNode(node);
+        return `${math.simplify(integral).toString()} + C`;
+
+    } catch (e) {
+        return e.message.includes("No elementary integral") 
+            ? "No elementary integral found." 
+            : "Cannot integrate complex expression.";
     }
   }
 
   /**
    * Calculates the numerical integral of a function over an interval using the trapezoidal rule.
-   * @param {CompiledExpression} compiledFunc - The compiled function to integrate.
-   * @param {number} a - The lower bound of integration.
-   * @param {number} b - The upper bound of integration.
-   * @param {string} [variable='x'] - The variable of integration.
-   * @param {number} [n=1000] - The number of subintervals to use.
-   * @returns {number} The approximate area under the curve.
    */
   static integrate(compiledFunc, a, b, variable = 'x', n = 1000) {
     if (!compiledFunc || typeof compiledFunc.evaluate !== 'function' || !isFinite(a) || !isFinite(b)) return Number.NaN;
@@ -67,7 +124,7 @@ export class MathParser {
     
     const h = (b - a) / n;
     let sum = 0.5 * (compiledFunc.evaluate({ [variable]: a }) + compiledFunc.evaluate({ [variable]: b }));
-    if (!isFinite(sum)) sum = 0; // Handle infinities at endpoints
+    if (!isFinite(sum)) sum = 0;
 
     for (let i = 1; i < n; i++) {
       const x = a + i * h;
@@ -80,11 +137,7 @@ export class MathParser {
   }
 
   /**
-   * Creates a function that represents the numerical antiderivative (integral function).
-   * @param {CompiledExpression} compiledFunc - The function to find the antiderivative of.
-   * @param {number} [x0=0] - The constant of integration (the point where the integral is zero).
-   * @param {string} [variable='x'] - The variable of integration.
-   * @returns {CompiledExpression} A compiled function representing the antiderivative.
+   * Creates a function that represents the numerical antiderivative.
    */
   static antiderivative(compiledFunc, x0 = 0, variable = 'x') {
     const antiDeriv = (scope) => {
@@ -104,13 +157,6 @@ export class MathParser {
 
   /**
    * Finds a root of a function using the Newton-Raphson method.
-   * @param {CompiledExpression} f - The compiled function.
-   * @param {CompiledExpression} df - The compiled derivative of the function.
-   * @param {number} x0 - The initial guess for the root.
-   * @param {string} [variable='x'] - The variable name.
-   * @param {number} [maxIterations=50] - The maximum number of iterations.
-   * @param {number} [tolerance=1e-7] - The desired precision.
-   * @returns {number} The estimated root, or NaN if not found.
    */
   static findRoot(f, df, x0, variable = 'x', maxIterations = 50, tolerance = 1e-7) {
     let x = x0;
@@ -120,7 +166,7 @@ export class MathParser {
       const dfx = df.evaluate(scope);
 
       if (Math.abs(fx) < tolerance) return x;
-      if (Math.abs(dfx) < 1e-15) break; // Avoid division by zero
+      if (Math.abs(dfx) < 1e-15) break;
 
       const newX = x - fx / dfx;
       if (!isFinite(newX)) break;
@@ -132,11 +178,6 @@ export class MathParser {
 
   /**
    * Finds multiple roots of a function within a given interval.
-   * @param {string} expression - The function's expression string.
-   * @param {number} xMin - The minimum x value of the search interval.
-   * @param {number} xMax - The maximum x value of the search interval.
-   * @param {number} [numSeeds=40] - The number of starting points to try.
-   * @returns {number[]} An array of unique roots found in the interval.
    */
   static findRoots(expression, xMin, xMax, numSeeds = 40) {
     const f = this.parseFunction(expression);
@@ -167,10 +208,6 @@ export class MathParser {
 
   /**
    * Finds x-values of local extrema for a function in an interval.
-   * @param {string} expression - The function's expression string.
-   * @param {number} xMin - The minimum x value of the search interval.
-   * @param {number} xMax - The maximum x value of the search interval.
-   * @returns {number[]} An array of x-values where local extrema occur.
    */
   static findExtrema(expression, xMin, xMax) {
     const derivativeExpr = this.derivativeToString(expression, 'x');
@@ -179,11 +216,6 @@ export class MathParser {
 
   /**
    * Finds intersection points of two functions in an interval.
-   * @param {string} expr1 - The first function's expression.
-   * @param {string} expr2 - The second function's expression.
-   * @param {number} xMin - The minimum x value of the search interval.
-   * @param {number} xMax - The maximum x value of the search interval.
-   * @returns {number[]} An array of x-values where the functions intersect.
    */
   static findIntersections(expr1, expr2, xMin, xMax) {
     if (!expr1 || !expr2) return [];
@@ -194,9 +226,6 @@ export class MathParser {
 
 /**
  * Creates a throttled function that only invokes `func` at most once per every `limit` milliseconds.
- * @param {Function} func The function to throttle.
- * @param {number} limit The amount of time to wait in milliseconds.
- * @returns {Function} Returns the new throttled function.
  */
 export function throttle(func, limit) {
   let lastFunc;

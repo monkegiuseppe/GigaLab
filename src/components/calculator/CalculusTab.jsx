@@ -1,6 +1,6 @@
 "use client"
 
-import { Calculator, Target, TrendingUp } from "lucide-react"
+import { Calculator, Target,FunctionSquare, TrendingUp } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
@@ -32,6 +32,13 @@ export default function CalculusTab({
     const derivativeExpr = MathParser.derivativeToString(calcExpression, 'x');
     return MathParser.parseFunction(derivativeExpr);
   }, [calcExpression])
+
+  const symbolicResults = useMemo(() => {
+      if (!calcExpression) return { derivative: "", integral: "" };
+      const derivative = MathParser.derivativeToString(calcExpression, 'x');
+      const integral = MathParser.symbolicIntegralToString(calcExpression, 'x');
+      return { derivative, integral };
+    }, [calcExpression]);
 
   const calcResults = useMemo(() => {
     if (!compiledFunction || !compiledDerivative) return { error: "Invalid expression for calculus." }
@@ -195,6 +202,22 @@ export default function CalculusTab({
             </div>
           </div>
         )}
+        <div className="space-y-3 pt-4">
+            <h4 className="text-slate-200 font-medium flex items-center gap-2">
+                <FunctionSquare className="w-5 h-5 text-amber-400"/>
+                Symbolic Results
+            </h4>
+            <div className="bg-slate-700/30 p-3 rounded border border-slate-600/30">
+              <div className="text-slate-400 text-sm">d/dx f(x) =</div>
+              <div className="text-lg font-mono text-green-300 break-words">{symbolicResults.derivative || "..."}</div>
+            </div>
+            <div className="bg-slate-700/30 p-3 rounded border border-slate-600/30">
+              <div className="text-slate-400 text-sm">∫f(x)dx =</div>
+              <div className={`text-lg font-mono break-words ${symbolicResults.integral.includes("found") || symbolicResults.integral.includes("complex") ? "text-amber-300" : "text-purple-300"}`}>
+                {symbolicResults.integral || "..."}
+              </div>
+            </div>
+        </div>
       </div>
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
