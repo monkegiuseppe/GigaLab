@@ -24,66 +24,71 @@ export default function CalculusTab({
   const [equationFormat, setEquationFormat] = useState("equals-zero")
   const [targetValue, setTargetValue] = useState(0)
 
-  const parsedFunction = useMemo(() => {
-    try {
-      return MathParser.parseFunction(calcExpression)
-    } catch {
-      return null
-    }
+  const compiledFunction = useMemo(() => {
+    return MathParser.parseFunction(calcExpression)
+  }, [calcExpression])
+
+  const compiledDerivative = useMemo(() => {
+    const derivativeExpr = MathParser.derivativeToString(calcExpression, 'x');
+    return MathParser.parseFunction(derivativeExpr);
   }, [calcExpression])
 
   const calcResults = useMemo(() => {
-    if (!parsedFunction) return { error: "Invalid expression for calculus." }
+    if (!compiledFunction || !compiledDerivative) return { error: "Invalid expression for calculus." }
     try {
-      const value = parsedFunction(calcPoint)
-      const derivative = MathParser.derivative(parsedFunction, calcPoint)
-      const integral = MathParser.integrate(parsedFunction, integralA, integralB)
+      const scope = { x: calcPoint };
+      const value = compiledFunction.evaluate(scope)
+      const derivative = compiledDerivative.evaluate(scope)
+      const integral = MathParser.integrate(compiledFunction, integralA, integralB, 'x')
       return {
         value: isFinite(value) ? value.toFixed(4) : "undefined",
         derivative: isFinite(derivative) ? derivative.toFixed(4) : "undefined",
         integral: isFinite(integral) ? integral.toFixed(4) : "undefined",
       }
     } catch (error) {
+      console.error(error);
       return { error: "Error in numerical calculation." }
     }
-  }, [parsedFunction, calcPoint, integralA, integralB])
+  }, [compiledFunction, compiledDerivative, calcPoint, integralA, integralB])
 
   const solverResults = useMemo(() => {
     try {
-      const rawF = MathParser.parseFunction(solverExpression)
-      const fToSolve = equationFormat === "equals-value" ? (x) => rawF(x) - targetValue : rawF
-      return MathParser.findRoots(fToSolve, globalXMin, globalXMax).filter((r) => isFinite(r))
+      const exprToSolve = equationFormat === "equals-value" 
+        ? `(${solverExpression}) - (${targetValue})` 
+        : solverExpression;
+      
+      const roots = MathParser.findRoots(exprToSolve, globalXMin, globalXMax);
+      return roots.filter((r) => isFinite(r));
     } catch (error) {
+      console.error(error);
       return []
     }
   }, [solverExpression, equationFormat, targetValue, globalXMin, globalXMax])
 
-  const graphHandler = (expression, type, baseFunc, integrationStart) => {
+  const graphHandler = (expression, type, baseCompiledFunc, integrationStart) => {
     const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
     const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
-    let newParsedFunc
-    if (type === "derivative" && baseFunc) newParsedFunc = (x) => MathParser.derivative(baseFunc, x)
-    else if (type === "integral" && baseFunc) newParsedFunc = MathParser.antiderivative(baseFunc, integrationStart ?? 0)
-    else newParsedFunc = MathParser.parseFunction(expression)
-
-    newParsedFunc.originalExpression =
-      type === "function" ? expression : `${type}_of_${baseFunc?.originalExpression || expression}`
-
-    setFunctions((prev) => [
-      ...prev,
-      {
+    let newFuncData = {
         id: newId,
         expression: expression,
         color: colors[newId % colors.length],
         visible: true,
         type: type,
-        parentId: null,
-        points: [],
-        integralPoints: [],
-        parsedFunc: newParsedFunc,
-      },
-    ])
-    setActiveTab("graphing")
+        parentId: null, // Can be enhanced to link parent
+    };
+
+    if (type === "derivative" && baseCompiledFunc) {
+      newFuncData.compiled = compiledDerivative; // Use the already computed one
+      newFuncData.originalExpression = compiledDerivative.originalExpression;
+    } else if (type === "integral" && baseCompiledFunc) {
+      newFuncData.compiled = MathParser.antiderivative(baseCompiledFunc, integrationStart ?? 0);
+    } else { // type === "function"
+      newFuncData.compiled = compiledFunction;
+      newFuncData.originalExpression = calcExpression;
+    }
+
+    setFunctions((prev) => [...prev, newFuncData]);
+    setActiveTab("graphing");
   }
 
   return (
@@ -164,8 +169,8 @@ export default function CalculusTab({
               <div className="flex items-center justify-between mb-2">
                 <div className="text-slate-400 text-sm">f'({calcPoint}) =</div>
                 <Button
-                  onClick={() => graphHandler(`f'(${calcExpression})`, "derivative", parsedFunction)}
-                  disabled={!parsedFunction}
+                  onClick={() => graphHandler(`f'(${calcExpression})`, "derivative", compiledFunction)}
+                  disabled={!compiledFunction}
                   className="bg-green-600 hover:bg-green-700 text-white text-xs h-6 px-2 py-1 rounded"
                 >
                   <TrendingUp className="w-3 h-3 mr-1 inline-flex" />+ f'(x)
@@ -179,8 +184,8 @@ export default function CalculusTab({
                   ∫[{integralA},{integralB}] f(x)dx =
                 </div>
                 <Button
-                  onClick={() => graphHandler(`∫(${calcExpression})dx`, "integral", parsedFunction, integralA)}
-                  disabled={!parsedFunction}
+                  onClick={() => graphHandler(`∫(${calcExpression})dx`, "integral", compiledFunction, integralA)}
+                  disabled={!compiledFunction}
                   className="bg-purple-600 hover:bg-purple-700 text-white text-xs h-6 px-2 py-1 rounded"
                 >
                   <TrendingUp className="w-3 h-3 mr-1 inline-flex" />+ ∫f(x)
@@ -256,7 +261,7 @@ export default function CalculusTab({
               ))}
             </div>
           ) : (
-            <div className="text-slate-400 text-center py-4">No solutions found.</div>
+            <div className="text-slate-400 text-center py-4">No solutions found in the current range.</div>
           )}
         </div>
       </div>

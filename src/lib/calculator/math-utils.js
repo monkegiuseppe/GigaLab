@@ -1,192 +1,201 @@
+// lib/calculator/math-utils.js
+
+import { create, all } from 'mathjs';
+
+const math = create(all);
+
+// Cache for compiled functions, especially derivatives
+export const derivativeCache = new Map();
+
 /**
- * A function that takes a number and returns a number, with an added property to store its original string expression.
- * @typedef {function(number): number & { originalExpression: string }} ParsedFunction
+ * A compiled mathjs expression object.
+ * @typedef {object} CompiledExpression
+ * @property {function(object): number} evaluate - Evaluates the expression with a given scope.
+ * @property {string} originalExpression - The original string expression.
  */
 
 export class MathParser {
   /**
-   * Parses a mathematical expression string into a JavaScript function.
+   * Parses and compiles a mathematical expression string.
    * @param {string} expression - The mathematical expression (e.g., "x^2 + sin(x)").
-   * @returns {ParsedFunction} A function that evaluates the expression for a given x.
+   * @returns {CompiledExpression | null} A compiled expression object or null on error.
    */
   static parseFunction(expression) {
-    const processed = expression
-      .replace(/\^/g, "**")
-      .replace(/sin/g, "Math.sin")
-      .replace(/cos/g, "Math.cos")
-      .replace(/tan/g, "Math.tan")
-      .replace(/log/g, "Math.log10")
-      .replace(/ln/g, "Math.log")
-      .replace(/sqrt/g, "Math.sqrt")
-      .replace(/abs/g, "Math.abs")
-      .replace(/exp/g, "Math.exp")
-      .replace(/pi/g, "Math.PI")
-      .replace(/e(?![a-zA-Z])/g, "Math.E");
-
-    const parsedFunc = (x) => {
-      try {
-        // Using eval is necessary here to dynamically interpret the string expression.
-        // The expression is sanitized above to only include Math functions.
-        return eval(processed.replace(/x/g, `(${x})`));
-      } catch {
-        return Number.NaN;
-      }
-    };
-    parsedFunc.originalExpression = expression;
-    return parsedFunc;
-  }
-
-  /**
-   * Calculates the numerical derivative of a function at a point using the central difference formula.
-   * @param {ParsedFunction} f - The function.
-   * @param {number} x - The point at which to find the derivative.
-   * @param {number} [h=0.0001] - The step size for the numerical differentiation.
-   * @returns {number} The approximate derivative value.
-   */
-  static derivative(f, x, h = 0.0001) {
     try {
-      const f_x_plus_h = f(x + h);
-      const f_x_minus_h = f(x - h);
-      if (isNaN(f_x_plus_h) || isNaN(f_x_minus_h) || !isFinite(f_x_plus_h) || !isFinite(f_x_minus_h)) {
-        return Number.NaN;
-      }
-      return (f_x_plus_h - f_x_minus_h) / (2 * h);
-    } catch {
-      return Number.NaN;
+      const node = math.parse(expression);
+      const code = node.compile();
+      code.originalExpression = expression;
+      return code;
+    } catch (e) {
+      console.error(`Error parsing expression "${expression}":`, e);
+      // Return an object that always evaluates to NaN, maintaining a consistent structure
+      return {
+        evaluate: () => Number.NaN,
+        originalExpression: expression,
+      };
     }
   }
 
   /**
-   * Calculates the numerical integral of a function over an interval using the rectangle method.
-   * @param {ParsedFunction} f - The function to integrate.
+   * Calculates the symbolic derivative of an expression and returns it as a string.
+   * @param {string} expression - The expression to differentiate.
+   * @param {string} [variable='x'] - The variable to differentiate with respect to.
+   * @returns {string} The derivative expression as a string.
+   */
+  static derivativeToString(expression, variable = 'x') {
+    try {
+      return math.derivative(expression, variable).toString();
+    } catch (e) {
+      console.error(`Error taking derivative of "${expression}":`, e);
+      return 'NaN'; // An expression that will evaluate to NaN
+    }
+  }
+
+  /**
+   * Calculates the numerical integral of a function over an interval using the trapezoidal rule.
+   * @param {CompiledExpression} compiledFunc - The compiled function to integrate.
    * @param {number} a - The lower bound of integration.
    * @param {number} b - The upper bound of integration.
-   * @param {number} [n=1000] - The number of subintervals (rectangles) to use.
+   * @param {string} [variable='x'] - The variable of integration.
+   * @param {number} [n=1000] - The number of subintervals to use.
    * @returns {number} The approximate area under the curve.
    */
-  static integrate(f, a, b, n = 1000) {
-    try {
-      if (!isFinite(a) || !isFinite(b) || a >= b) return Number.NaN;
-      const dx = (b - a) / n;
-      let sum = 0;
-      for (let i = 0; i < n; i++) {
-        const x = a + i * dx;
-        const y = f(x);
-        if (isNaN(y) || !isFinite(y)) continue;
-        sum += y;
-      }
-      return sum * dx;
-    } catch {
-      return Number.NaN;
+  static integrate(compiledFunc, a, b, variable = 'x', n = 1000) {
+    if (!compiledFunc || typeof compiledFunc.evaluate !== 'function' || !isFinite(a) || !isFinite(b)) return Number.NaN;
+    if (a === b) return 0;
+    if (a > b) return -this.integrate(compiledFunc, b, a, variable, n);
+    
+    const h = (b - a) / n;
+    let sum = 0.5 * (compiledFunc.evaluate({ [variable]: a }) + compiledFunc.evaluate({ [variable]: b }));
+    if (!isFinite(sum)) sum = 0; // Handle infinities at endpoints
+
+    for (let i = 1; i < n; i++) {
+      const x = a + i * h;
+      const y = compiledFunc.evaluate({ [variable]: x });
+      if (isNaN(y) || !isFinite(y)) continue;
+      sum += y;
     }
+    const result = h * sum;
+    return isFinite(result) ? result : Number.NaN;
   }
 
   /**
    * Creates a function that represents the numerical antiderivative (integral function).
-   * @param {ParsedFunction} f - The function to find the antiderivative of.
+   * @param {CompiledExpression} compiledFunc - The function to find the antiderivative of.
    * @param {number} [x0=0] - The constant of integration (the point where the integral is zero).
-   * @returns {ParsedFunction} A function representing the antiderivative.
+   * @param {string} [variable='x'] - The variable of integration.
+   * @returns {CompiledExpression} A compiled function representing the antiderivative.
    */
-  static antiderivative(f, x0 = 0) {
-    const antiDeriv = (x) => {
+  static antiderivative(compiledFunc, x0 = 0, variable = 'x') {
+    const antiDeriv = (scope) => {
+      const x = scope[variable];
+      if (x === x0) return 0;
       try {
-        return MathParser.integrate(f, x0, x, 100);
+        return MathParser.integrate(compiledFunc, x0, x, variable, 500);
       } catch {
         return Number.NaN;
       }
     };
-    antiDeriv.originalExpression = `∫(${f.originalExpression || "f(x)"})dx from ${x0}`;
-    return antiDeriv;
+    return {
+      evaluate: antiDeriv,
+      originalExpression: `∫(${compiledFunc.originalExpression})dx from ${x0}`,
+    };
   }
 
   /**
-   * FIXED: Finds a root of a function using the Newton-Raphson method. Returns NaN on failure.
-   * @param {ParsedFunction} f - The function.
-   * @param {number} [x0=0] - The initial guess for the root.
+   * Finds a root of a function using the Newton-Raphson method.
+   * @param {CompiledExpression} f - The compiled function.
+   * @param {CompiledExpression} df - The compiled derivative of the function.
+   * @param {number} x0 - The initial guess for the root.
+   * @param {string} [variable='x'] - The variable name.
    * @param {number} [maxIterations=50] - The maximum number of iterations.
    * @param {number} [tolerance=1e-7] - The desired precision.
    * @returns {number} The estimated root, or NaN if not found.
    */
-  static findRoot(f, x0 = 0, maxIterations = 50, tolerance = 1e-7) {
-    try {
-      let x = x0;
-      for (let i = 0; i < maxIterations; i++) {
-        const fx = f(x);
-        const fpx = MathParser.derivative(f, x);
-        if (Math.abs(fx) < tolerance) return x;
-        if (Math.abs(fpx) < 1e-15) break; // Avoid division by zero, method fails
-        const newX = x - fx / fpx;
-        if (!isFinite(newX)) break; // Stop if we get NaN or Infinity
-        if (Math.abs(newX - x) < tolerance) return newX;
-        x = newX;
-      }
-      // If loop finishes, it means we didn't converge to a root.
-      return Number.NaN;
-    } catch {
-      return Number.NaN;
+  static findRoot(f, df, x0, variable = 'x', maxIterations = 50, tolerance = 1e-7) {
+    let x = x0;
+    for (let i = 0; i < maxIterations; i++) {
+      const scope = { [variable]: x };
+      const fx = f.evaluate(scope);
+      const dfx = df.evaluate(scope);
+
+      if (Math.abs(fx) < tolerance) return x;
+      if (Math.abs(dfx) < 1e-15) break; // Avoid division by zero
+
+      const newX = x - fx / dfx;
+      if (!isFinite(newX)) break;
+      if (Math.abs(newX - x) < tolerance) return newX;
+      x = newX;
     }
+    return Number.NaN;
   }
 
   /**
-   * FIXED: Finds multiple roots of a function within a given interval. More robust and accurate.
-   * @param {ParsedFunction} f - The function.
-   * @param {number} [xMin=-10] - The minimum x value of the search interval.
-   * @param {number} [xMax=10] - The maximum x value of the search interval.
+   * Finds multiple roots of a function within a given interval.
+   * @param {string} expression - The function's expression string.
+   * @param {number} xMin - The minimum x value of the search interval.
+   * @param {number} xMax - The maximum x value of the search interval.
    * @param {number} [numSeeds=40] - The number of starting points to try.
    * @returns {number[]} An array of unique roots found in the interval.
    */
-  static findRoots(f, xMin = -10, xMax = 10, numSeeds = 40) {
+  static findRoots(expression, xMin, xMax, numSeeds = 40) {
+    const f = this.parseFunction(expression);
+    if (!f) return [];
+
+    const derivativeKey = `derivative_of_${expression}`;
+    let df = derivativeCache.get(derivativeKey);
+    if (!df) {
+      const df_expr = this.derivativeToString(expression, 'x');
+      df = this.parseFunction(df_expr);
+      if (df) derivativeCache.set(derivativeKey, df);
+    }
+    if (!df) return [];
+
     const roots = new Set();
     const step = (xMax - xMin) / numSeeds;
-    
-    for (let i = 0; i <= numSeeds; i++) { // Loop to numSeeds inclusive to check both ends
-        const seed = xMin + i * step;
-        const root = MathParser.findRoot(f, seed);
-        
-        // Verify the found root is valid, within bounds, and actually a root.
-        if (isFinite(root) && root >= xMin && root <= xMax && Math.abs(f(root)) < 1e-5) {
-            // Round to a certain precision to help with de-duplication
-            roots.add(parseFloat(root.toFixed(6)));
-        }
+
+    for (let i = 0; i <= numSeeds; i++) {
+      const seed = xMin + i * step;
+      const root = this.findRoot(f, df, seed, 'x');
+
+      if (isFinite(root) && root >= xMin && root <= xMax && Math.abs(f.evaluate({ x: root })) < 1e-5) {
+        roots.add(parseFloat(root.toFixed(6)));
+      }
     }
-    // Convert Set to a sorted array
     return Array.from(roots).sort((a, b) => a - b);
   }
 
   /**
-     * @param {ParsedFunction} f - The function.
-     * @param {number} xMin - The minimum x value of the search interval.
-     * @param {number} xMax - The maximum x value of the search interval.
-     * @returns {number[]} An array of x-values where local extrema occur.
-     */
-    static findExtrema(f, xMin, xMax) {
-      const derivativeFunc = (x) => MathParser.derivative(f, x);
-      derivativeFunc.originalExpression = `derivative_of_${f.originalExpression}`;
-      return MathParser.findRoots(derivativeFunc, xMin, xMax, 50); // Use more seeds for derivative
-    }
-
-    /**
-     * NEW: Finds intersection points of two functions in an interval.
-     * @param {ParsedFunction} f1 - The first function.
-     * @param {ParsedFunction} f2 - The second function.
-     * @param {number} xMin - The minimum x value of the search interval.
-     * @param {number} xMax - The maximum x value of the search interval.
-     * @returns {number[]} An array of x-values where the functions intersect.
-     */
-    static findIntersections(f1, f2, xMin, xMax) {
-      if (!f1 || !f2) return [];
-      const differenceFunc = (x) => f1(x) - f2(x);
-      differenceFunc.originalExpression = `(${f1.originalExpression || "f1"}) - (${f2.originalExpression || "f2"})`;
-      return MathParser.findRoots(differenceFunc, xMin, xMax, 40);
-    }
+   * Finds x-values of local extrema for a function in an interval.
+   * @param {string} expression - The function's expression string.
+   * @param {number} xMin - The minimum x value of the search interval.
+   * @param {number} xMax - The maximum x value of the search interval.
+   * @returns {number[]} An array of x-values where local extrema occur.
+   */
+  static findExtrema(expression, xMin, xMax) {
+    const derivativeExpr = this.derivativeToString(expression, 'x');
+    return this.findRoots(derivativeExpr, xMin, xMax, 50);
   }
 
-export const derivativeCache = new Map();
+  /**
+   * Finds intersection points of two functions in an interval.
+   * @param {string} expr1 - The first function's expression.
+   * @param {string} expr2 - The second function's expression.
+   * @param {number} xMin - The minimum x value of the search interval.
+   * @param {number} xMax - The maximum x value of the search interval.
+   * @returns {number[]} An array of x-values where the functions intersect.
+   */
+  static findIntersections(expr1, expr2, xMin, xMax) {
+    if (!expr1 || !expr2) return [];
+    const differenceExpr = `(${expr1}) - (${expr2})`;
+    return this.findRoots(differenceExpr, xMin, xMax, 40);
+  }
+}
 
 /**
  * Creates a throttled function that only invokes `func` at most once per every `limit` milliseconds.
  * @param {Function} func The function to throttle.
- * @param {number} limit The aount of time to wait in milliseconds.
+ * @param {number} limit The amount of time to wait in milliseconds.
  * @returns {Function} Returns the new throttled function.
  */
 export function throttle(func, limit) {

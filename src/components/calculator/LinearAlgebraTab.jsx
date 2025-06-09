@@ -5,7 +5,7 @@ import { Grid3X3, Plus, Minus } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import { MatrixOps } from "../../lib/calculator/matrix-utils"
+import { MatrixOps } from "../../lib/calculator/matrix-utils" // UPDATED IMPORT
 
 const MatrixInputDisplay = ({
   matrix,
@@ -22,7 +22,6 @@ const MatrixInputDisplay = ({
   <div className="space-y-4">
     <Label className="text-slate-200 text-lg font-medium">{label}</Label>
 
-    {/* Column control buttons */}
     <div className="flex gap-2 ml-8">
       {matrix[0]?.map((_, j) => (
         <Button
@@ -36,7 +35,6 @@ const MatrixInputDisplay = ({
       ))}
     </div>
 
-    {/* Matrix input area with improved styling */}
     <div className="w-full max-w-sm overflow-x-auto backdrop-blur-xl bg-slate-800/40 p-4 rounded-2xl border border-slate-600/30 shadow-lg">
       <div className="space-y-3 inline-block min-w-full">
         {matrix.map((row, i) => (
@@ -62,7 +60,6 @@ const MatrixInputDisplay = ({
       </div>
     </div>
 
-    {/* Add row/column buttons with improved styling */}
     <div className="flex gap-3">
       <Button
         onClick={onAddRow}
@@ -80,7 +77,6 @@ const MatrixInputDisplay = ({
       </Button>
     </div>
 
-    {/* Determinant display */}
     {det !== null && (
       <div className="backdrop-blur-xl bg-slate-800/40 p-4 rounded-2xl border border-slate-600/30 shadow-lg">
         <div className="flex items-center gap-2">
@@ -90,7 +86,6 @@ const MatrixInputDisplay = ({
       </div>
     )}
 
-    {/* Transpose display */}
     {transpose && (
       <div className="backdrop-blur-xl bg-slate-800/40 p-4 rounded-2xl border border-slate-600/30 shadow-lg">
         <div className="text-slate-400 text-sm mb-3 font-medium">
@@ -149,9 +144,9 @@ export default function LinearAlgebraTab() {
 
   useEffect(() => {
     try {
-      setDetAResult(matrixA.length === matrixA[0]?.length ? MatrixOps.determinant(matrixA).toFixed(4) : "Not Square")
-    } catch {
-      setDetAResult("Error")
+      setDetAResult(MatrixOps.determinant(matrixA).toFixed(4))
+    } catch(e) {
+      setDetAResult(e.message.includes("square") ? "Not Square" : "Error")
     }
     try {
       setTransposeAResult(MatrixOps.transpose(matrixA))
@@ -159,9 +154,9 @@ export default function LinearAlgebraTab() {
       setTransposeAResult("Error")
     }
     try {
-      setDetBResult(matrixB.length === matrixB[0]?.length ? MatrixOps.determinant(matrixB).toFixed(4) : "Not Square")
-    } catch {
-      setDetBResult("Error")
+      setDetBResult(MatrixOps.determinant(matrixB).toFixed(4))
+    } catch(e) {
+      setDetBResult(e.message.includes("square") ? "Not Square" : "Error")
     }
     try {
       setTransposeBResult(MatrixOps.transpose(matrixB))
@@ -221,7 +216,6 @@ export default function LinearAlgebraTab() {
         <div className="space-y-6">
           <Label className="text-slate-200 text-lg font-medium">Results</Label>
 
-          {/* Matrix Multiplication Result */}
           {productABResult && (
             <div className="backdrop-blur-xl bg-slate-800/40 p-6 rounded-2xl border border-slate-600/30 shadow-lg">
               <div className="text-slate-400 text-sm mb-4 font-medium">A × B =</div>
@@ -251,7 +245,6 @@ export default function LinearAlgebraTab() {
             </div>
           )}
 
-          {/* Matrix Inverse Result */}
           {inverseAResult && (
             <div className="backdrop-blur-xl bg-slate-800/40 p-6 rounded-2xl border border-slate-600/30 shadow-lg">
               <div className="text-slate-400 text-sm mb-4 font-medium">A⁻¹ =</div>

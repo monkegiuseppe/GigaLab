@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react" // UPDATED: import useRef
+import { useState, useCallback, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 
 // Adjust import paths based on your actual file structure
@@ -14,20 +14,23 @@ import ParametricTab from "../components/calculator/ParametricTab"
 import { MathParser, derivativeCache } from "../lib/calculator/math-utils"
 
 /**
+ * @typedef {import('../lib/calculator/math-utils').CompiledExpression} CompiledExpression
+ */
+
+/**
  * @typedef {object} FunctionPlotData
  * @property {number} id - Unique identifier for the function.
- * @property {string} expression - The mathematical expression as a string.
+ * @property {string} expression - The mathematical expression as a string for display.
+ * @property {string} [originalExpression] - The raw, parsable expression for derivatives.
  * @property {string} color - The hex color code for plotting.
  * @property {boolean} visible - Whether the function is visible on the graph.
  * @property {'function' | 'derivative' | 'integral' | 'parametric'} type - The type of function.
  * @property {number | null} parentId - The ID of the parent function if it's a derivative or integral.
- * @property {Array<{x: number, y: number}>} points - Calculated points for plotting.
- * @property {Array<{x: number, y: number}>} integralPoints - Calculated points for the integral area.
- * @property {import('../lib/calculator/math-utils').ParsedFunction | null} parsedFunc - The executable function parsed from the expression.
+ * @property {CompiledExpression | null} compiled - The mathjs compiled object for the function.
  * @property {string} [xExpression] - For parametric functions, the x(t) expression.
  * @property {string} [yExpression] - For parametric functions, the y(t) expression.
- * @property {import('../lib/calculator/math-utils').ParsedFunction | null} [parsedXFunc] - For parametric functions, the parsed x(t) function.
- * @property {import('../lib/calculator/math-utils').ParsedFunction | null} [parsedYFunc] - For parametric functions, the parsed y(t) function.
+ * @property {CompiledExpression | null} [compiledX] - For parametric functions, the compiled x(t) function.
+ * @property {CompiledExpression | null} [compiledY] - For parametric functions, the compiled y(t) function.
  * @property {number} [tMin] - For parametric functions, the minimum t value.
  * @property {number} [tMax] - For parametric functions, the maximum t value.
  */
@@ -43,9 +46,7 @@ const initialFunctions = [
     visible: true,
     type: "function",
     parentId: null,
-    points: [],
-    integralPoints: [],
-    parsedFunc: MathParser.parseFunction("x^2"),
+    compiled: MathParser.parseFunction("x^2"),
   },
 ]
 
@@ -62,27 +63,19 @@ export default function CalculatorPage() {
   const [integralBounds, setIntegralBounds] = useState({ a: -2, b: 2, functionId: 1 })
   const [showIntegralArea, setShowIntegralArea] = useState(true)
 
-  // ADDED: State for parametric animation. This was missing.
   const [animationState, setAnimationState] = useState({
     isPlaying: false,
     functionId: null,
     currentT: 0,
-    duration: 5, // Animation duration in seconds
+    duration: 8, // Animation duration in seconds
   })
-  const animationFrameRef = useRef() // ADDED: Ref for animation loop
+  const animationFrameRef = useRef()
 
   const mathSymbols = [
-    { symbol: "π", value: "pi" },
-    { symbol: "e", value: "e" },
-    { symbol: "sin", value: "sin(" },
-    { symbol: "cos", value: "cos(" },
-    { symbol: "tan", value: "tan(" },
-    { symbol: "ln", value: "ln(" },
-    { symbol: "log", value: "log(" },
-    { symbol: "√", value: "sqrt(" },
-    { symbol: "^", value: "^" },
-    { symbol: "|x|", value: "abs(" },
-    { symbol: "exp", value: "exp(" },
+    { symbol: "π", value: "pi" }, { symbol: "e", value: "e" }, { symbol: "sin", value: "sin(" },
+    { symbol: "cos", value: "cos(" }, { symbol: "tan", value: "tan(" }, { symbol: "ln", value: "ln(" },
+    { symbol: "log", value: "log(" }, { symbol: "√", value: "sqrt(" }, { symbol: "^", value: "^" },
+    { symbol: "|x|", value: "abs(" }, { symbol: "exp", value: "exp(" },
   ]
 
   const addSymbolToInput = useCallback((symbol, targetSetter) => {
@@ -100,9 +93,7 @@ export default function CalculatorPage() {
         visible: true,
         type: "function",
         parentId: null,
-        points: [],
-        integralPoints: [],
-        parsedFunc: MathParser.parseFunction(newFunctionInput),
+        compiled: MathParser.parseFunction(newFunctionInput),
       }
       setFunctions((prev) => [...prev, newFunc])
       setNewFunctionInput("")
@@ -121,13 +112,10 @@ export default function CalculatorPage() {
         if (f.id === id) {
           const updatedFunc = { ...f, ...updates }
           if (updates.expression && updates.expression !== f.expression) {
-            const oldExpressionKey = f.parsedFunc?.originalExpression || f.expression
-            updatedFunc.parsedFunc = MathParser.parseFunction(updates.expression)
-            derivativeCache.forEach((_, key) => {
-              if (key.startsWith(oldExpressionKey)) {
-                derivativeCache.delete(key)
-              }
-            })
+            updatedFunc.compiled = MathParser.parseFunction(updates.expression)
+            // Clear derivative cache related to the old expression
+            derivativeCache.delete(`derivative_of_${f.expression}`)
+            derivativeCache.delete(`derivative_of_derivative_of_${f.expression}`)
           }
           return updatedFunc
         }
@@ -136,12 +124,16 @@ export default function CalculatorPage() {
     )
   }, [])
 
-  // UPDATED: handleRemoveFunction now stops animation if the function is removed
   const handleRemoveFunction = useCallback(
     (idToRemove) => {
-      // Stop animation if the removed function was being animated
       if (animationState.functionId === idToRemove) {
         setAnimationState({ isPlaying: false, functionId: null, currentT: 0, duration: 5 })
+      }
+
+      const funcToRemove = functions.find((f) => f.id === idToRemove)
+      if (funcToRemove) {
+        const expr = funcToRemove.originalExpression || funcToRemove.expression;
+        derivativeCache.delete(`derivative_of_${expr}`)
       }
 
       setFunctions((prevFuncs) => {
@@ -159,30 +151,32 @@ export default function CalculatorPage() {
         return newFuncs
       })
     },
-    [integralBounds.functionId, animationState.functionId], // UPDATED: Add dependency
+    [integralBounds.functionId, animationState.functionId, functions],
   )
 
   const handleAddDerivative = useCallback(
     (parentId) => {
       const parentFunc = functions.find((f) => f.id === parentId)
-      if (!parentFunc || !parentFunc.parsedFunc) return
+      if (!parentFunc || !parentFunc.compiled) return
       const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
       const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
+
+      const derivativeExpression = MathParser.derivativeToString(parentFunc.expression, "x")
+      const compiledDerivative = MathParser.parseFunction(derivativeExpression)
+
       const displayExpr = `d/dx(${parentFunc.expression.substring(0, 10) + (parentFunc.expression.length > 10 ? "..." : "")})`
-      const derivativeFunc = (x) => MathParser.derivative(parentFunc.parsedFunc, x)
-      derivativeFunc.originalExpression = `derivative_of_${parentFunc.parsedFunc.originalExpression || parentFunc.expression}`
+
       setFunctions((prev) => [
         ...prev,
         {
           id: newId,
           expression: displayExpr,
+          originalExpression: derivativeExpression,
           color: colors[newId % colors.length],
           visible: true,
           type: "derivative",
           parentId: parentId,
-          points: [],
-          integralPoints: [],
-          parsedFunc: derivativeFunc,
+          compiled: compiledDerivative,
         },
       ])
     },
@@ -192,11 +186,13 @@ export default function CalculatorPage() {
   const handleAddIntegral = useCallback(
     (parentId) => {
       const parentFunc = functions.find((f) => f.id === parentId)
-      if (!parentFunc || !parentFunc.parsedFunc) return
+      if (!parentFunc || !parentFunc.compiled) return
       const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
       const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
       const displayExpr = `∫(${parentFunc.expression.substring(0, 10) + (parentFunc.expression.length > 10 ? "..." : "")})dx`
-      const integralFunc = MathParser.antiderivative(parentFunc.parsedFunc, xMin)
+
+      const integralFunc = MathParser.antiderivative(parentFunc.compiled, xMin)
+
       setFunctions((prev) => [
         ...prev,
         {
@@ -206,9 +202,7 @@ export default function CalculatorPage() {
           visible: true,
           type: "integral",
           parentId: parentId,
-          points: [],
-          integralPoints: [],
-          parsedFunc: integralFunc,
+          compiled: integralFunc,
         },
       ])
     },
@@ -220,33 +214,33 @@ export default function CalculatorPage() {
       const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
       const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
 
-      try {
-        const parsedXFunc = MathParser.parseFunction(xExpr.replace(/t/g, "x"))
-        const parsedYFunc = MathParser.parseFunction(yExpr.replace(/t/g, "x"))
+      const compiledX = MathParser.parseFunction(xExpr)
+      const compiledY = MathParser.parseFunction(yExpr)
 
-        setFunctions((prev) => [
-          ...prev,
-          {
-            id: newId,
-            expression: `(${xExpr}, ${yExpr})`,
-            xExpression: xExpr,
-            yExpression: yExpr,
-            color: colors[newId % colors.length],
-            visible: true,
-            type: "parametric",
-            parentId: null,
-            points: [],
-            integralPoints: [],
-            parsedFunc: null,
-            parsedXFunc: parsedXFunc,
-            parsedYFunc: parsedYFunc,
-            tMin: tMin,
-            tMax: tMax,
-          },
-        ])
-      } catch (error) {
-        console.error("Error parsing parametric functions:", error)
+      if (!compiledX || !compiledY) {
+        console.error("Error parsing parametric functions.")
+        // You could add user-facing error feedback here
+        return
       }
+
+      setFunctions((prev) => [
+        ...prev,
+        {
+          id: newId,
+          expression: `(x(t), y(t))`, // Display expression
+          xExpression: xExpr,
+          yExpression: yExpr,
+          color: colors[newId % colors.length],
+          visible: true,
+          type: "parametric",
+          parentId: null,
+          compiled: null,
+          compiledX: compiledX,
+          compiledY: compiledY,
+          tMin: tMin,
+          tMax: tMax,
+        },
+      ])
     },
     [functions],
   )
@@ -257,50 +251,42 @@ export default function CalculatorPage() {
 
   // Animation loop for parametric tracing
   useEffect(() => {
+    let animationFrameId;
     const animate = () => {
-      if (!animationState.isPlaying) return
-
-      const func = functions.find((f) => f.id === animationState.functionId)
-      if (!func || func.type !== "parametric") {
-        setAnimationState((prev) => ({ ...prev, isPlaying: false }))
-        return
-      }
-
-      // Calculate time step for the animation
-      const tRange = func.tMax - func.tMin
-      const tStep = tRange / (animationState.duration * 60) // Assuming 60fps
-
       setAnimationState((prev) => {
+        if (!prev.isPlaying) return prev
+
+        const func = functions.find((f) => f.id === prev.functionId)
+        if (!func || func.type !== "parametric") {
+          return { ...prev, isPlaying: false }
+        }
+
+        const tRange = func.tMax - func.tMin
+        const tStep = tRange / (prev.duration * 60) // Assuming 60fps
+
         const newT = prev.currentT + tStep
         if (newT >= func.tMax) {
-          // End animation
           return { ...prev, currentT: func.tMax, isPlaying: false }
         }
-        // Continue animation
         return { ...prev, currentT: newT }
       })
-
-      animationFrameRef.current = requestAnimationFrame(animate)
+      animationFrameId = requestAnimationFrame(animate)
     }
 
     if (animationState.isPlaying) {
-      animationFrameRef.current = requestAnimationFrame(animate)
+      animationFrameId = requestAnimationFrame(animate)
     }
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
+      cancelAnimationFrame(animationFrameId)
     }
-  }, [animationState, functions])
+  }, [animationState.isPlaying, functions])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0f172a" }}>
-      {/* Background animation */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       </div>
-
       <div className="max-w-7xl mx-auto p-6">
         <motion.div
           className="backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden"
@@ -314,7 +300,6 @@ export default function CalculatorPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {/* Header */}
           <motion.div
             className="p-8 border-b border-slate-700/30"
             initial={{ opacity: 0 }}
@@ -332,12 +317,7 @@ export default function CalculatorPage() {
           </motion.div>
 
           <Tabs defaultValue="graphing" onValueChange={setActiveTab}>
-            <motion.div
-              className="p-6 pb-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
+            <motion.div className="p-6 pb-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
               <TabsList
                 className="grid w-full grid-cols-4 h-14 p-1"
                 style={{
@@ -347,28 +327,16 @@ export default function CalculatorPage() {
                   backdropFilter: "blur(12px)",
                 }}
               >
-                <TabsTrigger
-                  value="graphing"
-                  className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-blue-600 data-[state=active]:shadow-lg font-medium"
-                >
+                <TabsTrigger value="graphing" className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-blue-600 data-[state=active]:shadow-lg font-medium">
                   📈 Graphing
                 </TabsTrigger>
-                <TabsTrigger
-                  value="calculus"
-                  className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-green-600 data-[state=active]:shadow-lg font-medium"
-                >
+                <TabsTrigger value="calculus" className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-green-600 data-[state=active]:shadow-lg font-medium">
                   🧮 Calculus
                 </TabsTrigger>
-                <TabsTrigger
-                  value="parametric"
-                  className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-orange-600 data-[state=active]:shadow-lg font-medium"
-                >
+                <TabsTrigger value="parametric" className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-orange-600 data-[state=active]:shadow-lg font-medium">
                   📐 Parametric
                 </TabsTrigger>
-                <TabsTrigger
-                  value="linear-algebra"
-                  className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-purple-600 data-[state=active]:shadow-lg font-medium"
-                >
+                <TabsTrigger value="linear-algebra" className="text-slate-300 rounded-xl transition-all duration-200 data-[state=active]:text-white data-[state=active]:bg-purple-600 data-[state=active]:shadow-lg font-medium">
                   🔢 Linear Algebra
                 </TabsTrigger>
               </TabsList>
@@ -380,52 +348,31 @@ export default function CalculatorPage() {
                   <GraphingTab
                     functions={functions}
                     setFunctions={setFunctions}
-                    xMin={xMin}
-                    setXMin={setXMin}
-                    xMax={xMax}
-                    setXMax={setXMax}
-                    yMin={yMin}
-                    setYMin={setYMin}
-                    yMax={yMax}
-                    setYMax={setYMax}
-                    integralBounds={integralBounds}
-                    setIntegralBounds={setIntegralBounds}
-                    showIntegralArea={showIntegralArea}
-                    setShowIntegralArea={setShowIntegralArea}
-                    mathSymbols={mathSymbols}
-                    addSymbolToInput={addSymbolToInput}
-                    newFunctionInput={newFunctionInput}
-                    setNewFunctionInput={setNewFunctionInput}
-                    onAddFunction={handleAddFunction}
-                    onAddDerivative={handleAddDerivative}
-                    onAddIntegral={handleAddIntegral}
-                    onUpdateFunction={handleUpdateFunction}
+                    xMin={xMin} setXMin={setXMin} xMax={xMax} setXMax={setXMax}
+                    yMin={yMin} setYMin={setYMin} yMax={yMax} setYMax={setYMax}
+                    integralBounds={integralBounds} setIntegralBounds={setIntegralBounds}
+                    showIntegralArea={showIntegralArea} setShowIntegralArea={setShowIntegralArea}
+                    mathSymbols={mathSymbols} addSymbolToInput={addSymbolToInput}
+                    newFunctionInput={newFunctionInput} setNewFunctionInput={setNewFunctionInput}
+                    onAddFunction={handleAddFunction} onAddDerivative={handleAddDerivative}
+                    onAddIntegral={handleAddIntegral} onUpdateFunction={handleUpdateFunction}
                     onRemoveFunction={handleRemoveFunction}
-                    animationState={animationState}
-                    setAnimationState={setAnimationState}
+                    animationState={animationState} setAnimationState={setAnimationState}
                   />
                 </TabsContent>
                 <TabsContent value="calculus">
                   <CalculusTab
-                    setActiveTab={setActiveTab}
-                    setFunctions={setFunctions}
-                    functions={functions}
-                    mathSymbols={mathSymbols}
-                    addSymbolToInput={addSymbolToInput}
-                    globalXMin={xMin}
-                    globalXMax={xMax}
+                    setActiveTab={setActiveTab} setFunctions={setFunctions}
+                    functions={functions} mathSymbols={mathSymbols} addSymbolToInput={addSymbolToInput}
+                    globalXMin={xMin} globalXMax={xMax}
                   />
                 </TabsContent>
                 <TabsContent value="parametric">
                   <ParametricTab
-                    functions={functions}
-                    setFunctions={setFunctions}
-                    mathSymbols={mathSymbols}
-                    addSymbolToInput={addSymbolToInput}
-                    onAddParametric={handleAddParametric}
-                    onUpdateFunction={handleUpdateFunction}
-                    onRemoveFunction={handleRemoveFunction}
-                    setActiveTab={setActiveTab}
+                    functions={functions} setFunctions={setFunctions}
+                    mathSymbols={mathSymbols} addSymbolToInput={addSymbolToInput}
+                    onAddParametric={handleAddParametric} onUpdateFunction={handleUpdateFunction}
+                    onRemoveFunction={handleRemoveFunction} setActiveTab={setActiveTab}
                   />
                 </TabsContent>
                 <TabsContent value="linear-algebra">
@@ -437,22 +384,13 @@ export default function CalculatorPage() {
         </motion.div>
       </div>
 
-      {/* CSS for background patterns */}
       <style>{`
         .bg-grid-pattern {
           background-image: radial-gradient(circle, rgba(59, 130, 246, 0.3) 1px, transparent 1px);
           background-size: 30px 30px;
         }
-        
-        @keyframes pulse {
-          0% { opacity: 0.03; }
-          50% { opacity: 0.06; }
-          100% { opacity: 0.03; }
-        }
-        
-        .bg-animate {
-          animation: pulse 8s ease-in-out infinite;
-        }
+        @keyframes pulse { 0% { opacity: 0.03; } 50% { opacity: 0.06; } 100% { opacity: 0.03; } }
+        .bg-animate { animation: pulse 8s ease-in-out infinite; }
       `}</style>
     </div>
   )
