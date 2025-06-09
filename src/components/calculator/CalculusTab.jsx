@@ -1,6 +1,6 @@
 "use client"
 
-import { Calculator, Target,FunctionSquare, TrendingUp } from "lucide-react"
+import { Calculator, Target, TrendingUp, FunctionSquare } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
@@ -32,7 +32,7 @@ export default function CalculusTab({
     const derivativeExpr = MathParser.derivativeToString(calcExpression, 'x');
     return MathParser.parseFunction(derivativeExpr);
   }, [calcExpression])
-
+  
   const symbolicResults = useMemo(() => {
       if (!calcExpression) return { derivative: "", integral: "" };
       const derivative = MathParser.derivativeToString(calcExpression, 'x');
@@ -72,23 +72,28 @@ export default function CalculusTab({
     }
   }, [solverExpression, equationFormat, targetValue, globalXMin, globalXMax])
 
-  const graphHandler = (expression, type, baseCompiledFunc, integrationStart) => {
+  const graphHandler = (displayExpression, type, baseCompiledFunc, integrationStart) => {
     const newId = Math.max(0, ...functions.map((f) => f.id)) + 1
     const colors = ["#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"]
     let newFuncData = {
         id: newId,
-        expression: expression,
+        expression: displayExpression, // This is for display only
         color: colors[newId % colors.length],
         visible: true,
         type: type,
-        parentId: null, // Can be enhanced to link parent
+        parentId: null,
     };
 
-    if (type === "derivative" && baseCompiledFunc) {
-      newFuncData.compiled = compiledDerivative; // Use the already computed one
+    if (type === "derivative") {
+      newFuncData.compiled = compiledDerivative;
+      // The parsable expression is the one from the compiled derivative object
       newFuncData.originalExpression = compiledDerivative.originalExpression;
-    } else if (type === "integral" && baseCompiledFunc) {
+    } else if (type === "integral") {
       newFuncData.compiled = MathParser.antiderivative(baseCompiledFunc, integrationStart ?? 0);
+      // For integrals, we create a parsable expression from the symbolic result
+      // We remove the "+ C" for parsing, as C is handled by the antiderivative function.
+      const parsableIntegral = symbolicResults.integral.replace(/\s*\+\s*C$/, '');
+      newFuncData.originalExpression = parsableIntegral;
     } else { // type === "function"
       newFuncData.compiled = compiledFunction;
       newFuncData.originalExpression = calcExpression;
@@ -127,7 +132,7 @@ export default function CalculusTab({
             className="bg-slate-700/50 border-slate-600 text-slate-200 flex-1"
           />
           <Button
-            onClick={() => graphHandler(calcExpression, "function")}
+            onClick={() => graphHandler(calcExpression, "function", compiledFunction)}
             className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded"
           >
             + f(x)
@@ -176,7 +181,7 @@ export default function CalculusTab({
               <div className="flex items-center justify-between mb-2">
                 <div className="text-slate-400 text-sm">f'({calcPoint}) =</div>
                 <Button
-                  onClick={() => graphHandler(`f'(${calcExpression})`, "derivative", compiledFunction)}
+                  onClick={() => graphHandler(`d/dx(${calcExpression})`, "derivative", compiledFunction)}
                   disabled={!compiledFunction}
                   className="bg-green-600 hover:bg-green-700 text-white text-xs h-6 px-2 py-1 rounded"
                 >

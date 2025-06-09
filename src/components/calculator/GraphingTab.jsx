@@ -14,11 +14,10 @@ const SVG_WIDTH = 400
 const SVG_HEIGHT = 300
 const AUTOFIT_DEFAULT_X_RANGE = { min: -10, max: 10 };
 const POI_COLORS = {
-  root: '#fde047',       // A bright yellow
-  extremum: '#a78bfa',   // A soft purple
-  intersection: '#60a5fa', // A clear blue
+  root: '#fde047',
+  extremum: '#a78bfa',
+  intersection: '#60a5fa',
 };
-
 
 export default function GraphingTab({
   functions,
@@ -105,6 +104,7 @@ export default function GraphingTab({
   }
 
   const getCompiledDerivative = useCallback((func) => {
+    // Use the parsable expression
     const expr = func.originalExpression || func.expression;
     const cacheKey = `derivative_of_${expr}`;
     if (derivativeCache.has(cacheKey)) {
@@ -182,8 +182,12 @@ export default function GraphingTab({
     const visibleFuncs = functions.filter(f => f.visible && f.type !== 'parametric' && f.compiled);
     
     visibleFuncs.forEach(func => {
+      // Use the parsable expression, falling back to the display one if needed.
       const expr = func.originalExpression || func.expression;
       
+      // Prevent trying to parse non-mathematical display strings
+      if (expr.includes('∫') || expr.includes('d/dx')) return;
+
       const roots = MathParser.findRoots(expr, xMin, xMax);
       roots.forEach(x => points.push({ x, y: 0, type: 'root', color: POI_COLORS.root, funcId: func.id }));
       
@@ -202,6 +206,8 @@ export default function GraphingTab({
             const f2 = visibleFuncs[j];
             const expr1 = f1.originalExpression || f1.expression;
             const expr2 = f2.originalExpression || f2.expression;
+
+            if (expr1.includes('∫') || expr1.includes('d/dx') || expr2.includes('∫') || expr2.includes('d/dx')) continue;
 
             const intersections = MathParser.findIntersections(expr1, expr2, xMin, xMax);
             intersections.forEach(x => {
@@ -604,7 +610,7 @@ export default function GraphingTab({
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: func.color }} />
                 <Input
-                  value={func.type === 'parametric' ? `${func.xExpression}, ${func.yExpression}` : func.expression}
+                  value={func.expression}
                   onChange={(e) => onUpdateFunction(func.id, { expression: e.target.value })}
                   className="bg-slate-700/50 border-slate-600/50 text-slate-200 text-sm h-9 rounded-xl backdrop-blur-sm"
                   disabled={func.type !== "function"}
