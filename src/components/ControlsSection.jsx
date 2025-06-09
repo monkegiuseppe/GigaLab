@@ -2,11 +2,80 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Zap, Settings, Activity, LineChart, BarChart3, Waves, Box, Atom, TrendingUp, Gauge } from "lucide-react"
+import { Zap, Settings, Activity, LineChart, BarChart3, Waves, Box, Atom, TrendingUp, Gauge, Info, X } from "lucide-react"
 import * as THREE from "three"
 import { Button } from "../components/ui/button"
 import { Slider } from "../components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
+
+// --- START: New Analytics Info Modal Component ---
+const AnalyticsInfoModal = ({ onClose, tools }) => {
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal Panel */}
+      <motion.div
+        className="relative w-full max-w-2xl max-h-[85vh] flex flex-col backdrop-blur-2xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden"
+        style={{
+          backgroundColor: "rgba(30, 41, 59, 0.85)",
+          borderColor: "rgba(51, 65, 85, 0.5)",
+        }}
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-700/50">
+          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <Info className="w-5 h-5 text-cyan-400" />
+            <span>Analytics Tools Explained</span>
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-slate-700/50 flex items-center justify-center text-slate-300 hover:bg-slate-600 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 p-6 overflow-y-auto space-y-8 custom-scrollbar">
+          {tools.map((tool, index) => (
+            <div key={index} className="flex items-start gap-4">
+              <div
+                className={`flex-shrink-0 mt-1 p-2 rounded-lg bg-gradient-to-br ${tool.color} text-white shadow-lg`}
+              >
+                {tool.icon}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-slate-100 mb-1">
+                  {tool.name}
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  {tool.details}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+// --- END: New Analytics Info Modal Component ---
+
 
 export default function ControlsSection({
   onModeToggle,
@@ -28,44 +97,51 @@ export default function ControlsSection({
   const [activeTab, setActiveTab] = useState("photon")
   const [currentTool, setCurrentTool] = useState(0)
   const [scrollDirection, setScrollDirection] = useState("down")
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false) // State for info modal
 
-  // Diagnostic tools
+  // Diagnostic tools with detailed explanations
   const diagnosticTools = [
     {
       name: "Absorption Spectrum",
       icon: <LineChart className="w-5 h-5" />,
       description: "Visualize absorption peaks across energy levels",
       color: "from-cyan-500 to-blue-600",
+      details: "This graph shows the probability that the atom will absorb an incoming photon at a given energy. The tall peaks, or 'absorption lines', occur at specific energies that precisely match the energy difference between two electron orbitals. When a photon with this exact energy hits the atom, an electron can 'jump' to a higher energy orbital. This is a fundamental concept in spectroscopy."
     },
     {
       name: "Photoelectron Spectrum",
       icon: <BarChart3 className="w-5 h-5" />,
       description: "Analyze energy distribution of ejected electrons",
       color: "from-rose-500 to-red-600",
+      details: "If an incoming photon has more energy than an electron's binding energy (the energy holding it to the atom), the electron can be completely ejected. This is the photoelectric effect. This graph shows the kinetic energy (KE) of these ejected 'photoelectrons'. By measuring the KE, we can deduce the electron's original binding energy using the formula: Binding Energy = Photon Energy - KE. Each bar corresponds to electrons ejected from a different orbital."
     },
     {
       name: "Dipole Spectrum",
       icon: <Waves className="w-5 h-5" />,
       description: "Analyze harmonic generation in strong fields",
       color: "from-purple-500 to-pink-600",
+      details: "When a very intense laser field interacts with an atom, it can cause the atom to emit light not just at the laser's frequency (ω), but also at odd multiples of that frequency (3ω, 5ω, etc.). This phenomenon is called High-Harmonic Generation (HHG). This graph shows the intensity of these emitted harmonics, which provides insight into the atom's highly non-linear response to the strong field."
     },
     {
       name: "Density Visualization",
       icon: <Box className="w-5 h-5" />,
       description: "Examine electron density distribution ρ(r,t)",
       color: "from-emerald-500 to-teal-600",
+      details: "In quantum mechanics, an electron doesn't have a fixed position but exists as a 'probability cloud'. This visualization represents the electron density, ρ(r,t), which describes the probability of finding an electron at a particular position (r) at a given time (t). Denser regions indicate a higher probability. The cross-section slider in the settings tab directly cuts through this density."
     },
     {
       name: "Expectation Values",
       icon: <TrendingUp className="w-5 h-5" />,
       description: "Track observables like ⟨r⟩(t) and ⟨H⟩(t) over time",
       color: "from-amber-500 to-orange-600",
+      details: "This graph shows the time evolution of the average value (or 'expectation value') of key physical properties. For example, ⟨r⟩(t) is the average position of the electron, showing how the electron cloud moves. ⟨H⟩(t) is the average total energy. Tracking these values is crucial for understanding how the quantum system evolves under the influence of external fields, like an incoming photon."
     },
     {
       name: "Ionization Yield",
       icon: <Gauge className="w-5 h-5" />,
       description: "Measure ionization probability vs. field parameters",
       color: "from-indigo-500 to-violet-600",
+      details: "Ionization is the process of completely removing an electron from an atom. This graph shows the probability of ionization occurring as a function of the intensity of the incoming light. As the light gets more intense, the ionization probability typically increases dramatically. This is a key metric in strong-field physics and is essential for understanding how matter behaves in extreme conditions."
     },
   ]
 
@@ -828,9 +904,14 @@ export default function ControlsSection({
                             {diagnosticTools[currentTool].icon}
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-lg font-bold text-slate-100 mb-1">
-                              {diagnosticTools[currentTool].name}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-lg font-bold text-slate-100 mb-1">
+                                {diagnosticTools[currentTool].name}
+                              </h3>
+                              <button onClick={() => setIsInfoModalOpen(true)} className="text-slate-400 hover:text-white transition-colors mb-1">
+                                  <Info className="w-4 h-4" />
+                              </button>
+                            </div>
                             <p className="text-sm text-slate-300">{diagnosticTools[currentTool].description}</p>
                           </div>
                         </motion.div>
@@ -1044,6 +1125,16 @@ export default function ControlsSection({
           }
         `}</style>
       </motion.div>
+    
+    {/* Render the modal when state is true */}
+    <AnimatePresence>
+        {isInfoModalOpen && (
+          <AnalyticsInfoModal
+            onClose={() => setIsInfoModalOpen(false)}
+            tools={diagnosticTools}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
