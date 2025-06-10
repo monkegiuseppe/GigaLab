@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Zap, Settings, Activity, LineChart, BarChart3, Waves, Box, Atom, TrendingUp, Gauge, Info, X } from "lucide-react"
+import { Zap, Settings, Activity, LineChart, BarChart3, Waves, Target, PieChart, Info, X } from "lucide-react"
 import * as THREE from "three"
 import { Button } from "../components/ui/button"
 import { Slider } from "../components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 
-// --- START: New Analytics Info Modal Component ---
+// ---  New Analytics Info Modal Component ---
 const AnalyticsInfoModal = ({ onClose, tools }) => {
   return (
     <motion.div
@@ -109,39 +109,32 @@ export default function ControlsSection({
       details: "This graph shows the probability that the atom will absorb an incoming photon at a given energy. The tall peaks, or 'absorption lines', occur at specific energies that precisely match the energy difference between two electron orbitals. When a photon with this exact energy hits the atom, an electron can 'jump' to a higher energy orbital. This is a fundamental concept in spectroscopy."
     },
     {
+        name: "Photon Emission Pattern",
+        icon: <Target className="w-5 h-5" />,
+        description: "See the probable direction of emitted photons",
+        color: "from-rose-500 to-red-600",
+        details: "When an atom emits a photon, it doesn't do so uniformly in all directions. This visualization shows the anisotropic probability distribution of photon emission, which depends on the selection rules of the transition (ΔL, Δm). The 'lobes' indicate the directions where the photon is most likely to be detected, providing insight into the angular momentum change. [19, 23]"
+    },
+    {
       name: "Photoelectron Spectrum",
       icon: <BarChart3 className="w-5 h-5" />,
       description: "Analyze energy distribution of ejected electrons",
-      color: "from-rose-500 to-red-600",
+      color: "from-emerald-500 to-teal-600",
       details: "If an incoming photon has more energy than an electron's binding energy (the energy holding it to the atom), the electron can be completely ejected. This is the photoelectric effect. This graph shows the kinetic energy (KE) of these ejected 'photoelectrons'. By measuring the KE, we can deduce the electron's original binding energy using the formula: Binding Energy = Photon Energy - KE. Each bar corresponds to electrons ejected from a different orbital."
     },
     {
-      name: "Dipole Spectrum",
-      icon: <Waves className="w-5 h-5" />,
-      description: "Analyze harmonic generation in strong fields",
-      color: "from-purple-500 to-pink-600",
-      details: "When a very intense laser field interacts with an atom, it can cause the atom to emit light not just at the laser's frequency (ω), but also at odd multiples of that frequency (3ω, 5ω, etc.). This phenomenon is called High-Harmonic Generation (HHG). This graph shows the intensity of these emitted harmonics, which provides insight into the atom's highly non-linear response to the strong field."
+        name: "Rabi Oscillations",
+        icon: <Waves className="w-5 h-5" />,
+        description: "Observe the energy exchange with a resonant field",
+        color: "from-purple-500 to-pink-600",
+        details: "When an atom is exposed to a continuous, resonant electromagnetic field, it doesn't just absorb the energy and stay excited. Instead, it coherently exchanges energy with the field, oscillating between its ground and excited states. The frequency of these 'Rabi oscillations' is a key parameter in quantum computing and control. [20, 28, 31, 32]"
     },
     {
-      name: "Density Visualization",
-      icon: <Box className="w-5 h-5" />,
-      description: "Examine electron density distribution ρ(r,t)",
-      color: "from-emerald-500 to-teal-600",
-      details: "In quantum mechanics, an electron doesn't have a fixed position but exists as a 'probability cloud'. This visualization represents the electron density, ρ(r,t), which describes the probability of finding an electron at a particular position (r) at a given time (t). Denser regions indicate a higher probability. The cross-section slider in the settings tab directly cuts through this density."
-    },
-    {
-      name: "Expectation Values",
-      icon: <TrendingUp className="w-5 h-5" />,
-      description: "Track observables like ⟨r⟩(t) and ⟨H⟩(t) over time",
-      color: "from-amber-500 to-orange-600",
-      details: "This graph shows the time evolution of the average value (or 'expectation value') of key physical properties. For example, ⟨r⟩(t) is the average position of the electron, showing how the electron cloud moves. ⟨H⟩(t) is the average total energy. Tracking these values is crucial for understanding how the quantum system evolves under the influence of external fields, like an incoming photon."
-    },
-    {
-      name: "Ionization Yield",
-      icon: <Gauge className="w-5 h-5" />,
-      description: "Measure ionization probability vs. field parameters",
-      color: "from-indigo-500 to-violet-600",
-      details: "Ionization is the process of completely removing an electron from an atom. This graph shows the probability of ionization occurring as a function of the intensity of the incoming light. As the light gets more intense, the ionization probability typically increases dramatically. This is a key metric in strong-field physics and is essential for understanding how matter behaves in extreme conditions."
+        name: "Elastic & Inelastic Scattering",
+        icon: <PieChart className="w-5 h-5" />,
+        description: "Differentiate between scattering event types",
+        color: "from-amber-500 to-orange-600",
+        details: "This chart shows the probabilities of two different outcomes when a photon interacts with the atom. In elastic (Rayleigh) scattering, the photon changes direction but not energy. In inelastic (Raman) scattering, the photon exchanges energy with the atom, emerging with a different color. The ratio depends on the photon's energy relative to the atom's energy levels. [6, 7, 16, 17, 27]"
     },
   ]
 
@@ -429,6 +422,67 @@ export default function ControlsSection({
         )
       }
 
+    case "Photon Emission Pattern": {
+        const centerX = 150;
+        const centerY = 65;
+        const maxR = 40;
+
+        // Determine transition type based on energy
+        let patternType = "isotropic"; // Default
+        if (isLocked) {
+            // Simple logic: associate certain energies with certain patterns
+            if (currentPhotonEnergy > 7000) patternType = "quadrupole"; // K-shell
+            else if (currentPhotonEnergy > 700) patternType = "dipole_sigma"; // L-shell
+            else patternType = "dipole_pi"; // M/N shell
+        }
+
+        const getPath = (type) => {
+            let path = `M ${centerX},${centerY} `;
+            for (let i = 0; i <= 360; i++) {
+                const angle = (i * Math.PI) / 180;
+                let r;
+                if (type === "dipole_pi") { // sin^2(θ)
+                    r = maxR * Math.pow(Math.sin(angle), 2);
+                } else if (type === "dipole_sigma") { // 1 + cos^2(θ)
+                    r = maxR * (1 + Math.pow(Math.cos(angle), 2)) / 2.5;
+                } else if (type === "quadrupole") { // sin^2(2θ)
+                    r = maxR * Math.pow(Math.sin(2 * angle), 2);
+                } else { // Isotropic
+                    r = maxR * 0.8;
+                }
+                const x = centerX + r * Math.cos(angle - Math.PI / 2);
+                const y = centerY + r * Math.sin(angle - Math.PI / 2);
+                path += `L ${x},${y} `;
+            }
+            return path + 'Z';
+        };
+        
+        const patternPath = getPath(patternType);
+        const patternLabel = {
+            dipole_pi: "Dipole (Δm=0)",
+            dipole_sigma: "Dipole (Δm=±1)",
+            quadrupole: "Quadrupole",
+            isotropic: "Isotropic (Forbidden)"
+        }[patternType];
+
+        return (
+            <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48 flex flex-col items-center justify-center">
+                <svg className="flex-grow w-full" viewBox="0 0 300 120">
+                    <defs>
+                        <radialGradient id="patternGlow">
+                            <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx={centerX} cy={centerY} r={maxR*1.5} fill="url(#patternGlow)" />
+                    <path d={patternPath} fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+                    <circle cx={centerX} cy={centerY} r="4" fill="#f43f5e" stroke="white" strokeWidth="1.5" />
+                </svg>
+                <p className="text-xs text-rose-300 font-medium mt-1">{patternLabel}</p>
+            </div>
+        );
+    }
+
       case "Photoelectron Spectrum": {
         const photoelectronPeaks = Object.values(orbitalData)
           .filter(o => currentPhotonEnergy > o.energy)
@@ -499,151 +553,49 @@ export default function ControlsSection({
         )
       }
 
-      case "Dipole Spectrum":
+      case "Rabi Oscillations": {
+        const rabiFreq = Math.sqrt(currentPhotonEnergy) * 0.1;
+        let pathD = `M ${xStart} ${yBaseline} `;
+        for (let i = 0; i <= graphWidth; i++) {
+            const t = (i / graphWidth) * 20;
+            const y = yBaseline - (graphHeight * Math.pow(Math.sin(rabiFreq * t), 2));
+            pathD += `L ${xStart + i} ${y} `;
+        }
         return (
-          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
-            <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
-                <defs>
-                  <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
-                    <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                {[1, 3, 5, 7, 9, 11, 13].map((harmonic) => {
-                  const x = xStart + (harmonic / 13) * (graphWidth - 10)
-                  const intensity = Math.exp(-harmonic / 5)
-                  const barHeight = (harmonic === 1 ? 0.9 : intensity * 0.7) * graphHeight
-                  return (
-                    <g key={harmonic}>
-                      <rect
-                        x={x - 4}
-                        y={yBaseline - barHeight}
-                        width="8"
-                        height={barHeight}
-                        fill={`hsl(${280 - harmonic * 15}, 80%, 60%)`}
-                        rx="2"
-                        opacity="0.8"
-                      />
-                      <text x={x} y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                        {harmonic}ω
-                      </text>
-                    </g>
-                  )
-                })}
-
-                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
-                  Intensity
-                </text>
-                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                  Harmonic Order
-                </text>
-              </svg>
+            <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
+                <svg className="w-full h-full" viewBox="0 0 300 120">
+                    <path d={pathD} fill="none" stroke="#a855f7" strokeWidth="2" />
+                    <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">Time</text>
+                    <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">Excited State</text>
+                </svg>
             </div>
-          </div>
-        )
-      
-      // ... Rest of the cases with placeholder or decorative visualizations
-      
-      case "Density Visualization":
+        );
+    }
+
+    case "Elastic & Inelastic Scattering": {
+        const inelasticProb = 1 / (1 + Math.pow((currentPhotonEnergy - 500) / 100, 2));
+        const elasticProb = 1 - inelasticProb;
+        const elasticAngle = elasticProb * 360;
+
+        const centerX = 150;
+        const centerY = 60;
+        const radius = 40;
+
+        const elasticPath = `M ${centerX} ${centerY} L ${centerX + radius} ${centerY} A ${radius} ${radius} 0 ${elasticAngle > 180 ? 1 : 0} 1 ${centerX + radius * Math.cos(elasticAngle * Math.PI / 180)} ${centerY + radius * Math.sin(elasticAngle * Math.PI / 180)} Z`;
+        const inelasticPath = `M ${centerX} ${centerY} L ${centerX + radius * Math.cos(elasticAngle * Math.PI / 180)} ${centerY + radius * Math.sin(elasticAngle * Math.PI / 180)} A ${radius} ${radius} 0 ${elasticAngle < 180 ? 1 : 0} 1 ${centerX + radius} ${centerY} Z`;
+
         return (
-          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
-            <div className="w-full h-full relative flex items-center justify-center">
-              <div className="relative w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32">
-                <div className="absolute inset-0 rounded-full bg-gradient-radial from-emerald-400/80 via-emerald-500/40 to-transparent animate-pulse"></div>
-                <div className="absolute inset-4 rounded-full bg-gradient-radial from-emerald-300/90 via-emerald-400/30 to-transparent"></div>
-                <div className="absolute inset-8 rounded-full bg-gradient-radial from-emerald-200 via-emerald-300/20 to-transparent"></div>
-                <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                  <Atom className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="absolute bottom-2 right-2 text-xs text-slate-400">Density ρ(r,t) visualization</div>
+            <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48 flex items-center justify-center">
+                <svg className="w-2/3 h-2/3" viewBox="0 0 300 120">
+                    <path d={elasticPath} fill="#f59e0b" />
+                    <path d={inelasticPath} fill="#fbbf24" />
+                    <text x="150" y="115" textAnchor="middle" fill="#f59e0b" fontSize="10">Elastic</text>
+                    <text x="150" y="10" textAnchor="middle" fill="#fbbf24" fontSize="10">Inelastic</text>
+                </svg>
             </div>
-          </div>
-        )
-
-      case "Expectation Values":
-        return (
-          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
-            <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
-                <defs>
-                  <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
-                    <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                <path
-                  d="M 30 80 C 50 82, 70 85, 90 90 C 110 70, 130 75, 150 80 C 170 85, 190 90, 210 70 C 230 75, 250 80, 280 85"
-                  fill="none"
-                  stroke="#f59e0b"
-                  strokeWidth="2"
-                />
-
-                <path
-                  d="M 30 90 C 50 85, 70 80, 90 75 C 110 95, 130 90, 150 85 C 170 80, 190 75, 210 95 C 230 90, 250 85, 280 80"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="2"
-                />
-
-                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
-                  Value
-                </text>
-                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                  Time (fs)
-                </text>
-
-                <circle cx="40" cy="30" r="3" fill="#f59e0b" />
-                <text x="50" y="33" fill="rgba(148, 163, 184, 0.8)" fontSize="8">
-                  ⟨H⟩(t)
-                </text>
-                <circle cx="80" cy="30" r="3" fill="#3b82f6" />
-                <text x="90" y="33" fill="rgba(148, 163, 184, 0.8)" fontSize="8">
-                  ⟨r⟩(t)
-                </text>
-              </svg>
-            </div>
-          </div>
-        )
-
-      case "Ionization Yield":
-        return (
-          <div className="bg-slate-700/30 rounded-xl p-3 md:p-4 border border-slate-600/30 h-36 md:h-40 lg:h-48">
-            <div className="w-full h-full relative">
-              <svg className="w-full h-full absolute inset-0" viewBox="0 0 300 120">
-                <defs>
-                  <pattern id="grid" width="30" height="15" patternUnits="userSpaceOnUse">
-                    <path d="M 30 0 L 0 0 0 15" fill="none" stroke="rgba(148, 163, 184, 0.1)" strokeWidth="0.5" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-                <line x1={xStart} y1={yBaseline} x2={xStart + graphWidth} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-                <line x1={xStart} y1={yTop} x2={xStart} y2={yBaseline} stroke="rgba(148, 163, 184, 0.3)" strokeWidth="1" />
-
-                <path
-                  d="M 30 100 C 90 98, 120 95, 150 80 C 180 60, 210 30, 280 25"
-                  fill="none"
-                  stroke="#7c3aed"
-                  strokeWidth="2"
-                />
-                
-                <text x="15" y="60" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8" transform="rotate(-90, 15, 60)">
-                  Ionization
-                </text>
-                <text x="155" y="115" textAnchor="middle" fill="rgba(148, 163, 184, 0.6)" fontSize="8">
-                  Intensity (W/cm²)
-                </text>
-              </svg>
-            </div>
-          </div>
-        )
+        );
+    }
+    
       default:
         return (
           <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30 h-48 flex items-center justify-center">

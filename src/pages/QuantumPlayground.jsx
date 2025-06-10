@@ -10,6 +10,7 @@ export default function QuantumPlayground() {
   const containerRef = useRef(null);
   const [selectedOrbital, setSelectedOrbital] = useState('3p');
   const [photonEnergy, setPhotonEnergy] = useState(52); // Source of truth for photon energy
+  const photonEnergyRef = useRef(photonEnergy); // Ref to hold the latest energy for closures
   const [orbitalDataForControls, setOrbitalDataForControls] = useState(null); // Data for graphs
   const switchOrbitalRef = useRef(null);
   const updatePhotonWavelengthRef = useRef(null);
@@ -36,6 +37,11 @@ export default function QuantumPlayground() {
       updatePhotonWavelengthRef.current(energy);
     }
   };
+
+  // Effect to keep the photonEnergyRef synchronized with the state
+  useEffect(() => {
+    photonEnergyRef.current = photonEnergy;
+  }, [photonEnergy]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -156,9 +162,7 @@ export default function QuantumPlayground() {
           vec4 worldPosition = modelMatrix * translationToAnimatedCenter * vec4(scaledPosition, 1.0);
           vWorldPosition = worldPosition.xyz;
           
-          // Updated cross-section visibility (0-10 range instead of -10 to 10)
-          float crossSectionFactor = u_crossSectionX / 10.0; // Convert 0-10 to 0-1
-          vCrossSectionVisibility = worldPosition.x <= mix(0.0, 10.0, crossSectionFactor) ? 1.0 : 0.0;
+          vCrossSectionVisibility = worldPosition.x <= u_crossSectionX ? 1.0 : 0.0;
           
           // Camera-based culling with different behavior for primary vs secondary orbitals
           float distanceToCamera = distance(worldPosition.xyz, u_cameraPosition);
@@ -1128,7 +1132,8 @@ export default function QuantumPlayground() {
         updatePhoton(deltaTime);
 
         if (typeof updatePhotonWave === 'function') {
-          updatePhotonWave(photonEnergy, deltaTime);
+          // FIX: Use the ref to get the current energy, preventing stale state in the animation loop.
+          updatePhotonWave(photonEnergyRef.current, deltaTime);
         }
 
         time += deltaTime * waveSpeed;
@@ -1305,10 +1310,11 @@ export default function QuantumPlayground() {
           updateLayeringMode();
         },
         updateCrossSection: (value) => {
-          const normalizedValue = value / 10; // Convert from 0-100 to 0-10
+          const clippingX = (value - 50) / 5.0;
+
           for (const type in orbitalGroups) {
             if (orbitalGroups[type].material && orbitalGroups[type].material.uniforms) {
-              orbitalGroups[type].material.uniforms.u_crossSectionX.value = normalizedValue;
+              orbitalGroups[type].material.uniforms.u_crossSectionX.value = clippingX;
             }
           }
         }
@@ -1702,16 +1708,16 @@ export default function QuantumPlayground() {
             waveAbsorbed = false;
             waveTime = 0;
             reemissionTime = 0;
-            wavePosition = -10; // Starting position closer to the atom
+            wavePosition = -10;
             
             // Reset absorption state
             absorptionActive = false;
             absorptionStrength = 0.0;
             
-            // Get photon energy from the component's state
-            const energy = photonEnergy;
+            // FIX: Get photon energy from the ref to ensure it's up-to-date
+            const energy = photonEnergyRef.current;
             
-            // Update wave parameters based on energy
+            // Update wave parameters based on the correct energy
             updatePhotonWavelength(energy);
             waveConfig.wavelength = photonWavelength;
             waveConfig.waveFrequency = 1.0 / photonWavelength;
@@ -1744,7 +1750,8 @@ export default function QuantumPlayground() {
                           const distanceEffectLocal = Math.pow(1 - Math.min(normalizedDistanceLocal, 1), 2);
 
                           const energyDifferenceLocal = Math.abs(currentPhotonEnergy - orbitalEnergyForCheck) / orbitalEnergyForCheck;
-                          const energyMatchLocal = Math.exp(-Math.pow(energyDifferenceLocal, 2) * 5);
+                          // FIX: Make the energy matching much stricter for more realistic absorption
+                          const energyMatchLocal = Math.exp(-Math.pow(energyDifferenceLocal, 2) * 150);
                           
                           const combinedEffect = distanceEffectLocal * energyMatchLocal;
 
@@ -1768,7 +1775,8 @@ export default function QuantumPlayground() {
                       absorptionStrength = absorptionStrength * 0.95 + targetAbsorptionStrength * 0.05;
 
                       const absorptionThreshold = currentPhotonEnergy > 5000 ? 0.15 : 0.3;
-                      if (energyMatch > 0.5 && distanceToCenter < matchedCloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
+                      // FIX: Make the absorption trigger condition stricter
+                      if (energyMatch > 0.8 && distanceToCenter < matchedCloudRadius * 0.8 && absorptionStrength > absorptionThreshold) {
                           if (!waveAbsorbed) {
                               waveAbsorbed = true;
                               reemissionTime = 0;
