@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom'
 const simulations = [
   {
     id: "quantum-playground",
-    title: "Atom Simulation", // More descriptive title
-    description: "Interactive iron atom with electron orbitals and X-ray absorption", // Better description
+    title: "Atom Simulation", 
+    description: "Interactive iron atom with electron orbitals and X-ray absorption", 
     color: "#06b6d4",
     image: "⚛️",
-    path: "/atom", // This should match your existing route
+    path: "/atom", 
     available: true,
   },
-  // Keep the other placeholder cards as they are, or update them if you have real implementations
+
     {
     id: "physics-calculator",
     title: "Advanced Calculator",

@@ -8,7 +8,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { motion } from "framer-motion"
-import { MathParser } from "../../lib/calculator/math-utils" // UPDATED: Import MathParser
+import { MathParser } from "../../lib/calculator/math-utils" //Import MathParser
 
 export default function ParametricTab({
   functions,
@@ -36,7 +36,7 @@ export default function ParametricTab({
     }
   }
 
-  // UPDATED: Cleaned-up handler for robust updates
+  //Cleaned-up handler for robust updates
   const handleUpdateParametric = (id, field, value) => {
     const func = functions.find((f) => f.id === id)
     if (!func || func.type !== "parametric") return
