@@ -2,7 +2,8 @@ Enter the website: https://monkegiuseppe.github.io/GigaLab/
 
 (doesn't work properly on mobile)
 
-![image](https://github.com/user-attachments/assets/4e34ee4a-07a2-4679-b2d8-2acb3c76d05d)
+![image](https://github.com/user-attachments/assets/d83648e6-3ed2-4f42-9ded-686a73f1075a)
+
 
 ![image](https://github.com/user-attachments/assets/30b65d0c-becc-408c-9ea3-e5d757014037)
 
