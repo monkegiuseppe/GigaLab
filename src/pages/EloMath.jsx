@@ -19,7 +19,7 @@ const isAnswerCorrect = (userAnswer, correctAnswer) => {
     const evalCorrect = new Function('return ' + cleanCorrectAnswer.replace('π', 'Math.PI').replace('√', 'Math.sqrt').replace('^','**').replace('e', 'Math.E'));
     if (Math.abs(userNum - evalCorrect()) < 0.001) return true;
   } catch (e) {}
-  return cleanUserAnswer.toLowerCase() === cleanCorrectAnswer.toLowerCase();
+  return cleanUserAnswer.replace(/\s/g, '').toLowerCase() === cleanCorrectAnswer.replace(/\s/g, '').toLowerCase();
 };
 
 
