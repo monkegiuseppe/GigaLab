@@ -11,16 +11,36 @@ const parseAndFormatMatrix = (matrixString) => {
     const parts = matrixString.split('=');
     const namePart = parts.length > 1 ? `${parts[0].trim()} =` : '';
     const arrayString = parts.length > 1 ? parts[1].trim() : parts[0].trim();
-    const matrixArray = JSON.parse(arrayString.replace(/'/g, '"'));
-
-    if (!Array.isArray(matrixArray) || !Array.isArray(matrixArray[0])) {
+    
+    // Instead of JSON.parse, use a regex to parse the matrix structure
+    // This regex matches nested arrays with numbers, variables, or expressions
+    const matrixMatch = arrayString.match(/^\[\s*(\[.*?\](?:\s*,\s*\[.*?\])*)\s*\]$/);
+    
+    if (!matrixMatch) {
       return matrixString;
     }
-
-    const latexBody = matrixArray
+    
+    // Extract rows - match everything between [ and ]
+    const rowsString = matrixMatch[1];
+    const rowRegex = /\[(.*?)\]/g;
+    const rows = [];
+    let rowMatch;
+    
+    while ((rowMatch = rowRegex.exec(rowsString)) !== null) {
+      // Split by comma but preserve the original formatting
+      const elements = rowMatch[1].split(',').map(el => el.trim());
+      rows.push(elements);
+    }
+    
+    if (rows.length === 0) {
+      return matrixString;
+    }
+    
+    // Build LaTeX matrix
+    const latexBody = rows
       .map(row => row.join(' & '))
       .join(' \\\\ ');
-
+    
     return `${namePart} \\begin{bmatrix} ${latexBody} \\end{bmatrix}`;
   } catch (error) {
     console.error("Failed to parse matrix:", matrixString, error);
