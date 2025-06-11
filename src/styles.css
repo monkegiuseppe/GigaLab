@@ -188,6 +188,13 @@ button:active {
   margin: 0 auto;
 }
 
+.mq-editable-field, .mq-math-mode {
+  background: transparent !important;
+}
+
+.mq-editable-field .mq-root-block {
+  color: #e2e8f0 !important;
+}
 
 
 @layer base {
