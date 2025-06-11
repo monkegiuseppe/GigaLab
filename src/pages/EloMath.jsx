@@ -118,7 +118,7 @@ export default function EloMath() {
           </div>
         </header>
         {/* Main Content */}
-        <div className="relative bg-slate-800/50 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-xl p-8 min-h-[24rem]">
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-xl p-8 min-h-[24rem]">
 
           <AnimatePresence mode="wait">
             {currentProblem && (
@@ -137,12 +137,13 @@ export default function EloMath() {
                   <div className="flex items-center gap-3">
                     <motion.button
                       onClick={() => setIsNotepadOpen(true)}
-                      className="p-1 rounded-full text-slate-400 hover:bg-slate-700 hover:text-blue-300 transition-colors"
+                      className="top-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-slate-300 bg-slate-700/50 hover:bg-slate-700 transition-colors"
                       title="Open Scratchpad"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Notebook size={18} />
+                      <Notebook size={16} />
+                      Scratchpad
                     </motion.button>
                     <span className="text-sm font-medium text-slate-400">Difficulty: {currentProblem.difficulty}</span>
                   </div>
@@ -209,6 +210,7 @@ export default function EloMath() {
                         {feedback.type === 'correct' ? <CheckCircle /> : <XCircle />}
                         <div>
                             <p className="font-bold">{feedback.message}</p>
+                          <div className="text-sm flex items-center"></div>
                             <p className="text-sm">The correct answer is: <span className="font-mono">{feedback.correctAnswer}</span></p>
                         </div>
                     </div>
