@@ -329,7 +329,7 @@ export default function Notepad({ onClose }) {
       {/* Inline styles for better integration */}
       <style jsx global>{`
         .notepad-content:empty:before {
-          content: "Type your notes here...\\A\\APress Ctrl+M to insert math";
+          content: "Type your notes here...";
           white-space: pre;
           color: #64748b;
           pointer-events: none;
