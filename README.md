@@ -10,3 +10,6 @@ Enter the website: https://monkegiuseppe.github.io/GigaLab/
 
 ![image](https://github.com/user-attachments/assets/d4a7f716-be2e-4575-8be6-f39d6ebe31c3)
 
+![image](https://github.com/user-attachments/assets/6d67f753-fcf7-49bf-8d40-6e10c066a07c)
+
+
