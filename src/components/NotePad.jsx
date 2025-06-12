@@ -286,6 +286,31 @@ export default function Notepad({ onClose }) {
               restrictMismatchedBrackets: true,
               autoCommands: 'pi theta sqrt sum alpha beta gamma delta sigma',
               autoOperatorNames: 'sin cos tan log ln exp',
+              // CHANGED: Added a handler to delete the equation box on backspace when empty
+              handlers: {
+                deleteOutOf: (dir, mathField) => {
+                  if (dir === -1 && mathField.latex() === '') {
+                    // Backspace at the start of an empty field
+                    const wrapper = contentRef.current?.querySelector(`[data-equation-id="${equationId}"]`);
+                    if (wrapper) {
+                      const selection = window.getSelection();
+                      if (selection) {
+                          const range = document.createRange();
+                          range.setStartBefore(wrapper);
+                          range.collapse(true);
+                          selection.removeAllRanges();
+                          selection.addRange(range);
+                      }
+                      wrapper.remove();
+                    }
+                    setEquations(prev => {
+                      const next = { ...prev };
+                      delete next[equationId];
+                      return next;
+                    });
+                  }
+                }
+              }
             }}
             mathquillDidMount={(mathField) => {
               // Find the wrapper and insert the mathfield

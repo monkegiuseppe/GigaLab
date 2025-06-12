@@ -142,7 +142,7 @@ export default function EloMath() {
   const getNewProblem = (currentElo) => {
     setFeedback(null);
     setUserAnswer("");
-    const eloRange = 250;
+    const eloRange = 150;
     const effectiveElo = currentElo || userElo;
     let eligibleProblems = mathProblems.filter(
       p => Math.abs(p.difficulty - effectiveElo) <= eloRange && p.id !== currentProblem?.id
