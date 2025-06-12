@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, XCircle, SkipForward, BrainCircuit, RefreshCw, Notebook, Info, X } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, SkipForward, BrainCircuit, RefreshCw, Notebook, Info, X, SlidersHorizontal, Check } from "lucide-react";
 import { mathProblems } from "../lib/elomath/mathProblems";
 import { calculateNewElo } from "../lib/elomath/Elo";
 import Notepad from "../components/Notepad";
 import ProblemRenderer from '../components/ProblemRenderer';
+
+// --- Utility Functions ---
 
 const isAnswerCorrect = (userAnswer, correctAnswer) => {
   const cleanUserAnswer = userAnswer.trim();
@@ -22,7 +24,11 @@ const isAnswerCorrect = (userAnswer, correctAnswer) => {
   return cleanUserAnswer.replace(/[\s()<>]/g, '').toLowerCase() === cleanCorrectAnswer.replace(/[\s()<>]/g, '').toLowerCase();
 };
 
-// --- Helper Component for the Info Modal ---
+const allCategories = ["Calculus I", "Calculus II", "Calculus III", "Differential Equations", "Linear Algebra1", "Linear Algebra2", "Complex Analysis"];
+
+
+// --- Helper Components ---
+
 const InfoPopup = ({ isOpen, onClose, title, children }) => {
   return (
     <AnimatePresence>
@@ -61,7 +67,6 @@ const InfoPopup = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-// --- Content for the Info Modal ---
 const Code = ({ children }) => <code className="bg-slate-900/70 text-amber-300 px-1.5 py-0.5 rounded-md font-mono text-sm">{children}</code>;
 
 const AnswerFormatGuide = () => (
@@ -129,8 +134,12 @@ const AnswerFormatGuide = () => (
 );
 
 
+// --- Main Application Component ---
+
 export default function EloMath() {
   const STARTING_ELO = 1200;
+
+  // --- Component State ---
   const [userElo, setUserElo] = useState(STARTING_ELO);
   const [currentProblem, setCurrentProblem] = useState(null);
   const [userAnswer, setUserAnswer] = useState("");
@@ -138,33 +147,87 @@ export default function EloMath() {
   const [sessionStats, setSessionStats] = useState({ correct: 0, incorrect: 0, skipped: 0 });
   const [isNotepadOpen, setIsNotepadOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState(allCategories);
+  const [isCategorySelectorOpen, setIsCategorySelectorOpen] = useState(false);
+  const [categoryError, setCategoryError] = useState("");
+  const categorySelectorRef = useRef(null);
+  const categoryButtonRef = useRef(null);
 
+  // --- Core Logic: Problem Selection ---
   const getNewProblem = (currentElo) => {
     setFeedback(null);
     setUserAnswer("");
+    
+    let availableProblems = mathProblems.filter(p => selectedCategories.includes(p.category));
+    
+    if (availableProblems.length === 0) {
+      setCurrentProblem({ id: 'no-problems', topic: 'System', difficulty: 0, problem: 'No problems available for the selected categories. Please select a category to begin.', answer: '' });
+      return;
+    }
+    
     const eloRange = 150;
     const effectiveElo = currentElo || userElo;
-    let eligibleProblems = mathProblems.filter(
-      p => Math.abs(p.difficulty - effectiveElo) <= eloRange && p.id !== currentProblem?.id
-    );
+    
+    let eligibleProblems = availableProblems.filter(p => Math.abs(p.difficulty - effectiveElo) <= eloRange && p.id !== currentProblem?.id);
+    
     if (eligibleProblems.length === 0) {
-      eligibleProblems = mathProblems.filter(p => p.id !== currentProblem?.id);
+      eligibleProblems = availableProblems.filter(p => p.id !== currentProblem?.id);
     }
+    
+    if (eligibleProblems.length === 0) {
+      setCurrentProblem({ id: 'no-problems-left', topic: 'System', difficulty: 0, problem: 'You have seen all available problems for this filter. Please select more categories or reset.', answer: '' });
+      return;
+    }
+
     const randomIndex = Math.floor(Math.random() * eligibleProblems.length);
     setCurrentProblem(eligibleProblems[randomIndex]);
   };
+
+  // --- Lifecycle Hook: Initial Load & Outside Click Handling ---
   useEffect(() => {
     const savedElo = localStorage.getItem('userElo');
+    const savedCategories = localStorage.getItem('selectedCategories');
     let initialElo = STARTING_ELO;
+
     if (savedElo) {
       initialElo = parseInt(savedElo, 10);
       setUserElo(initialElo);
     }
+    
+    if (savedCategories) {
+      try {
+        const parsed = JSON.parse(savedCategories);
+        const validSaved = parsed.filter(c => allCategories.includes(c));
+        if (validSaved.length > 0) {
+          setSelectedCategories(validSaved);
+        }
+      } catch (e) {
+        console.error("Failed to parse saved categories:", e);
+        localStorage.removeItem('selectedCategories');
+      }
+    }
+    
     getNewProblem(initialElo);
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        isCategorySelectorOpen &&
+        categorySelectorRef.current && !categorySelectorRef.current.contains(event.target) &&
+        categoryButtonRef.current && !categoryButtonRef.current.contains(event.target)
+      ) {
+        setIsCategorySelectorOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isCategorySelectorOpen]);
+
+  // --- Event Handlers ---
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!userAnswer.trim()) return;
+    if (!userAnswer.trim() || !currentProblem || currentProblem.id.startsWith('no-problems')) return;
     const correct = isAnswerCorrect(userAnswer, currentProblem.answer);
     const newElo = calculateNewElo(userElo, currentProblem.difficulty, correct);
     const eloChange = newElo - userElo;
@@ -178,18 +241,91 @@ export default function EloMath() {
       setFeedback({ type: 'incorrect', message: `Incorrect. ELO ${eloChange}`, correctAnswer: currentProblem.answer });
     }
   };
+
   const handleSkip = () => {
     setSessionStats(prev => ({ ...prev, skipped: prev.skipped + 1 }));
     getNewProblem();
   };
+  
   const handleResetElo = () => {
-    if (window.confirm("Are you sure you want to reset your ELO and session stats?")) {
+    if (window.confirm("Are you sure you want to reset your ELO, session stats, and category filters?")) {
       setUserElo(STARTING_ELO);
       localStorage.removeItem('userElo');
       setSessionStats({ correct: 0, incorrect: 0, skipped: 0 });
+      setSelectedCategories(allCategories);
+      localStorage.removeItem('selectedCategories');
       getNewProblem(STARTING_ELO);
     }
   };
+
+  const handleCategoryToggle = (category) => {
+    const newSelectedCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+
+    if (newSelectedCategories.length === 0) {
+      setCategoryError("At least one category must be selected.");
+      setTimeout(() => setCategoryError(""), 3000);
+      return;
+    }
+    
+    setCategoryError("");
+    setSelectedCategories(newSelectedCategories);
+    localStorage.setItem('selectedCategories', JSON.stringify(newSelectedCategories));
+    getNewProblem(userElo);
+  };
+
+  // --- Category Selector UI Component ---
+  const CategorySelector = () => (
+    <AnimatePresence>
+      {isCategorySelectorOpen && (
+        <motion.div
+          ref={categorySelectorRef}
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-30 p-4"
+        >
+          <h3 className="text-sm font-semibold text-slate-200 mb-3">Filter Problem Categories</h3>
+          <div className="max-h-60 overflow-y-auto space-y-1 pr-2">
+            {allCategories.map(category => (
+              <label key={category} className="flex items-center gap-3 p-2 rounded-md hover:bg-slate-700/50 transition-colors cursor-pointer">
+                <div className="relative flex items-center justify-center w-5 h-5">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryToggle(category)}
+                    className="appearance-none w-5 h-5 rounded-md bg-slate-900 border-2 border-slate-600 checked:bg-blue-600 checked:border-blue-500 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-blue-500"
+                  />
+                  <AnimatePresence>
+                  {selectedCategories.includes(category) && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ duration: 0.1 }}>
+                      <Check size={14} className="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                    </motion.div>
+                  )}
+                  </AnimatePresence>
+                </div>
+                <span className="text-sm text-slate-300 select-none">{category.replace(/(\d)$/, ' $1')}</span>
+              </label>
+            ))}
+          </div>
+          <AnimatePresence>
+            {categoryError && (
+              <motion.p
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: '12px' }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="text-xs text-red-400 text-center"
+              >
+                {categoryError}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-200 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
@@ -207,12 +343,25 @@ export default function EloMath() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
         <header className="flex items-center justify-between mb-6">
-          <Link to="/" className="group flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors">
-            <ArrowLeft size={20} className="transition-transform duration-200 ease-out group-hover:-translate-x-1" />
-            Back to Home
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="group flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors">
+              <ArrowLeft size={20} className="transition-transform duration-200 ease-out group-hover:-translate-x-1" />
+              Back to Home
+            </Link>
+            <div className="relative">
+              <button 
+                ref={categoryButtonRef}
+                onClick={() => setIsCategorySelectorOpen(p => !p)}
+                className="group flex items-center gap-2 text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-700/60 border border-slate-700 px-3 py-1.5 rounded-lg text-sm transition-colors"
+                title="Filter problem categories"
+              >
+                <SlidersHorizontal size={16} />
+                <span>Categories ({selectedCategories.length}/{allCategories.length})</span>
+              </button>
+              <CategorySelector />
+            </div>
+          </div>
           <div className="flex items-center gap-4 text-center">
              <div className="flex items-center gap-2 text-lg font-semibold text-blue-400">
                <BrainCircuit size={24} />
@@ -222,13 +371,12 @@ export default function EloMath() {
                <span>
                  <span className="text-green-400">✓ {sessionStats.correct}</span> | <span className="text-red-400">✗ {sessionStats.incorrect}</span> | <span className="text-amber-400">» {sessionStats.skipped}</span>
                </span>
-               <button onClick={handleResetElo} title="Reset ELO and Stats" className="group text-slate-500 hover:text-red-400 transition-colors">
+               <button onClick={handleResetElo} title="Reset ELO, Stats, and Filters" className="group text-slate-500 hover:text-red-400 transition-colors">
                  <RefreshCw size={16} className="transition-transform duration-300 ease-in-out group-hover:rotate-[-90deg]" />
                </button>
              </div>
           </div>
         </header>
-        {/* Main Content */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-xl p-8 min-h-[24rem]">
           <AnimatePresence mode="wait">
             {currentProblem && (
@@ -240,7 +388,6 @@ export default function EloMath() {
                 transition={{ duration: 0.4, ease: "easeInOut" }}
                 className="flex flex-col h-full"
               >
-                {/* Problem Info */}
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-sm font-medium text-blue-400 bg-blue-900/50 px-3 py-1 rounded-full">{currentProblem.topic}</span>
                   <div className="flex items-center gap-3">
@@ -256,19 +403,17 @@ export default function EloMath() {
                     <span className="text-sm font-medium text-slate-400">Difficulty: {currentProblem.difficulty}</span>
                   </div>
                 </div>
-                {/* Problem Statement */}
                 <div className="flex-grow mb-6">
                   <ProblemRenderer text={currentProblem.problem} />
                 </div>
-                {/* Answer Form */}
                 <form onSubmit={handleSubmit} className="mt-auto">
                     <div className="relative">
                         <input
                             type="text"
                             value={userAnswer}
                             onChange={(e) => setUserAnswer(e.target.value)}
-                            placeholder="Your Answer..."
-                            disabled={!!feedback}
+                            placeholder={currentProblem.id.startsWith('no-problems') ? "Please select categories..." : "Your Answer..."}
+                            disabled={!!feedback || !currentProblem || currentProblem.id.startsWith('no-problems')}
                             className="w-full bg-slate-900 border-2 border-slate-700 rounded-lg py-3 pr-12 pl-4 text-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all disabled:opacity-50"
                         />
                          <button 
@@ -281,7 +426,7 @@ export default function EloMath() {
                         </button>
                     </div>
                     <div className="flex items-center justify-end gap-4 mt-4">
-                        {!feedback && (
+                        {!feedback && !currentProblem.id.startsWith('no-problems') && (
                             <motion.button 
                                 type="button" 
                                 onClick={handleSkip}
@@ -293,7 +438,7 @@ export default function EloMath() {
                         )}
                         <motion.button 
                             type="submit" 
-                            disabled={!!feedback}
+                            disabled={!!feedback || !currentProblem || currentProblem.id.startsWith('no-problems')}
                             className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-200 ease-out hover:-translate-y-0.5 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg"
                             whileTap={{ scale: 0.95 }}
                         >
@@ -305,7 +450,6 @@ export default function EloMath() {
             )}
           </AnimatePresence>
         </div>
-        {/* Feedback Section */}
         <AnimatePresence>
             {feedback && (
                 <motion.div

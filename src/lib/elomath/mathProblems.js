@@ -7,6 +7,7 @@ export const mathProblems = [
   // --- Calculus I: Derivatives ---
 
   {
+    category: "Calculus I",
     id: "C01",
     topic: "Calculus (Basic Derivative)",
     difficulty: 1100,
@@ -14,6 +15,7 @@ export const mathProblems = [
     answer: "34",
   },
   {
+    category: "Calculus I",
     id: "C02",
     topic: "Calculus (Product Rule)",
     difficulty: 1350,
@@ -21,6 +23,7 @@ export const mathProblems = [
     answer: "-π²",
   },
   {
+    category: "Calculus I",
     id: "C03",
     topic: "Calculus (Quotient Rule)",
     difficulty: 1450,
@@ -28,6 +31,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C04",
     topic: "Calculus (Chain Rule)",
     difficulty: 1500,
@@ -35,6 +39,7 @@ export const mathProblems = [
     answer: "768",
   },
   {
+    category: "Calculus I",
     id: "C05",
     topic: "Calculus (Chain Rule with Trig)",
     difficulty: 1600,
@@ -42,6 +47,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C06",
     topic: "Calculus (Implicit Differentiation)",
     difficulty: 1850,
@@ -49,6 +55,7 @@ export const mathProblems = [
     answer: "0.75",
   },
   {
+    category: "Calculus I",
     id: "C36",
     topic: "Calculus (Related Rates)",
     difficulty: 1850,
@@ -56,6 +63,7 @@ export const mathProblems = [
     answer: "800π",
   },
   {
+    category: "Calculus I",
     id: "C37",
     topic: "Calculus (Optimization)",
     difficulty: 1950,
@@ -63,6 +71,7 @@ export const mathProblems = [
     answer: "625",
   },
   {
+    category: "Calculus I",
     id: "C38",
     topic: "Calculus (Mean Value Theorem)",
     difficulty: 1750,
@@ -70,6 +79,7 @@ export const mathProblems = [
     answer: "√3",
   },
   {
+    category: "Calculus I",
     id: "C39",
     topic: "Calculus (Chain & Product Rule)",
     difficulty: 1700,
@@ -77,6 +87,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus I",
     id: "C40",
     topic: "Calculus (Derivative of Inverse Trig)",
     difficulty: 1600,
@@ -84,6 +95,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C51",
     topic: "Calculus (Limit by Factoring)",
     difficulty: 1150,
@@ -91,6 +103,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Calculus I",
     id: "C52",
     topic: "Calculus (Limit at Infinity)",
     difficulty: 1300,
@@ -98,6 +111,7 @@ export const mathProblems = [
     answer: "3/7",
   },
   {
+    category: "Calculus I",
     id: "C53",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1250,
@@ -105,6 +119,7 @@ export const mathProblems = [
     answer: "sin(x)",
   },
   {
+    category: "Calculus I",
     id: "C54",
     topic: "Calculus (Equation of a Tangent Line)",
     difficulty: 1400,
@@ -112,6 +127,7 @@ export const mathProblems = [
     answer: "-16",
   },
   {
+    category: "Calculus I",
     id: "C55",
     topic: "Calculus (Chain Rule with Logs)",
     difficulty: 1550,
@@ -119,6 +135,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C56",
     topic: "Calculus (Critical Points)",
     difficulty: 1350,
@@ -126,6 +143,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Calculus I",
     id: "C57",
     topic: "Calculus (Concavity)",
     difficulty: 1600,
@@ -133,6 +151,7 @@ export const mathProblems = [
     answer: "(-2, ∞)",
   },
   {
+    category: "Calculus I",
     id: "C58",
     topic: "Calculus (Derivative of an Inverse)",
     difficulty: 1900,
@@ -140,6 +159,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus I",
     id: "C59",
     topic: "Calculus (Related Rates - Ladder)",
     difficulty: 1900,
@@ -147,6 +167,7 @@ export const mathProblems = [
     answer: "1.5",
   },
   {
+    category: "Calculus I",
     id: "C60",
     topic: "Calculus (Optimization - Box)",
     difficulty: 2050,
@@ -154,6 +175,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C61",
     topic: "Calculus (L'Hôpital's Rule Indeterminate Power)",
     difficulty: 2200,
@@ -161,755 +183,15 @@ export const mathProblems = [
     answer: "e²",
   },
   {
+    category: "Calculus I",
     id: "C62",
     topic: "Calculus (Product Rule - 3 functions)",
     difficulty: 1650,
     problem: "Let $f(x) = x \\cdot e^x \\cdot \\cos(x)$. Find $f'(0)$.",
     answer: "1",
   },
-{
-  id: "C97",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1100,
-  problem: "Let $f(x) = 2x^{-3} + \\sqrt{x}$. Find $f'(x)$.",
-  answer: "-6x⁻⁴ + (1/2)x⁻¹/²",
-},
-{
-  id: "C98",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1200,
-  problem: "Let $g(t) = 3e^t - \\tan(t)$. Find $g'(0)$.",
-  answer: "2",
-},
-{
-  id: "C99",
-  topic: "Calculus (Product Rule)",
-  difficulty: 1400,
-  problem: "Let $f(x) = x^3 \\ln(x)$. Find $f'(e)$.",
-  answer: "4e²",
-},
-{
-  id: "C100",
-  topic: "Calculus (Quotient Rule)",
-  difficulty: 1500,
-  problem: "Let $h(x) = \\frac{e^x}{x^2+1}$. Find the value of $h'(0)$.",
-  answer: "1",
-},
-{
-  id: "C101",
-  topic: "Calculus (Chain Rule)",
-  difficulty: 1450,
-  problem: "Let $f(x) = \\sqrt{x^2+9}$. Find $f'(4)$.",
-  answer: "0.8",
-},
-{
-  id: "C102",
-  topic: "Calculus (Definition of Derivative)",
-  difficulty: 1650,
-  problem: "Use the limit definition of the derivative to find $f'(x)$ for $f(x) = 2x^2$. Evaluate the limit $\\lim_{h \\to 0} \\frac{2(x+h)^2 - 2x^2}{h}$.",
-  answer: "4x",
-},
-{
-  id: "C103",
-  topic: "Calculus (Chain Rule with Trig)",
-  difficulty: 1600,
-  problem: "Let $g(x) = \\sin^3(x)$. Find $g'(\\pi/3)$.",
-  answer: "9/8",
-},
-{
-  id: "C104",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 1900,
-  problem: "For the curve defined by $xy + y^2 = 3$, find $\\frac{dy}{dx}$ at the point $(2, 1)$.",
-  answer: "-0.25",
-},
-{
-  id: "C105",
-  topic: "Calculus (Higher-Order Derivative)",
-  difficulty: 1550,
-  problem: "Let $f(x) = x^2e^x$. Find the second derivative, $f''(x)$, and evaluate it at $x=0$.",
-  answer: "2",
-},
-{
-  id: "C106",
-  topic: "Calculus (Horizontal Tangents)",
-  difficulty: 1700,
-  problem: "Find the smallest positive x-value where the function $f(x) = x + \\cos(x)$ has a horizontal tangent line.",
-  answer: "π/2",
-},
-{
-  id: "C107",
-  topic: "Calculus (Related Rates)",
-  difficulty: 2000,
-  problem: "Water is leaking out of an inverted conical tank at a rate of 10,000 cm³/min. The tank has a height of 6m and a base radius of 2m. How fast is the water level falling when the water is 3m deep? (Use 1m = 100cm).",
-  answer: "10/π cm/min",
-},
-{
-  id: "C108",
-  topic: "Calculus (Optimization)",
-  difficulty: 2100,
-  problem: "Find the point on the line $y=2x+3$ that is closest to the origin $(0,0)$. What is the x-coordinate of this point?",
-  answer: "-1.2",
-},
-{
-  id: "C109",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 1850,
-  problem: "Evaluate the limit $\\lim_{x \\to 1} \\frac{\\ln(x)}{x-1}$.",
-  answer: "1",
-},
-{
-  id: "C110",
-  topic: "Calculus (Logarithmic Differentiation)",
-  difficulty: 2200,
-  problem: "Let $y = x^x$. Find the value of $\\frac{dy}{dx}$ at $x=e$.",
-  answer: "2e^e",
-},
-{
-  id: "C111",
-  topic: "Calculus (Equation of a Normal Line)",
-  difficulty: 1750,
-  problem: "Find the slope of the normal line to the curve $y = 1/x$ at $x=2$.",
-  answer: "4",
-},
-{
-  id: "C112",
-  topic: "Calculus (FTC Part 1 with Chain Rule)",
-  difficulty: 2250,
-  problem: "Let $g(x) = \\int_0^{x^2} \\cos(t) dt$. Find $g'(\\sqrt{\\pi})$.",
-  answer: "-2√π",
-},
-{
-  id: "C113",
-  topic: "Calculus (Finding Inflection Points)",
-  difficulty: 1800,
-  problem: "Find the x-coordinate of the inflection point of the curve $f(x) = x^3 - 3x^2 + 2x + 5$.",
-  answer: "1",
-},
-{
-  id: "C114",
-  topic: "Calculus (Differentiability)",
-  difficulty: 1950,
-  problem: "For what value of 'a' is the function $f(x) = \\begin{cases} x^2, & x \\le 2 \\\\ ax-4, & x > 2 \\end{cases}$ differentiable everywhere?",
-  answer: "4",
-},
-{
-  id: "C115",
-  topic: "Calculus (Linear Approximation)",
-  difficulty: 1700,
-  problem: "Use a linear approximation of $f(x) = \\sqrt{x}$ at $x=100$ to estimate the value of $\\sqrt{101}$.",
-  answer: "10.05",
-},
-{
-  id: "C116",
-  topic: "Calculus (Second Derivative Implicit)",
-  difficulty: 2400,
-  problem: "For the circle $x^2+y^2=25$, find the value of the second derivative, $\\frac{d^2y}{dx^2}$, at the point $(0, 5)$.",
-  answer: "-0.2",
-},
-{
-  id: "C157",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1125,
-  problem: "Let $f(x) = \\frac{1}{x^4} - 3 \\cos(x)$. Find $f'(x)$.",
-  answer: "-4x⁻⁵ + 3sin(x)",
-},
-{
-  id: "C158",
-  topic: "Calculus (Product Rule)",
-  difficulty: 1375,
-  problem: "Let $f(x) = (x^2+1)e^x$. Find the slope of the tangent line at $x=1$.",
-  answer: "4e",
-},
-{
-  id: "C159",
-  topic: "Calculus (Quotient Rule)",
-  difficulty: 1475,
-  problem: "Let $g(x) = \\frac{\\sin(x)}{x}$. Find $g'(\\pi)$.",
-  answer: "-1/π",
-},
-{
-  id: "C160",
-  topic: "Calculus (Chain Rule)",
-  difficulty: 1525,
-  problem: "Let $h(x) = \\ln(x^4 + 3)$. Find $h'(1)$.",
-  answer: "1",
-},
-{
-  id: "C161",
-  topic: "Calculus (Chain Rule with Trig)",
-  difficulty: 1625,
-  problem: "Let $f(x) = e^{\\tan(x)}$. Find $f'(0)$.",
-  answer: "1",
-},
-{
-  id: "C162",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 1875,
-  problem: "For the ellipse defined by $4x^2 + y^2 = 8$, find the slope of the tangent line at the point $(1, 2)$.",
-  answer: "-2",
-},
-{
-  id: "C163",
-  topic: "Calculus (Higher-Order Derivative)",
-  difficulty: 1400,
-  problem: "Let $f(x) = 5x^4 - 2x^3 + 10x$. Find the third derivative, $f'''(x)$.",
-  answer: "120x - 12",
-},
-{
-  id: "C164",
-  topic: "Calculus (Critical Points)",
-  difficulty: 1500,
-  problem: "Find the sum of the x-coordinates of the critical points of $f(x) = 2x^3 - 9x^2 - 24x + 5$.",
-  answer: "3",
-},
-{
-  id: "C165",
-  topic: "Calculus (Related Rates)",
-  difficulty: 1975,
-  problem: "A cube's volume is increasing at a rate of 12 cm³/s. How fast is the surface area increasing when the side length is 2 cm?",
-  answer: "24 cm²/s",
-},
-{
-  id: "C166",
-  topic: "Calculus (Optimization)",
-  difficulty: 2025,
-  problem: "A farmer wants to fence a rectangular field of 1.5 million square feet and then divide it in half with a fence parallel to one of the sides. What is the minimum length of fencing required (in feet)?",
-  answer: "6000",
-},
-{
-  id: "C167",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 1825,
-  problem: "Evaluate the limit $\\lim_{x \\to 0} \\frac{1-\\cos(x)}{x^2}$.",
-  answer: "0.5",
-},
-{
-  id: "C168",
-  topic: "Calculus (Mean Value Theorem)",
-  difficulty: 1775,
-  problem: "For the function $f(x) = \\sqrt{x}$ on the interval $[1, 9]$, find the value of $c$ that satisfies the Mean Value Theorem.",
-  answer: "4",
-},
-{
-  id: "C169",
-  topic: "Calculus (Derivative of Inverse Trig)",
-  difficulty: 1675,
-  problem: "Let $f(x) = x \\arcsin(x)$. Find $f'(1/2)$.",
-  answer: "arcsin(1/2) + 1/√3",
-},
-{
-  id: "C170",
-  topic: "Calculus (Concavity)",
-  difficulty: 1650,
-  problem: "Find the interval where the function $f(x) = x^4 - 6x^2$ is concave down.",
-  answer: "(-1, 1)",
-},
-{
-  id: "C171",
-  topic: "Calculus (Logarithmic Differentiation)",
-  difficulty: 2225,
-  problem: "Let $y = (\\sin x)^x$. Find the value of $\\frac{dy}{dx}$ at $x=\\pi/2$.",
-  answer: "0",
-},
-{
-  id: "C172",
-  topic: "Calculus (Absolute Extrema)",
-  difficulty: 1725,
-  problem: "Find the absolute maximum value of the function $f(x) = 10x - x^2$ on the interval $[0, 8]$.",
-  answer: "25",
-},
-{
-  id: "C173",
-  topic: "Calculus (Definition of Derivative)",
-  difficulty: 1550,
-  problem: "The limit $\\lim_{h \\to 0} \\frac{\\tan(\\pi/4 + h) - 1}{h}$ represents the derivative of a function $f(x)$ at a point $a$. What is the value of this limit?",
-  answer: "2",
-},
-{
-  id: "C174",
-  topic: "Calculus (Horizontal Tangents)",
-  difficulty: 1750,
-  problem: "At what x-value does the graph of $y = \\frac{x}{x^2+1}$ have a horizontal tangent?",
-  answer: "1",
-},
-{
-  id: "C175",
-  topic: "Calculus (Linear Approximation)",
-  difficulty: 1725,
-  problem: "Use a linear approximation of $f(x) = x^{1/3}$ at $x=8$ to estimate the value of $(8.12)^{1/3}$.",
-  answer: "2.01",
-},
-{
-  id: "C176",
-  topic: "Calculus (Implicit Differentiation with Product Rule)",
-  difficulty: 2150,
-  problem: "For the curve defined by $x^2y^2 = 9$, find the slope of the tangent line at $(1, 3)$.",
-  answer: "-3",
-},
-{
-  id: "C217",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1150,
-  problem: "Let $f(x) = \\frac{1}{x} + 2\\sqrt{x}$. Find the value of $f'(4)$.",
-  answer: "7/16",
-},
-{
-  id: "C218",
-  topic: "Calculus (Product Rule)",
-  difficulty: 1400,
-  problem: "Let $f(x) = e^x \\cos(x)$. Find the value of $f'(\\pi)$.",
-  answer: "-e^π",
-},
-{
-  id: "C219",
-  topic: "Calculus (Quotient Rule)",
-  difficulty: 1550,
-  problem: "Let $h(x) = \\frac{\\ln(x)}{x^2}$. Find the value of $h'(1)$.",
-  answer: "1",
-},
-{
-  id: "C220",
-  topic: "Calculus (Chain Rule with Roots)",
-  difficulty: 1500,
-  problem: "Let $f(x) = (4x^2 - 3)^{3/2}$. Find the value of $f'(1)$.",
-  answer: "12",
-},
-{
-  id: "C221",
-  topic: "Calculus (Equation of a Normal Line)",
-  difficulty: 1550,
-  problem: "Find the y-intercept of the normal line to the curve $y=e^x$ at $x=0$.",
-  answer: "2",
-},
-{
-  id: "C222",
-  topic: "Calculus (Higher-Order Derivative)",
-  difficulty: 1450,
-  problem: "Let $f(x) = x \\ln(x)$. Find the second derivative, $f''(x)$.",
-  answer: "1/x",
-},
-{
-  id: "C223",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 1950,
-  problem: "For the curve defined by $\\sin(xy) = y$, find the slope $\\frac{dy}{dx}$ at the point $(\\pi/2, 1)$.",
-  answer: "0",
-},
-{
-  id: "C224",
-  topic: "Calculus (Critical Points)",
-  difficulty: 1400,
-  problem: "Find the x-coordinate of the local minimum of the function $f(x) = x^3 - 12x + 1$.",
-  answer: "2",
-},
-{
-  id: "C225",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 1950,
-  problem: "Evaluate the limit $\\lim_{x \\to 0} \\frac{e^x - 1 - x}{x^2}$.",
-  answer: "0.5",
-},
-{
-  id: "C226",
-  topic: "Calculus (Optimization)",
-  difficulty: 2150,
-  problem: "A cylindrical can with an open top is to be made to hold a volume of 1000 cm³. What is the radius (in cm) that minimizes the amount of material used? The answer is of the form $(k/\\pi)^{1/3}$. Find k.",
-  answer: "500",
-},
-{
-  id: "C227",
-  topic: "Calculus (Related Rates - Shadow)",
-  difficulty: 2000,
-  problem: "A 6 ft tall person walks away from a 15 ft tall lamppost at a rate of 5 ft/s. At what rate is the tip of their shadow moving away from the lamppost (in ft/s)?",
-  answer: "25/3",
-},
-{
-  id: "C228",
-  topic: "Calculus (Concavity)",
-  difficulty: 1700,
-  problem: "Find the x-coordinate of the inflection point for the function $f(x) = e^{-x^2/2}$.",
-  answer: "1",
-},
-{
-  id: "C229",
-  topic: "Calculus (Absolute Extrema)",
-  difficulty: 1650,
-  problem: "Find the absolute minimum value of the function $f(x) = x^4 - 2x^2 + 3$ on the interval $[-2, 2]$.",
-  answer: "2",
-},
-{
-  id: "C230",
-  topic: "Calculus (Rolle's Theorem)",
-  difficulty: 1700,
-  problem: "For the function $f(x) = x^2 - 4x + 3$ on the interval $[1, 3]$, find the value of $c$ that satisfies Rolle's Theorem.",
-  answer: "2",
-},
-{
-  id: "C231",
-  topic: "Calculus (Derivative of Inverse Trig)",
-  difficulty: 1700,
-  problem: "Let $f(x) = \\arcsin(2x)$. Find $f'(0.25)$.",
-  answer: "2/√3",
-},
-{
-  id: "C232",
-  topic: "Calculus (Limit Definition of Derivative)",
-  difficulty: 1600,
-  problem: "The limit $\\lim_{h \\to 0} \\frac{\\ln(e+h) - 1}{h}$ represents $f'(a)$. What is the value of this limit?",
-  answer: "1/e",
-},
-{
-  id: "C233",
-  topic: "Calculus (Chain Rule with Quotient Rule)",
-  difficulty: 1750,
-  problem: "Let $f(x) = \\sqrt{\\frac{x}{x+1}}$. Find $f'(1)$.",
-  answer: "1/(4√2)",
-},
-{
-  id: "C234",
-  topic: "Calculus (Differentiability)",
-  difficulty: 2050,
-  problem: "Find the values of $a$ and $b$ that make the function $f(x) = \\begin{cases} x^3, & x \\le 1 \\\\ ax+b, & x > 1 \\end{cases}$ differentiable everywhere. What is the value of $a+b$?",
-  answer: "1",
-},
-{
-  id: "C235",
-  topic: "Calculus (Logarithmic Differentiation)",
-  difficulty: 2250,
-  problem: "Let $y = x^{\\cos(x)}$. Find the value of $\\frac{dy}{dx}$ at $x=\\pi/2$.",
-  answer: "-ln(π/2)",
-},
-{
-  id: "C236",
-  topic: "Calculus (Second Derivative Implicit)",
-  difficulty: 2450,
-  problem: "For the curve $y^2 - x^2 = 1$, find the value of the second derivative, $\\frac{d^2y}{dx^2}$, at the point $(0, 1)$.",
-  answer: "-1",
-},
-{
-  id: "C237",
-  topic: "Calculus (Horizontal Tangents)",
-  difficulty: 1800,
-  problem: "Find the smallest positive x-value where the graph of $y = e^x \\cos(x)$ has a horizontal tangent.",
-  answer: "π/4",
-},
-{
-  id: "C238",
-  topic: "Calculus (Related Rates - Distance)",
-  difficulty: 2100,
-  problem: "Car A is traveling west at 50 mph and car B is traveling north at 60 mph. Both are headed for the intersection of the two roads. At what rate are the cars approaching each other when car A is 0.3 mi and car B is 0.4 mi from the intersection? (in mph)",
-  answer: "78",
-},
-{
-  id: "C239",
-  topic: "Calculus (Optimization)",
-  difficulty: 1900,
-  problem: "Find the positive number $x$ such that the sum of the number and its reciprocal is a minimum.",
-  answer: "1",
-},
-{
-  id: "C240",
-  topic: "Calculus (Derivative of an Inverse)",
-  difficulty: 2000,
-  problem: "Let $f(x) = e^x + 2x$. Find the value of $(f^{-1})'(1)$.",
-  answer: "1/3",
-},
-{
-  id: "C241",
-  topic: "Calculus (Mean Value Theorem)",
-  difficulty: 1800,
-  problem: "For the function $f(x) = \\ln(x)$ on the interval $[1, e]$, find the value of $c$ that satisfies the Mean Value Theorem.",
-  answer: "e-1",
-},
-{
-  id: "C157",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1050,
-  problem: "Let $f(x) = 7x^4 - 3x^2 + 9$. Find $f'(x)$.",
-  answer: "28x³ - 6x",
-},
-{
-  id: "C158",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1150,
-  problem: "Let $g(x) = 5\\sqrt{x}$. Find the value of $g'(25)$.",
-  answer: "0.5",
-},
-{
-  id: "C159",
-  topic: "Calculus (Product Rule)",
-  difficulty: 1350,
-  problem: "Let $f(x) = e^x \\cos(x)$. Find $f'(0)$.",
-  answer: "1",
-},
-{
-  id: "C160",
-  topic: "Calculus (Quotient Rule)",
-  difficulty: 1450,
-  problem: "Let $f(x) = \\frac{x}{x+1}$. Find $f'(1)$.",
-  answer: "0.25",
-},
-{
-  id: "C161",
-  topic: "Calculus (Chain Rule)",
-  difficulty: 1500,
-  problem: "Let $h(x) = \\sin(x^2)$. Find $h'(\\sqrt{\\pi})$.",
-  answer: "-2√π",
-},
-{
-  id: "C162",
-  topic: "Calculus (Chain Rule with Logs)",
-  difficulty: 1600,
-  problem: "Let $f(x) = \\ln(3x^2 - 2)$. Find $f'(1)$.",
-  answer: "6",
-},
-{
-  id: "C163",
-  topic: "Calculus (Higher-Order Derivative)",
-  difficulty: 1250,
-  problem: "Let $f(x) = 2x^5$. Find the third derivative, $f'''(x)$.",
-  answer: "120x²",
-},
-{
-  id: "C164",
-  topic: "Calculus (Tangent Line Equation)",
-  difficulty: 1400,
-  problem: "Find the slope of the tangent line to $y = \\tan(x)$ at $x=\\pi/4$.",
-  answer: "2",
-},
-{
-  id: "C165",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 1800,
-  problem: "For the ellipse $4x^2 + y^2 = 8$, find the slope of the tangent line at the point $(1, 2)$.",
-  answer: "-2",
-},
-{
-  id: "C166",
-  topic: "Calculus (Critical Points)",
-  difficulty: 1300,
-  problem: "Find the x-coordinate of the critical point of $f(x) = x^2 - 4x + 7$.",
-  answer: "2",
-},
-{
-  id: "C167",
-  topic: "Calculus (Absolute Extrema)",
-  difficulty: 1700,
-  problem: "Find the absolute maximum value of the function $f(x) = x^3 - 3x + 1$ on the interval $[0, 2]$.",
-  answer: "3",
-},
-{
-  id: "C168",
-  topic: "Calculus (Mean Value Theorem)",
-  difficulty: 1750,
-  problem: "For $f(x) = x^2$ on $[1, 3]$, find the value of $c$ that satisfies the Mean Value Theorem.",
-  answer: "2",
-},
-{
-  id: "C169",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 1900,
-  problem: "Evaluate the limit $\\lim_{x \\to 0} \\frac{e^x - 1 - x}{x^2}$.",
-  answer: "0.5",
-},
-{
-  id: "C170",
-  topic: "Calculus (Related Rates)",
-  difficulty: 1850,
-  problem: "The radius of a circle is increasing at a rate of 3 m/s. How fast is the area increasing when the radius is 10 m?",
-  answer: "60π",
-},
-{
-  id: "C171",
-  topic: "Calculus (Optimization)",
-  difficulty: 1950,
-  problem: "Of all rectangles with a perimeter of 40, which one has the maximum area? What is this area?",
-  answer: "100",
-},
-{
-  id: "C172",
-  topic: "Calculus (Derivative of Inverse Trig)",
-  difficulty: 1650,
-  problem: "Let $f(x) = \\arcsin(x/2)$. Find $f'(1)$.",
-  answer: "1/√3",
-},
-{
-  id: "C173",
-  topic: "Calculus (Linear Approximation)",
-  difficulty: 1700,
-  problem: "Use the linear approximation of $f(x) = x^{1/3}$ at $x=8$ to estimate $(8.1)^{1/3}$.",
-  answer: "2 + 1/120",
-},
-{
-  id: "C174",
-  topic: "Calculus (Concavity)",
-  difficulty: 1550,
-  problem: "Find the interval where the function $f(x) = x^3 - 12x$ is concave down.",
-  answer: "(-∞, 0)",
-},
-{
-  id: "C175",
-  topic: "Calculus (Definition of Derivative)",
-  difficulty: 1800,
-  problem: "Evaluate the limit $\\lim_{h \\to 0} \\frac{\\cos(\\pi + h) - \\cos(\\pi)}{h}$. This is the derivative of what function at what point?",
-  answer: "0",
-},
-{
-  id: "C176",
-  topic: "Calculus (Logarithmic Differentiation)",
-  difficulty: 2250,
-  problem: "Let $f(x) = (x+1)^x$. Find $f'(1)$.",
-  answer: "2 + 2ln(2)",
-},
-{
-  id: "C177",
-  topic: "Calculus (Normal Line)",
-  difficulty: 1600,
-  problem: "Find the y-intercept of the normal line to the curve $y=x^2$ at the point $(1,1)$.",
-  answer: "1.5",
-},
-{
-  id: "C178",
-  topic: "Calculus (Chain Rule - Multiple Layers)",
-  difficulty: 1900,
-  problem: "Let $f(x) = e^{\\sin(x^2)}$. Find $f'(0)$.",
-  answer: "0",
-},
-{
-  id: "C179",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 2000,
-  problem: "Find $\\frac{dy}{dx}$ for the curve $x^3+y^3=6xy$ at the point $(3,3)$.",
-  answer: "-1",
-},
-{
-  id: "C180",
-  topic: "Calculus (Rolle's Theorem)",
-  difficulty: 1650,
-  problem: "Let $f(x) = x^2 - 4x + 3$. Find a value of $c$ in $(1,3)$ that satisfies Rolle's Theorem.",
-  answer: "2",
-},
-{
-  id: "C181",
-  topic: "Calculus (Finding Inflection Points)",
-  difficulty: 1750,
-  problem: "Find the x-coordinate of the inflection point for $f(x) = e^{-x^2}$.",
-  answer: "1/√2",
-},
-{
-  id: "C182",
-  topic: "Calculus (Optimization - Distance)",
-  difficulty: 2100,
-  problem: "Find the minimum distance from the point $(4,0)$ to the parabola $y^2=2x$.",
-  answer: "√12",
-},
-{
-  id: "C183",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 2050,
-  problem: "Evaluate $\\lim_{x \\to 0} \\frac{x - \\arctan(x)}{x^3}$.",
-  answer: "1/3",
-},
-{
-  id: "C184",
-  topic: "Calculus (Related Rates - Shadow)",
-  difficulty: 2300,
-  problem: "A 6 ft tall man walks away from a 15 ft tall lamppost at a speed of 5 ft/s. How fast is the tip of his shadow moving when he is 10 ft from the lamppost?",
-  answer: "25/3 ft/s",
-},
-{
-  id: "C185",
-  topic: "Calculus (Derivative of an Inverse)",
-  difficulty: 2150,
-  problem: "Let $f(x) = x^3+2x-1$. Let $g(x)$ be the inverse of $f(x)$. Find $g'(2)$.",
-  answer: "1/5",
-},
-{
-  id: "C186",
-  topic: "Calculus (Differentiability)",
-  difficulty: 2000,
-  problem: "Find the value of 'b' that makes the function $f(x) = \\begin{cases} x^3, & x \\le 1 \\\\ 3x+b, & x > 1 \\end{cases}$ differentiable at $x=1$.",
-  answer: "-2",
-},
-{
-  id: "C187",
-  topic: "Calculus (Product Rule - Higher Order)",
-  difficulty: 1950,
-  problem: "Let $f(x) = x \\sin(x)$. Find the second derivative $f''(x)$ and evaluate it at $x=\\pi/2$.",
-  answer: "-π/2",
-},
-{
-  id: "C188",
-  topic: "Calculus (Basic Derivative)",
-  difficulty: 1100,
-  problem: "Find the derivative of $f(x) = \\frac{1}{x} + \\frac{1}{x^2}$.",
-  answer: "-1/x² - 2/x³",
-},
-{
-  id: "C189",
-  topic: "Calculus (Horizontal Tangents)",
-  difficulty: 1700,
-  problem: "Find the y-coordinate of the point where $f(x) = x e^x$ has a horizontal tangent.",
-  answer: "-1/e",
-},
-{
-  id: "C190",
-  topic: "Calculus (Quotient Rule with Trig)",
-  difficulty: 1600,
-  problem: "Let $f(x) = \\frac{\\sin(x)}{\\cos(x)}$. Find $f'(\\pi)$.",
-  answer: "1",
-},
-{
-  id: "C191",
-  topic: "Calculus (Chain Rule)",
-  difficulty: 1550,
-  problem: "Let $f(x) = (1 - x^2)^{10}$. Find $f'(0)$.",
-  answer: "0",
-},
-{
-  id: "C192",
-  topic: "Calculus (Implicit Differentiation)",
-  difficulty: 2100,
-  problem: "Given $e^y = x+y$, find $\\frac{dy}{dx}$ in terms of $x$ and $y$.",
-  answer: "1/(e^y - 1)",
-},
-{
-  id: "C193",
-  topic: "Calculus (Optimization - Can)",
-  difficulty: 2400,
-  problem: "A cylindrical can is to be made to hold 1000 cm³ of oil. Find the radius of the can that will minimize the cost of the metal to make the can. (Minimize surface area).",
-  answer: "∛(500/π)",
-},
-{
-  id: "C194",
-  topic: "Calculus (L'Hôpital's Rule)",
-  difficulty: 2200,
-  problem: "Evaluate $\\lim_{x \\to \\infty} x \\sin(1/x)$.",
-  answer: "1",
-},
-{
-  id: "C195",
-  topic: "Calculus (Tangent Line)",
-  difficulty: 1350,
-  problem: "Find the x-intercept of the tangent line to $y = 1/x$ at $x=1$.",
-  answer: "2",
-},
-{
-  id: "C196",
-  topic: "Calculus (Second Derivative Test)",
-  difficulty: 1500,
-  problem: "The function $f(x) = x^3 - 12x$ has a critical point at $x=2$. Is this point a local maximum or a local minimum?",
-  answer: "local minimum",
-},
-{
-    id: "C301",
-    topic: "Calculus (Basic Derivative)",
-    difficulty: 1100,
-    problem: "Let $f(x) = 4x^5 + 3x^{-2} - 7$. Find $f'(x)$.",
-    answer: "20x⁴ - 6x⁻³",
-  },
   {
+    category: "Calculus I",
     id: "C302",
     topic: "Calculus (Basic Derivative)",
     difficulty: 1200,
@@ -917,6 +199,7 @@ export const mathProblems = [
     answer: "-3",
   },
   {
+    category: "Calculus I",
     id: "C303",
     topic: "Calculus (Product Rule)",
     difficulty: 1350,
@@ -924,6 +207,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C304",
     topic: "Calculus (Quotient Rule)",
     difficulty: 1450,
@@ -931,6 +215,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C305",
     topic: "Calculus (Chain Rule)",
     difficulty: 1500,
@@ -938,6 +223,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C306",
     topic: "Calculus (Chain Rule with Trig)",
     difficulty: 1650,
@@ -945,6 +231,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C307",
     topic: "Calculus (Implicit Differentiation)",
     difficulty: 1850,
@@ -952,6 +239,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C308",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1300,
@@ -959,6 +247,7 @@ export const mathProblems = [
     answer: "12x² - 6",
   },
   {
+    category: "Calculus I",
     id: "C309",
     topic: "Calculus (Equation of a Tangent Line)",
     difficulty: 1400,
@@ -966,6 +255,7 @@ export const mathProblems = [
     answer: "1/e²",
   },
   {
+    category: "Calculus I",
     id: "C310",
     topic: "Calculus (Critical Points)",
     difficulty: 1450,
@@ -973,6 +263,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C311",
     topic: "Calculus (Concavity)",
     difficulty: 1600,
@@ -980,6 +271,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C312",
     topic: "Calculus (L'Hôpital's Rule)",
     difficulty: 1800,
@@ -987,6 +279,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C313",
     topic: "Calculus (Related Rates)",
     difficulty: 1900,
@@ -994,6 +287,7 @@ export const mathProblems = [
     answer: "1 cm/s",
   },
   {
+    category: "Calculus I",
     id: "C314",
     topic: "Calculus (Optimization)",
     difficulty: 2000,
@@ -1001,6 +295,7 @@ export const mathProblems = [
     answer: "20",
   },
   {
+    category: "Calculus I",
     id: "C315",
     topic: "Calculus (Mean Value Theorem)",
     difficulty: 1750,
@@ -1008,6 +303,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C316",
     topic: "Calculus (Derivative of Inverse Trig)",
     difficulty: 1650,
@@ -1015,6 +311,7 @@ export const mathProblems = [
     answer: "1/√3",
   },
   {
+    category: "Calculus I",
     id: "C317",
     topic: "Calculus (Linear Approximation)",
     difficulty: 1700,
@@ -1022,6 +319,7 @@ export const mathProblems = [
     answer: "1.1",
   },
   {
+    category: "Calculus I",
     id: "C318",
     topic: "Calculus (Derivative of an Inverse)",
     difficulty: 1950,
@@ -1029,6 +327,7 @@ export const mathProblems = [
     answer: "1/5",
   },
   {
+    category: "Calculus I",
     id: "C319",
     topic: "Calculus (Chain & Product Rule)",
     difficulty: 1700,
@@ -1036,6 +335,7 @@ export const mathProblems = [
     answer: "ln(2) + 1",
   },
   {
+    category: "Calculus I",
     id: "C320",
     topic: "Calculus (Differentiability)",
     difficulty: 1900,
@@ -1043,6 +343,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C321",
     topic: "Calculus (Logarithmic Differentiation)",
     difficulty: 2150,
@@ -1050,6 +351,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C322",
     topic: "Calculus (Quotient Rule with Trig)",
     difficulty: 1550,
@@ -1057,6 +359,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C323",
     topic: "Calculus (Horizontal Tangents)",
     difficulty: 1700,
@@ -1064,6 +367,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Calculus I",
     id: "C324",
     topic: "Calculus (Second Derivative Implicit)",
     difficulty: 2350,
@@ -1071,6 +375,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C325",
     topic: "Calculus (Optimization - Cylinder)",
     difficulty: 2200,
@@ -1078,6 +383,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C326",
     topic: "Calculus (Related Rates - Cone)",
     difficulty: 2100,
@@ -1085,6 +391,7 @@ export const mathProblems = [
     answer: "2/9",
   },
   {
+    category: "Calculus I",
     id: "C327",
     topic: "Calculus (Definition of Derivative)",
     difficulty: 1600,
@@ -1092,6 +399,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C328",
     topic: "Calculus (Higher-Order Trig Derivative)",
     difficulty: 1400,
@@ -1099,6 +407,7 @@ export const mathProblems = [
     answer: "cos(x)",
   },
   {
+    category: "Calculus I",
     id: "C329",
     topic: "Calculus (Absolute Extrema)",
     difficulty: 1750,
@@ -1106,6 +415,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C330",
     topic: "Calculus (Chain Rule with Logs)",
     difficulty: 1550,
@@ -1113,6 +423,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C331",
     topic: "Calculus (Rolle's Theorem)",
     difficulty: 1700,
@@ -1120,6 +431,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus I",
     id: "C332",
     topic: "Calculus (L'Hôpital's Rule Indeterminate Power)",
     difficulty: 2250,
@@ -1127,6 +439,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C333",
     topic: "Calculus (Equation of a Normal Line)",
     difficulty: 1600,
@@ -1134,6 +447,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C334",
     topic: "Calculus (Second Derivative Test)",
     difficulty: 1500,
@@ -1141,6 +455,7 @@ export const mathProblems = [
     answer: "local max",
   },
   {
+    category: "Calculus I",
     id: "C335",
     topic: "Calculus (Implicit Differentiation)",
     difficulty: 2000,
@@ -1148,6 +463,7 @@ export const mathProblems = [
     answer: "-4",
   },
   {
+    category: "Calculus I",
     id: "C336",
     topic: "Calculus (Optimization - Distance)",
     difficulty: 2100,
@@ -1155,6 +471,7 @@ export const mathProblems = [
     answer: "√5",
   },
   {
+    category: "Calculus I",
     id: "C337",
     topic: "Calculus (Related Rates)",
     difficulty: 1950,
@@ -1162,6 +479,7 @@ export const mathProblems = [
     answer: "65 mi/h",
   },
   {
+    category: "Calculus I",
     id: "C338",
     topic: "Calculus (Chain Rule with Inverse Trig)",
     difficulty: 1750,
@@ -1169,6 +487,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C339",
     topic: "Calculus (Product Rule with 3 functions)",
     difficulty: 1750,
@@ -1176,6 +495,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C340",
     topic: "Calculus (Concavity)",
     difficulty: 1650,
@@ -1183,6 +503,7 @@ export const mathProblems = [
     answer: "(0, ∞)",
   },
   {
+    category: "Calculus I",
     id: "C341",
     topic: "Calculus (Basic Derivative)",
     difficulty: 1150,
@@ -1190,6 +511,7 @@ export const mathProblems = [
     answer: "5sec²(x) + 2/x²",
   },
   {
+    category: "Calculus I",
     id: "C342",
     topic: "Calculus (Critical Points)",
     difficulty: 1500,
@@ -1197,6 +519,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C343",
     topic: "Calculus (L'Hôpital's Rule)",
     difficulty: 1850,
@@ -1204,6 +527,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C344",
     topic: "Calculus (Differentiability)",
     difficulty: 2100,
@@ -1211,6 +535,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C345",
     topic: "Calculus (Derivative of an Inverse)",
     difficulty: 2050,
@@ -1218,6 +543,7 @@ export const mathProblems = [
     answer: "1/3",
   },
   {
+    category: "Calculus I",
     id: "C346",
     topic: "Calculus (Optimization - Box)",
     difficulty: 2150,
@@ -1225,6 +551,7 @@ export const mathProblems = [
     answer: "40 cm",
   },
   {
+    category: "Calculus I",
     id: "C347",
     topic: "Calculus (Linear Approximation)",
     difficulty: 1750,
@@ -1232,6 +559,7 @@ export const mathProblems = [
     answer: "0.05",
   },
   {
+    category: "Calculus I",
     id: "C348",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1500,
@@ -1239,6 +567,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Calculus I",
     id: "C349",
     topic: "Calculus (Equation of a Tangent Line)",
     difficulty: 1450,
@@ -1246,6 +575,7 @@ export const mathProblems = [
     answer: "-4",
   },
   {
+    category: "Calculus I",
     id: "C350",
     topic: "Calculus (Chain Rule)",
     difficulty: 1550,
@@ -1260,6 +590,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C502",
     topic: "Calculus (Basic Derivative)",
     difficulty: 1150,
@@ -1267,6 +598,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Calculus I",
     id: "C503",
     topic: "Calculus (Product Rule)",
     difficulty: 1350,
@@ -1274,6 +606,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C504",
     topic: "Calculus (Quotient Rule)",
     difficulty: 1450,
@@ -1281,6 +614,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C505",
     topic: "Calculus (Chain Rule)",
     difficulty: 1500,
@@ -1288,6 +622,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C506",
     topic: "Calculus (Chain Rule with Trig)",
     difficulty: 1600,
@@ -1295,6 +630,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C507",
     topic: "Calculus (Implicit Differentiation)",
     difficulty: 1850,
@@ -1302,6 +638,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C508",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1300,
@@ -1309,6 +646,7 @@ export const mathProblems = [
     answer: "-1/x²",
   },
   {
+    category: "Calculus I",
     id: "C509",
     topic: "Calculus (Equation of a Tangent Line)",
     difficulty: 1400,
@@ -1316,6 +654,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C510",
     topic: "Calculus (Critical Points)",
     difficulty: 1450,
@@ -1323,6 +662,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Calculus I",
     id: "C511",
     topic: "Calculus (Concavity)",
     difficulty: 1650,
@@ -1330,6 +670,7 @@ export const mathProblems = [
     answer: "(-∞, 0) U (1, ∞)",
   },
   {
+    category: "Calculus I",
     id: "C512",
     topic: "Calculus (L'Hôpital's Rule)",
     difficulty: 1800,
@@ -1337,6 +678,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C513",
     topic: "Calculus (Related Rates)",
     difficulty: 1950,
@@ -1344,6 +686,7 @@ export const mathProblems = [
     answer: "36 in³/s",
   },
   {
+    category: "Calculus I",
     id: "C514",
     topic: "Calculus (Optimization)",
     difficulty: 2050,
@@ -1351,6 +694,7 @@ export const mathProblems = [
     answer: "-25",
   },
   {
+    category: "Calculus I",
     id: "C515",
     topic: "Calculus (Mean Value Theorem)",
     difficulty: 1750,
@@ -1358,6 +702,7 @@ export const mathProblems = [
     answer: "√2",
   },
   {
+    category: "Calculus I",
     id: "C516",
     topic: "Calculus (Derivative of Inverse Trig)",
     difficulty: 1650,
@@ -1365,6 +710,7 @@ export const mathProblems = [
     answer: "π/4 + 0.5",
   },
   {
+    category: "Calculus I",
     id: "C517",
     topic: "Calculus (Linear Approximation)",
     difficulty: 1700,
@@ -1372,6 +718,7 @@ export const mathProblems = [
     answer: "0.1",
   },
   {
+    category: "Calculus I",
     id: "C518",
     topic: "Calculus (Derivative of an Inverse)",
     difficulty: 2000,
@@ -1379,6 +726,7 @@ export const mathProblems = [
     answer: "1/8",
   },
   {
+    category: "Calculus I",
     id: "C519",
     topic: "Calculus (Chain & Quotient Rule)",
     difficulty: 1750,
@@ -1386,6 +734,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C520",
     topic: "Calculus (Differentiability)",
     difficulty: 1950,
@@ -1393,6 +742,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C521",
     topic: "Calculus (Logarithmic Differentiation)",
     difficulty: 2200,
@@ -1400,6 +750,7 @@ export const mathProblems = [
     answer: "2 + ln(4)",
   },
   {
+    category: "Calculus I",
     id: "C522",
     topic: "Calculus (Product Rule with Trig)",
     difficulty: 1400,
@@ -1407,6 +758,7 @@ export const mathProblems = [
     answer: "1 + π/2",
   },
   {
+    category: "Calculus I",
     id: "C523",
     topic: "Calculus (Horizontal Tangents)",
     difficulty: 1750,
@@ -1414,6 +766,7 @@ export const mathProblems = [
     answer: "2π/3",
   },
   {
+    category: "Calculus I",
     id: "C524",
     topic: "Calculus (Second Derivative Implicit)",
     difficulty: 2400,
@@ -1421,6 +774,7 @@ export const mathProblems = [
     answer: "-0.5",
   },
   {
+    category: "Calculus I",
     id: "C525",
     topic: "Calculus (Optimization - Fence)",
     difficulty: 2100,
@@ -1428,6 +782,7 @@ export const mathProblems = [
     answer: "40 ft",
   },
   {
+    category: "Calculus I",
     id: "C526",
     topic: "Calculus (Related Rates - Shadow)",
     difficulty: 2150,
@@ -1435,6 +790,7 @@ export const mathProblems = [
     answer: "-0.5 m/s",
   },
   {
+    category: "Calculus I",
     id: "C527",
     topic: "Calculus (Definition of Derivative)",
     difficulty: 1650,
@@ -1442,6 +798,7 @@ export const mathProblems = [
     answer: "f(x)=e^(2x), a=1",
   },
   {
+    category: "Calculus I",
     id: "C528",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1450,
@@ -1449,6 +806,7 @@ export const mathProblems = [
     answer: "-6/x⁴",
   },
   {
+    category: "Calculus I",
     id: "C529",
     topic: "Calculus (Absolute Extrema)",
     difficulty: 1800,
@@ -1456,6 +814,7 @@ export const mathProblems = [
     answer: "2/(3√3)",
   },
   {
+    category: "Calculus I",
     id: "C530",
     topic: "Calculus (Chain Rule with Roots)",
     difficulty: 1550,
@@ -1463,6 +822,7 @@ export const mathProblems = [
     answer: "4/3",
   },
   {
+    category: "Calculus I",
     id: "C531",
     topic: "Calculus (Rolle's Theorem)",
     difficulty: 1700,
@@ -1470,6 +830,7 @@ export const mathProblems = [
     answer: "1/√3",
   },
   {
+    category: "Calculus I",
     id: "C532",
     topic: "Calculus (L'Hôpital's Rule with Logs)",
     difficulty: 1900,
@@ -1477,6 +838,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C533",
     topic: "Calculus (Equation of a Normal Line)",
     difficulty: 1650,
@@ -1484,6 +846,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C534",
     topic: "Calculus (Second Derivative Test)",
     difficulty: 1550,
@@ -1491,6 +854,7 @@ export const mathProblems = [
     answer: "local min",
   },
   {
+    category: "Calculus I",
     id: "C535",
     topic: "Calculus (Implicit Differentiation)",
     difficulty: 2050,
@@ -1498,6 +862,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C536",
     topic: "Calculus (Optimization - Wire)",
     difficulty: 2250,
@@ -1505,6 +870,7 @@ export const mathProblems = [
     answer: "10",
   },
   {
+    category: "Calculus I",
     id: "C537",
     topic: "Calculus (Related Rates - Distance)",
     difficulty: 2100,
@@ -1512,6 +878,7 @@ export const mathProblems = [
     answer: "10√37 m/s",
   },
   {
+    category: "Calculus I",
     id: "C538",
     topic: "Calculus (Derivative of Inverse Trig)",
     difficulty: 1700,
@@ -1519,6 +886,7 @@ export const mathProblems = [
     answer: "-2/√3",
   },
   {
+    category: "Calculus I",
     id: "C539",
     topic: "Calculus (Product & Chain Rule)",
     difficulty: 1800,
@@ -1526,6 +894,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus I",
     id: "C540",
     topic: "Calculus (Concavity)",
     difficulty: 1700,
@@ -1533,6 +902,7 @@ export const mathProblems = [
     answer: "√3",
   },
   {
+    category: "Calculus I",
     id: "C541",
     topic: "Calculus (Basic Derivative)",
     difficulty: 1200,
@@ -1540,6 +910,7 @@ export const mathProblems = [
     answer: "2^x * ln(2) + 2x",
   },
   {
+    category: "Calculus I",
     id: "C542",
     topic: "Calculus (Critical Points)",
     difficulty: 1550,
@@ -1547,6 +918,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C543",
     topic: "Calculus (L'Hôpital's Rule)",
     difficulty: 1950,
@@ -1554,6 +926,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C544",
     topic: "Calculus (Differentiability)",
     difficulty: 2150,
@@ -1561,6 +934,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus I",
     id: "C545",
     topic: "Calculus (Derivative of an Inverse)",
     difficulty: 2100,
@@ -1568,6 +942,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus I",
     id: "C546",
     topic: "Calculus (Optimization)",
     difficulty: 1950,
@@ -1575,6 +950,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus I",
     id: "C547",
     topic: "Calculus (Linear Approximation)",
     difficulty: 1800,
@@ -1582,6 +958,7 @@ export const mathProblems = [
     answer: "1.01",
   },
   {
+    category: "Calculus I",
     id: "C548",
     topic: "Calculus (Higher-Order Derivative)",
     difficulty: 1550,
@@ -1589,6 +966,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus I",
     id: "C549",
     topic: "Calculus (Equation of a Tangent Line)",
     difficulty: 1500,
@@ -1596,6 +974,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus I",
     id: "C550",
     topic: "Calculus (Chain Rule)",
     difficulty: 1600,
@@ -1615,6 +994,7 @@ export const mathProblems = [
 
 
   {
+    category: "Calculus II",
     id: "C10",
     topic: "Calculus (Definite Integral)",
     difficulty: 1250,
@@ -1622,6 +1002,7 @@ export const mathProblems = [
     answer: "16",
   },
   {
+    category: "Calculus II",
     id: "C11",
     topic: "Calculus (U-Substitution)",
     difficulty: 1550,
@@ -1629,6 +1010,7 @@ export const mathProblems = [
     answer: "3.75",
   },
   {
+    category: "Calculus II",
     id: "C12",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1650,
@@ -1636,6 +1018,7 @@ export const mathProblems = [
     answer: "(e²+1)/4",
   },
   {
+    category: "Calculus II",
     id: "C13",
     topic: "Calculus (Improper Integral)",
     difficulty: 1900,
@@ -1643,6 +1026,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus II",
     id: "C14",
     topic: "Calculus (Trigonometric Substitution)",
     difficulty: 2100,
@@ -1650,6 +1034,7 @@ export const mathProblems = [
     answer: "π",
   },
   {
+    category: "Calculus II",
     id: "C15",
     topic: "Calculus (Partial Fractions)",
     difficulty: 2200,
@@ -1657,6 +1042,7 @@ export const mathProblems = [
     answer: "ln(4/3)",
   },
   {
+    category: "Calculus II",
     id: "C41",
     topic: "Calculus (Ratio Test for Convergence)",
     difficulty: 1750,
@@ -1664,6 +1050,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus II",
     id: "C42",
     topic: "Calculus (Interval of Convergence)",
     difficulty: 2300,
@@ -1671,6 +1058,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Calculus II",
     id: "C43",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1600,
@@ -1678,6 +1066,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus II",
     id: "C44",
     topic: "Calculus (L'Hôpital's Rule with Logs)",
     difficulty: 2050,
@@ -1685,6 +1074,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus II",
     id: "C45",
     topic: "Calculus (Separable Differential Equation)",
     difficulty: 1800,
@@ -1692,6 +1082,7 @@ export const mathProblems = [
     answer: "5e",
   },
   {
+    category: "Calculus II",
     id: "C46",
     topic: "Calculus (Area in Polar Coordinates)",
     difficulty: 2150,
@@ -1699,6 +1090,7 @@ export const mathProblems = [
     answer: "2π",
   },
   {
+    category: "Calculus II",
     id: "C63",
     topic: "Calculus (Indefinite Integral)",
     difficulty: 1100,
@@ -1706,6 +1098,7 @@ export const mathProblems = [
     answer: "x⁴ + tan(x)",
   },
   {
+    category: "Calculus II",
     id: "C64",
     topic: "Calculus (Fundamental Theorem of Calculus Part 1)",
     difficulty: 1700,
@@ -1713,6 +1106,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus II",
     id: "C65",
     topic: "Calculus (Integration by Parts - Tabular)",
     difficulty: 1800,
@@ -1720,6 +1114,7 @@ export const mathProblems = [
     answer: "e-2",
   },
   {
+    category: "Calculus II",
     id: "C66",
     topic: "Calculus (Trigonometric Integral)",
     difficulty: 1950,
@@ -1727,6 +1122,7 @@ export const mathProblems = [
     answer: "π/4",
   },
   {
+    category: "Calculus II",
     id: "C67",
     topic: "Calculus (Partial Fractions - Repeated Root)",
     difficulty: 2250,
@@ -1734,6 +1130,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus II",
     id: "C68",
     topic: "Calculus (p-Series Convergence)",
     difficulty: 1500,
@@ -1741,6 +1138,7 @@ export const mathProblems = [
     answer: "p > 1",
   },
   {
+    category: "Calculus II",
     id: "C69",
     topic: "Calculus (Alternating Series Error Bound)",
     difficulty: 2100,
@@ -1748,6 +1146,7 @@ export const mathProblems = [
     answer: "1/16",
   },
   {
+    category: "Calculus II",
     id: "C70",
     topic: "Calculus (Integral Test)",
     difficulty: 1850,
@@ -1755,6 +1154,7 @@ export const mathProblems = [
     answer: "diverges",
   },
   {
+    category: "Calculus II",
     id: "C71",
     topic: "Calculus (Maclaurin Series for sin(x))",
     difficulty: 1900,
@@ -1762,6 +1162,7 @@ export const mathProblems = [
     answer: "1/120",
   },
   {
+    category: "Calculus II",
     id: "C72",
     topic: "Calculus (Taylor Series for ln(x))",
     difficulty: 2150,
@@ -1769,6 +1170,7 @@ export const mathProblems = [
     answer: "1/3",
   },
   {
+    category: "Calculus II",
     id: "C73",
     topic: "Calculus (Volume of Revolution - Washer Method)",
     difficulty: 1950,
@@ -1776,6 +1178,7 @@ export const mathProblems = [
     answer: "π/6",
   },
   {
+    category: "Calculus II",
     id: "C74",
     topic: "Calculus (Arc Length - Polar)",
     difficulty: 2400,
@@ -1783,6 +1186,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Calculus II",
     id: "C75",
     topic: "Calculus (Surface Area of Revolution)",
     difficulty: 2300,
@@ -1790,6 +1194,7 @@ export const mathProblems = [
     answer: "π/27 * (10√10 - 1)",
   },
   {
+    category: "Calculus II",
     id: "C76",
     topic: "Calculus (Work - Pumping Water)",
     difficulty: 2250,
@@ -1797,6 +1202,7 @@ export const mathProblems = [
     answer: "9800 * (10*8³/3 - 8⁴/4)",
   },
   {
+    category: "Calculus II",
     id: "C77",
     topic: "Calculus (Improper Integral - Discontinuity)",
     difficulty: 1900,
@@ -1804,755 +1210,15 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C78",
     topic: "Calculus (Radius of Convergence)",
     difficulty: 2200,
     problem: "Find the radius of convergence of the power series $\\sum_{n=0}^{\\infty} \\frac{n! x^n}{n^n}$.",
     answer: "e",
   },
-{
-  id: "C117",
-  topic: "Calculus (Definite Integral)",
-  difficulty: 1200,
-  problem: "Evaluate $\\int_1^2 (4x^3 - 2x) dx$.",
-  answer: "12",
-},
-{
-  id: "C118",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1500,
-  problem: "Evaluate $\\int_0^{\\pi/2} \\cos(x) \\sin(\\sin(x)) dx$.",
-  answer: "1-cos(1)",
-},
-{
-  id: "C119",
-  topic: "Calculus (Integral of exponential)",
-  difficulty: 1300,
-  problem: "Evaluate $\\int_0^{\\ln(2)} e^{3x} dx$.",
-  answer: "7/3",
-},
-{
-  id: "C120",
-  topic: "Calculus (Area Between Curves)",
-  difficulty: 1700,
-  problem: "Find the area of the region bounded by $y=8-x^2$ and $y=x^2$.",
-  answer: "128/3",
-},
-{
-  id: "C121",
-  topic: "Calculus (Volume of Revolution - Disk)",
-  difficulty: 1750,
-  problem: "The region under the curve $y=e^x$ from $x=0$ to $x=1$ is rotated about the x-axis. Find the volume.",
-  answer: "π(e²-1)/2",
-},
-{
-  id: "C122",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1800,
-  problem: "Evaluate $\\int_0^{\\pi} x \\sin(x) dx$.",
-  answer: "π",
-},
-{
-  id: "C123",
-  topic: "Calculus (Trigonometric Integral)",
-  difficulty: 1900,
-  problem: "Evaluate $\\int_0^{\\pi/4} \\tan^2(x) dx$.",
-  answer: "1 - π/4",
-},
-{
-  id: "C124",
-  topic: "Calculus (Trigonometric Substitution)",
-  difficulty: 2150,
-  problem: "Evaluate $\\int_0^1 \\frac{1}{1+x^2} dx$.",
-  answer: "π/4",
-},
-{
-  id: "C125",
-  topic: "Calculus (Partial Fractions)",
-  difficulty: 2250,
-  problem: "Evaluate $\\int_2^3 \\frac{3x-1}{x^2-x} dx$.",
-  answer: "ln(9)",
-},
-{
-  id: "C126",
-  topic: "Calculus (Improper Integral)",
-  difficulty: 1950,
-  problem: "Evaluate $\\int_0^\\infty e^{-2x} dx$.",
-  answer: "0.5",
-},
-{
-  id: "C127",
-  topic: "Calculus (Comparison Test for Integrals)",
-  difficulty: 2050,
-  problem: "Does the integral $\\int_1^\\infty \\frac{1}{x + e^x} dx$ converge or diverge? (Answer 'converge' or 'diverge')",
-  answer: "converge",
-},
-{
-  id: "C128",
-  topic: "Calculus (Arc Length)",
-  difficulty: 2300,
-  problem: "Find the arc length of the curve $y = \\ln(\\cos(x))$ from $x=0$ to $x=\\pi/4$.",
-  answer: "ln(√2 + 1)",
-},
-{
-  id: "C129",
-  topic: "Calculus (Volume of Revolution - Shell Method)",
-  difficulty: 2200,
-  problem: "Use the shell method to find the volume generated by revolving the region bounded by $y=x^2$, $y=0$, and $x=2$ about the y-axis.",
-  answer: "8π",
-},
-{
-  id: "C130",
-  topic: "Calculus (Work)",
-  difficulty: 2100,
-  problem: "A force of $10$ N is required to hold a spring stretched $0.2$ m beyond its natural length. How much work (in Joules) is done in stretching it from its natural length to $0.5$ m beyond its natural length? ($F=kx$)",
-  answer: "6.25",
-},
-{
-  id: "C131",
-  topic: "Calculus (Geometric Series)",
-  difficulty: 1650,
-  problem: "Find the sum of the series $\\sum_{n=1}^{\\infty} 5(\\frac{1}{2})^{n-1}$.",
-  answer: "10",
-},
-{
-  id: "C132",
-  topic: "Calculus (Ratio Test)",
-  difficulty: 1850,
-  problem: "For what values of x does the series $\\sum_{n=1}^{\\infty} \\frac{x^n}{n!}$ converge? (Answer in interval notation)",
-  answer: "(-∞, ∞)",
-},
-{
-  id: "C133",
-  topic: "Calculus (Taylor Series Coefficient)",
-  difficulty: 2350,
-  problem: "Find the coefficient of the $(x-\\pi/2)^2$ term in the Taylor series expansion of $f(x)=\\cos(x)$ centered at $a=\\pi/2$.",
-  answer: "-0.5",
-},
-{
-  id: "C134",
-  topic: "Calculus (Alternating Series)",
-  difficulty: 1750,
-  problem: "Does the series $\\sum_{n=1}^{\\infty} \\frac{(-1)^n}{\\sqrt{n}}$ converge absolutely, converge conditionally, or diverge?",
-  answer: "converge conditionally",
-},
-{
-  id: "C135",
-  topic: "Calculus (Power Series from Geometric)",
-  difficulty: 2000,
-  problem: "Find a power series representation for $f(x) = \\frac{1}{1+x^2}$. What is the coefficient of the $x^4$ term?",
-  answer: "1",
-},
-{
-  id: "C136",
-  topic: "Calculus (Integration by Parts - Cyclic)",
-  difficulty: 2450,
-  problem: "Evaluate $\\int_0^{\\pi/2} e^x \\cos(x) dx$.",
-  answer: "(e^(π/2) - 1)/2",
-},
-{
-  id: "C177",
-  topic: "Calculus (Indefinite Integral)",
-  difficulty: 1175,
-  problem: "Find the antiderivative of $f(x) = x^2 - \\sin(x) + e^x$. Do not include the constant C.",
-  answer: "x³/3 + cos(x) + e^x",
-},
-{
-  id: "C178",
-  topic: "Calculus (Definite Integral)",
-  difficulty: 1275,
-  problem: "Evaluate $\\int_0^{\\pi/2} (\\cos x - \\sin x) dx$.",
-  answer: "0",
-},
-{
-  id: "C179",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1575,
-  problem: "Evaluate $\\int_0^1 \\frac{x}{x^2+1} dx$.",
-  answer: "ln(2)/2",
-},
-{
-  id: "C180",
-  topic: "Calculus (Average Value of a Function)",
-  difficulty: 1650,
-  problem: "Find the average value of the function $f(x) = 3x^2$ on the interval $[0, 2]$.",
-  answer: "4",
-},
-{
-  id: "C181",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1825,
-  problem: "Evaluate $\\int_0^1 \\arctan(x) dx$.",
-  answer: "π/4 - ln(2)/2",
-},
-{
-  id: "C182",
-  topic: "Calculus (Trigonometric Integral)",
-  difficulty: 1925,
-  problem: "Evaluate $\\int_0^{\\pi/2} \\cos^3(x) dx$.",
-  answer: "2/3",
-},
-{
-  id: "C183",
-  topic: "Calculus (Trigonometric Substitution)",
-  difficulty: 2175,
-  problem: "Evaluate $\\int_0^3 \\frac{x^2}{\\sqrt{9-x^2}} dx$. (Hint: The area of a circle is $\\pi r^2$).",
-  answer: "9π/4",
-},
-{
-  id: "C184",
-  topic: "Calculus (Partial Fractions)",
-  difficulty: 2275,
-  problem: "Evaluate $\\int_1^2 \\frac{4}{x(x+2)} dx$.",
-  answer: "2ln(3/2)",
-},
-{
-  id: "C185",
-  topic: "Calculus (Improper Integral)",
-  difficulty: 2075,
-  problem: "Evaluate the improper integral $\\int_0^\\infty x e^{-x} dx$.",
-  answer: "1",
-},
-{
-  id: "C186",
-  topic: "Calculus (Area Between Curves)",
-  difficulty: 1725,
-  problem: "Find the area of the region bounded by $y=e^x$, $y=0$, $x=0$, and $x=2$.",
-  answer: "e²-1",
-},
-{
-  id: "C187",
-  topic: "Calculus (Volume of Revolution - Washer)",
-  difficulty: 1975,
-  problem: "The region bounded by $y=x^2$ and $y=x$ is rotated about the line $y=2$. Find the volume.",
-  answer: "8π/15",
-},
-{
-  id: "C188",
-  topic: "Calculus (Arc Length)",
-  difficulty: 2325,
-  problem: "Find the arc length of the curve $y = \\frac{1}{3}(x^2+2)^{3/2}$ from $x=0$ to $x=3$.",
-  answer: "12",
-},
-{
-  id: "C189",
-  topic: "Calculus (Limit Comparison Test)",
-  difficulty: 2125,
-  problem: "Does the series $\\sum_{n=1}^{\\infty} \\frac{n^2+1}{n^4+n}$ converge or diverge? (Answer 'converge' or 'diverge')",
-  answer: "converge",
-},
-{
-  id: "C190",
-  topic: "Calculus (Root Test)",
-  difficulty: 2050,
-  problem: "Consider the series $\\sum_{n=1}^{\\infty} (\\frac{2n}{3n+1})^n$. Let $L$ be the limit from the Root Test. What is the value of $L$?",
-  answer: "2/3",
-},
-{
-  id: "C191",
-  topic: "Calculus (Radius of Convergence)",
-  difficulty: 2300,
-  problem: "Find the radius of convergence for the power series $\\sum_{n=1}^{\\infty} \\frac{(-1)^n x^n}{n^2 5^n}$.",
-  answer: "5",
-},
-{
-  id: "C192",
-  topic: "Calculus (Taylor Series from known series)",
-  difficulty: 2400,
-  problem: "Find the Maclaurin series for $f(x) = x \\cos(x)$. What is the coefficient of the $x^3$ term?",
-  answer: "-1/2",
-},
-{
-  id: "C193",
-  topic: "Calculus (Work - Hooke's Law)",
-  difficulty: 2150,
-  problem: "A spring has a natural length of 1m. A force of 20N is required to stretch and hold the spring to a length of 3m. How much work is done in stretching the spring from 2m to 4m?",
-  answer: "60 J",
-},
-{
-  id: "C194",
-  topic: "Calculus (Area in Polar Coordinates)",
-  difficulty: 2175,
-  problem: "Find the area of the region enclosed by the cardioid $r = 2 + 2\\cos(\\theta)$.",
-  answer: "6π",
-},
-{
-  id: "C195",
-  topic: "Calculus (Improper Integral - Discontinuity)",
-  difficulty: 2000,
-  problem: "Evaluate the improper integral $\\int_0^2 \\frac{1}{(x-1)^{2/3}} dx$.",
-  answer: "6",
-},
-{
-  id: "C196",
-  topic: "Calculus (Separable Differential Equation)",
-  difficulty: 1850,
-  problem: "Solve the differential equation $\\frac{dy}{dx} = \\frac{x^2}{y}$ with the initial condition $y(0) = 2$. Find the value of $y(3)$.",
-  answer: "5",
-},
-{
-  id: "C242",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1550,
-  problem: "Evaluate $\\int_0^{\\pi/2} \\sin(x)\\cos^3(x) dx$.",
-  answer: "0.25",
-},
-{
-  id: "C243",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1750,
-  problem: "Evaluate $\\int_0^1 x e^{2x} dx$.",
-  answer: "(e²+1)/4",
-},
-{
-  id: "C244",
-  topic: "Calculus (Trigonometric Integral)",
-  difficulty: 2000,
-  problem: "Evaluate $\\int_0^{\\pi/4} \\sec^4(x) dx$.",
-  answer: "4/3",
-},
-{
-  id: "C245",
-  topic: "Calculus (Trigonometric Substitution)",
-  difficulty: 2200,
-  problem: "Evaluate $\\int_0^1 \\frac{1}{(x^2+1)^{3/2}} dx$.",
-  answer: "1/√2",
-},
-{
-  id: "C246",
-  topic: "Calculus (Partial Fractions)",
-  difficulty: 2300,
-  problem: "Evaluate $\\int_0^1 \\frac{x^2}{x+1} dx$. (Hint: Use polynomial division or substitution).",
-  answer: "ln(2) - 0.5",
-},
-{
-  id: "C247",
-  topic: "Calculus (Improper Integral)",
-  difficulty: 2100,
-  problem: "Evaluate the improper integral $\\int_0^\\infty \\frac{1}{x^2+1} dx$.",
-  answer: "π/2",
-},
-{
-  id: "C248",
-  topic: "Calculus (Area Between Curves)",
-  difficulty: 1750,
-  problem: "Find the area of the region bounded by the parabola $y^2=4x$ and the line $y=2x-4$.",
-  answer: "9",
-},
-{
-  id: "C249",
-  topic: "Calculus (Volume of Revolution - Shell)",
-  difficulty: 2050,
-  problem: "The region bounded by $y=x$, $y=-x$, and $x=1$ is rotated about the y-axis. Find the volume.",
-  answer: "4π/3",
-},
-{
-  id: "C250",
-  topic: "Calculus (Volume of Revolution - Washer)",
-  difficulty: 2100,
-  problem: "The region bounded by $y=\\sqrt{x}$ and $y=x^2$ is rotated about the line $y=-1$. Find the volume. The answer is a multiple of $\\pi$. What is the coefficient?",
-  answer: "29/30",
-},
-{
-  id: "C251",
-  topic: "Calculus (Arc Length)",
-  difficulty: 2350,
-  problem: "Find the arc length of the curve $y = \\frac{x^3}{6} + \\frac{1}{2x}$ from $x=1$ to $x=2$.",
-  answer: "17/12",
-},
-{
-  id: "C252",
-  topic: "Calculus (Geometric Series)",
-  difficulty: 1600,
-  problem: "Find the sum of the series $\\sum_{n=2}^{\\infty} 3(\\frac{-1}{2})^n$.",
-  answer: "0.5",
-},
-{
-  id: "C253",
-  topic: "Calculus (Integral Test)",
-  difficulty: 1900,
-  problem: "Does the series $\\sum_{n=2}^{\\infty} \\frac{1}{n(\\ln n)^2}$ converge or diverge? (Answer 'converge' or 'diverge')",
-  answer: "converge",
-},
-{
-  id: "C254",
-  topic: "Calculus (Limit Comparison Test)",
-  difficulty: 2050,
-  problem: "Does the series $\\sum_{n=1}^{\\infty} \\frac{2n+1}{\\sqrt{n^3+1}}$ converge or diverge? (Answer 'converge' or 'diverge')",
-  answer: "diverge",
-},
-{
-  id: "C255",
-  topic: "Calculus (Alternating Series)",
-  difficulty: 1800,
-  problem: "Does the series $\\sum_{n=1}^{\\infty} \\frac{(-1)^n n}{n+1}$ converge absolutely, converge conditionally, or diverge?",
-  answer: "diverge",
-},
-{
-  id: "C256",
-  topic: "Calculus (Radius of Convergence)",
-  difficulty: 2250,
-  problem: "Find the radius of convergence for the power series $\\sum_{n=1}^{\\infty} \\frac{n(x+2)^n}{3^{n+1}}$.",
-  answer: "3",
-},
-{
-  id: "C257",
-  topic: "Calculus (Maclaurin Series)",
-  difficulty: 2100,
-  problem: "Find the coefficient of the $x^4$ term in the Maclaurin series for $f(x) = e^{-x^2}$.",
-  answer: "1/2",
-},
-{
-  id: "C258",
-  topic: "Calculus (Taylor Series)",
-  difficulty: 2200,
-  problem: "Find the coefficient of the $(x-1)^2$ term in the Taylor series for $f(x) = \\frac{1}{x}$ centered at $a=1$.",
-  answer: "1",
-},
-{
-  id: "C259",
-  topic: "Calculus (FTC Part 1 with Chain Rule)",
-  difficulty: 2300,
-  problem: "Let $g(x) = \\int_{\\sin x}^{1} (1-t^2) dt$. Find $g'(\\pi/2)$.",
-  answer: "0",
-},
-{
-  id: "C260",
-  topic: "Calculus (Work)",
-  difficulty: 2200,
-  problem: "A 200-lb cable is 100 ft long and hangs vertically from the top of a tall building. How much work is required to lift the cable to the top of the building? (in ft-lb)",
-  answer: "10000",
-},
-{
-  id: "C261",
-  topic: "Calculus (Average Value of a Function)",
-  difficulty: 1700,
-  problem: "Find the average value of the function $f(x) = \\sin(x)$ on the interval $[0, \\pi]$.",
-  answer: "2/π",
-},
-{
-  id: "C262",
-  topic: "Calculus (Area in Polar Coordinates)",
-  difficulty: 2250,
-  problem: "Find the area of the region inside the circle $r=3\\cos\\theta$ and outside the cardioid $r=1+\\cos\\theta$.",
-  answer: "π",
-},
-{
-  id: "C263",
-  topic: "Calculus (Separable Differential Equation)",
-  difficulty: 1900,
-  problem: "Solve the differential equation $\\frac{dy}{dx} = y^2(x^2+1)$ with the initial condition $y(0) = -1$. Find the value of $y(1)$.",
-  answer: "-0.75",
-},
-{
-  id: "C264",
-  topic: "Calculus (Power Series from Geometric)",
-  difficulty: 2150,
-  problem: "Find a power series representation for $f(x) = \\frac{x}{2-x}$. What is the coefficient of the $x^3$ term?",
-  answer: "1/4",
-},
-{
-  id: "C265",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1950,
-  problem: "Evaluate $\\int_1^e (\\ln x)^2 dx$.",
-  answer: "e-2",
-},
-{
-  id: "C266",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1650,
-  problem: "Evaluate $\\int_0^1 \\frac{e^x}{1+e^{2x}} dx$.",
-  answer: "arctan(e) - π/4",
-},
-{
-  id: "C197",
-  topic: "Calculus (Indefinite Integral)",
-  difficulty: 1100,
-  problem: "Find the general antiderivative of $f(x) = 6x^2 + e^x - \\sin(x)$. Do not include the constant C.",
-  answer: "2x³ + e^x + cos(x)",
-},
-{
-  id: "C198",
-  topic: "Calculus (Definite Integral)",
-  difficulty: 1250,
-  problem: "Evaluate $\\int_{-1}^1 (x^3 - x) dx$.",
-  answer: "0",
-},
-{
-  id: "C199",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1500,
-  problem: "Evaluate $\\int_0^1 (2x+1)^4 dx$.",
-  answer: "48.4",
-},
-{
-  id: "C200",
-  topic: "Calculus (U-Substitution with Trig)",
-  difficulty: 1600,
-  problem: "Evaluate $\\int_0^{\\pi/2} \\sin^3(x) \\cos(x) dx$.",
-  answer: "0.25",
-},
-{
-  id: "C201",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1750,
-  problem: "Evaluate $\\int_0^1 x e^{-x} dx$.",
-  answer: "1 - 2/e",
-},
-{
-  id: "C202",
-  topic: "Calculus (Trigonometric Integral)",
-  difficulty: 1950,
-  problem: "Evaluate $\\int_0^{\\pi} \\sin^2(x) \\cos^2(x) dx$.",
-  answer: "π/8",
-},
-{
-  id: "C203",
-  topic: "Calculus (Trigonometric Substitution)",
-  difficulty: 2200,
-  problem: "Evaluate $\\int_0^1 \\frac{x^3}{\\sqrt{1-x^2}} dx$.",
-  answer: "2/3",
-},
-{
-  id: "C204",
-  topic: "Calculus (Partial Fractions)",
-  difficulty: 2250,
-  problem: "Evaluate $\\int_2^3 \\frac{1}{x(x-1)} dx$.",
-  answer: "ln(4/3)",
-},
-{
-  id: "C205",
-  topic: "Calculus (Improper Integral)",
-  difficulty: 2000,
-  problem: "Evaluate $\\int_1^\\infty \\frac{\\ln(x)}{x^2} dx$.",
-  answer: "1",
-},
-{
-  id: "C206",
-  topic: "Calculus (Area Between Curves)",
-  difficulty: 1650,
-  problem: "Find the area of the region bounded by $y=x^2-1$ and the x-axis.",
-  answer: "4/3",
-},
-{
-  id: "C207",
-  topic: "Calculus (Volume of Revolution - Disk)",
-  difficulty: 1700,
-  problem: "Find the volume of the solid formed by revolving the region bounded by $y=x^2$, $x=2$, and $y=0$ about the x-axis.",
-  answer: "32π/5",
-},
-{
-  id: "C208",
-  topic: "Calculus (Volume of Revolution - Washer)",
-  difficulty: 1900,
-  problem: "Find the volume of the solid formed by revolving the region bounded by $y=x$ and $y=x^2$ about the line $y=2$.",
-  answer: "8π/15",
-},
-{
-  id: "C209",
-  topic: "Calculus (Volume of Revolution - Shell)",
-  difficulty: 2150,
-  problem: "Use the shell method to find the volume generated by revolving the region bounded by $y=x-x^2$ and $y=0$ about the y-axis.",
-  answer: "π/6",
-},
-{
-  id: "C210",
-  topic: "Calculus (Arc Length)",
-  difficulty: 2350,
-  problem: "Find the arc length of the curve $y = \\cosh(x)$ from $x=0$ to $x=\\ln(2)$.",
-  answer: "0.75",
-},
-{
-  id: "C211",
-  topic: "Calculus (Geometric Series)",
-  difficulty: 1600,
-  problem: "Does the series $\\sum_{n=0}^{\\infty} (\\frac{\\pi}{3})^n$ converge or diverge?",
-  answer: "diverge",
-},
-{
-  id: "C212",
-  topic: "Calculus (Integral Test)",
-  difficulty: 1850,
-  problem: "Use the integral test to determine if the series $\\sum_{n=2}^{\\infty} \\frac{1}{n \\ln(n)}$ converges or diverges.",
-  answer: "diverge",
-},
-{
-  id: "C213",
-  topic: "Calculus (Comparison Test)",
-  difficulty: 1900,
-  problem: "Does the series $\\sum_{n=1}^{\\infty} \\frac{1}{n^2+n+1}$ converge or diverge?",
-  answer: "converge",
-},
-{
-  id: "C214",
-  topic: "Calculus (Alternating Series)",
-  difficulty: 1750,
-  problem: "Find the smallest number of terms needed to approximate the sum of $\\sum_{n=1}^{\\infty} \\frac{(-1)^n}{n!}$ with an error less than 0.01.",
-  answer: "4",
-},
-{
-  id: "C215",
-  topic: "Calculus (Ratio Test)",
-  difficulty: 1800,
-  problem: "Use the Ratio Test on the series $\\sum_{n=1}^{\\infty} \\frac{3^n}{n!}$. What is the resulting limit?",
-  answer: "0",
-},
-{
-  id: "C216",
-  topic: "Calculus (Radius of Convergence)",
-  difficulty: 2200,
-  problem: "Find the radius of convergence for the power series $\\sum_{n=0}^{\\infty} (-1)^n \\frac{x^{2n}}{(2n)!}$.",
-  answer: "∞",
-},
-{
-  id: "C217",
-  topic: "Calculus (Maclaurin Series)",
-  difficulty: 2000,
-  problem: "Find the first four non-zero terms of the Maclaurin series for $f(x) = \\frac{1}{1-x}$.",
-  answer: "1+x+x²+x³",
-},
-{
-  id: "C218",
-  topic: "Calculus (Taylor Series)",
-  difficulty: 2300,
-  problem: "Find the Taylor series for $f(x)=e^x$ centered at $a=1$. What is the coefficient of the $(x-1)^2$ term?",
-  answer: "e/2",
-},
-{
-  id: "C219",
-  topic: "Calculus (Average Value of a Function)",
-  difficulty: 1600,
-  problem: "Find the average value of the function $f(x) = x^2$ on the interval $[0, 3]$.",
-  answer: "3",
-},
-{
-  id: "C220",
-  topic: "Calculus (FTC Part 1)",
-  difficulty: 1700,
-  problem: "If $F(x) = \\int_1^x \\frac{1}{t} dt$, what is $F'(e)$?",
-  answer: "1/e",
-},
-{
-  id: "C221",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1650,
-  problem: "Evaluate $\\int_1^e \\frac{\\ln(x)}{x} dx$.",
-  answer: "0.5",
-},
-{
-  id: "C222",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 2100,
-  problem: "Evaluate $\\int \\arctan(x) dx$. Do not include the constant C.",
-  answer: "x*arctan(x) - 0.5*ln(1+x²)",
-},
-{
-  id: "C223",
-  topic: "Calculus (Improper Integral)",
-  difficulty: 2100,
-  problem: "Evaluate the improper integral $\\int_0^1 \\frac{1}{x^{1/3}} dx$.",
-  answer: "1.5",
-},
-{
-  id: "C224",
-  topic: "Calculus (Work - Pumping)",
-  difficulty: 2400,
-  problem: "A cylindrical tank with a radius of 3m and height of 10m is full of water. How much work is required to pump the water out of the top? Use density $\\rho$ and gravity $g$. The answer is a multiple of $\\pi \\rho g$. What is the coefficient?",
-  answer: "450",
-},
-{
-  id: "C225",
-  topic: "Calculus (Sum of a Series)",
-  difficulty: 2500,
-  problem: "Find the sum of the series $\\sum_{n=0}^{\\infty} \\frac{(-1)^n \\pi^{2n}}{3^{2n}(2n)!}$. (Hint: Relate to a known Maclaurin series).",
-  answer: "cos(π/3)",
-},
-{
-  id: "C226",
-  topic: "Calculus (Area in Polar Coordinates)",
-  difficulty: 2250,
-  problem: "Find the area of the region enclosed by the cardioid $r = 1 + \\sin(\\theta)$.",
-  answer: "1.5π",
-},
-{
-  id: "C227",
-  topic: "Calculus (Surface Area of Revolution)",
-  difficulty: 2450,
-  problem: "Find the area of the surface obtained by rotating the curve $y=\\sqrt{x}$ from $x=0$ to $x=1$ about the x-axis.",
-  answer: "π/6 * (5√5 - 1)",
-},
-{
-  id: "C228",
-  topic: "Calculus (Definite Integral)",
-  difficulty: 1300,
-  problem: "Evaluate $\\int_0^2 (3x^2 - 5) dx$.",
-  answer: "-2",
-},
-{
-  id: "C229",
-  topic: "Calculus (p-Series)",
-  difficulty: 1400,
-  problem: "For what value of $p$ is the p-series $\\sum_{n=1}^{\\infty} \\frac{1}{n^p}$ on the borderline between converging and diverging?",
-  answer: "1",
-},
-{
-  id: "C230",
-  topic: "Calculus (Limit Comparison Test)",
-  difficulty: 2000,
-  problem: "Use the Limit Comparison Test with $\\sum \\frac{1}{n^2}$ on the series $\\sum \\frac{n}{n^3+1}$. What is the value of the limit?",
-  answer: "1",
-},
-{
-  id: "C231",
-  topic: "Calculus (Root Test)",
-  difficulty: 1950,
-  problem: "Use the Root Test on the series $\\sum_{n=1}^{\\infty} (\\frac{2n}{n+1})^n$. What is the limit of the n-th root of the terms?",
-  answer: "2",
-},
-{
-  id: "C232",
-  topic: "Calculus (Interval of Convergence)",
-  difficulty: 2300,
-  problem: "Find the interval of convergence for the series $\\sum_{n=1}^{\\infty} \\frac{(x-1)^n}{n}$.",
-  answer: "[0, 2)",
-},
-{
-  id: "C233",
-  topic: "Calculus (Trigonometric Substitution)",
-  difficulty: 2350,
-  problem: "Evaluate $\\int_0^3 \\frac{dx}{x^2+9}$.",
-  answer: "π/12",
-},
-{
-  id: "C234",
-  topic: "Calculus (Integration by Parts)",
-  difficulty: 1850,
-  problem: "Evaluate $\\int_1^e \\ln(x) dx$.",
-  answer: "1",
-},
-{
-  id: "C235",
-  topic: "Calculus (U-Substitution)",
-  difficulty: 1550,
-  problem: "Evaluate $\\int e^{x} \\sqrt{1+e^x} dx$. Do not include the constant C.",
-  answer: "2/3 * (1+e^x)^(3/2)",
-},
-{
-  id: "C236",
-  topic: "Calculus (Area Between Curves)",
-  difficulty: 1800,
-  problem: "Find the area of the region bounded by the curves $y=e^x$, $y=e$, and $x=0$.",
-  answer: "1",
-},
-{
-    id: "C351",
-    topic: "Calculus (Definite Integral)",
-    difficulty: 1250,
-    problem: "Evaluate the definite integral: $\\int_1^3 2x dx$.",
-    answer: "8",
-  },
   {
+    category: "Calculus II",
     id: "C352",
     topic: "Calculus (U-Substitution)",
     difficulty: 1500,
@@ -2560,6 +1226,7 @@ export const mathProblems = [
     answer: "3.1",
   },
   {
+    category: "Calculus II",
     id: "C353",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1700,
@@ -2567,6 +1234,7 @@ export const mathProblems = [
     answer: "π/2 - 1",
   },
   {
+    category: "Calculus II",
     id: "C354",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1650,
@@ -2574,6 +1242,7 @@ export const mathProblems = [
     answer: "0.25",
   },
   {
+    category: "Calculus II",
     id: "C355",
     topic: "Calculus (Volume of Revolution - Disk)",
     difficulty: 1750,
@@ -2581,6 +1250,7 @@ export const mathProblems = [
     answer: "6.4",
   },
   {
+    category: "Calculus II",
     id: "C356",
     topic: "Calculus (Geometric Series)",
     difficulty: 1650,
@@ -2588,6 +1258,7 @@ export const mathProblems = [
     answer: "2/3",
   },
   {
+    category: "Calculus II",
     id: "C357",
     topic: "Calculus (Ratio Test for Convergence)",
     difficulty: 1800,
@@ -2595,6 +1266,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus II",
     id: "C358",
     topic: "Calculus (Improper Integral)",
     difficulty: 1950,
@@ -2602,6 +1274,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C359",
     topic: "Calculus (Maclaurin Series)",
     difficulty: 1900,
@@ -2609,6 +1282,7 @@ export const mathProblems = [
     answer: "4/3",
   },
   {
+    category: "Calculus II",
     id: "C360",
     topic: "Calculus (Partial Fractions)",
     difficulty: 2200,
@@ -2616,6 +1290,7 @@ export const mathProblems = [
     answer: "ln(4/3)",
   },
   {
+    category: "Calculus II",
     id: "C361",
     topic: "Calculus (Trigonometric Integral)",
     difficulty: 1900,
@@ -2623,6 +1298,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus II",
     id: "C362",
     topic: "Calculus (Trigonometric Substitution)",
     difficulty: 2150,
@@ -2630,6 +1306,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus II",
     id: "C363",
     topic: "Calculus (Interval of Convergence)",
     difficulty: 2350,
@@ -2637,6 +1314,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C364",
     topic: "Calculus (Fundamental Theorem of Calculus Part 1)",
     difficulty: 1800,
@@ -2644,6 +1322,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus II",
     id: "C365",
     topic: "Calculus (Separable Differential Equation)",
     difficulty: 1850,
@@ -2651,6 +1330,7 @@ export const mathProblems = [
     answer: "-e",
   },
   {
+    category: "Calculus II",
     id: "C366",
     topic: "Calculus (Volume of Revolution - Washer Method)",
     difficulty: 2000,
@@ -2658,6 +1338,7 @@ export const mathProblems = [
     answer: "2/15",
   },
   {
+    category: "Calculus II",
     id: "C367",
     topic: "Calculus (Arc Length)",
     difficulty: 2300,
@@ -2665,6 +1346,7 @@ export const mathProblems = [
     answer: "(82√82 - 1)/243",
   },
   {
+    category: "Calculus II",
     id: "C368",
     topic: "Calculus (p-Series Convergence)",
     difficulty: 1550,
@@ -2672,6 +1354,7 @@ export const mathProblems = [
     answer: "converge",
   },
   {
+    category: "Calculus II",
     id: "C369",
     topic: "Calculus (Taylor Series)",
     difficulty: 2100,
@@ -2679,6 +1362,7 @@ export const mathProblems = [
     answer: "e/2",
   },
   {
+    category: "Calculus II",
     id: "C370",
     topic: "Calculus (Alternating Series Error Bound)",
     difficulty: 2150,
@@ -2686,6 +1370,7 @@ export const mathProblems = [
     answer: "1/120",
   },
   {
+    category: "Calculus II",
     id: "C371",
     topic: "Calculus (Indefinite Integral)",
     difficulty: 1150,
@@ -2693,6 +1378,7 @@ export const mathProblems = [
     answer: "sec(x) - x³",
   },
   {
+    category: "Calculus II",
     id: "C372",
     topic: "Calculus (Average Value of a Function)",
     difficulty: 1650,
@@ -2700,6 +1386,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C373",
     topic: "Calculus (U-Substitution)",
     difficulty: 1600,
@@ -2707,6 +1394,7 @@ export const mathProblems = [
     answer: "0.25",
   },
   {
+    category: "Calculus II",
     id: "C374",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1850,
@@ -2714,6 +1402,7 @@ export const mathProblems = [
     answer: "2 - 5/e",
   },
   {
+    category: "Calculus II",
     id: "C375",
     topic: "Calculus (Improper Integral - Discontinuity)",
     difficulty: 2000,
@@ -2721,6 +1410,7 @@ export const mathProblems = [
     answer: "1.5",
   },
   {
+    category: "Calculus II",
     id: "C376",
     topic: "Calculus (Area in Polar Coordinates)",
     difficulty: 2200,
@@ -2728,6 +1418,7 @@ export const mathProblems = [
     answer: "25π",
   },
   {
+    category: "Calculus II",
     id: "C377",
     topic: "Calculus (Work)",
     difficulty: 2150,
@@ -2735,6 +1426,7 @@ export const mathProblems = [
     answer: "6 J",
   },
   {
+    category: "Calculus II",
     id: "C378",
     topic: "Calculus (Limit Comparison Test)",
     difficulty: 2050,
@@ -2742,6 +1434,7 @@ export const mathProblems = [
     answer: "converge",
   },
   {
+    category: "Calculus II",
     id: "C379",
     topic: "Calculus (Radius of Convergence)",
     difficulty: 2250,
@@ -2749,6 +1442,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus II",
     id: "C380",
     topic: "Calculus (Volume of Revolution - Shell Method)",
     difficulty: 2200,
@@ -2756,6 +1450,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C381",
     topic: "Calculus (FTC Part 1 with Chain Rule)",
     difficulty: 2200,
@@ -2763,6 +1458,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus II",
     id: "C382",
     topic: "Calculus (Sum of a Series)",
     difficulty: 2450,
@@ -2770,6 +1466,7 @@ export const mathProblems = [
     answer: "1/√2",
   },
   {
+    category: "Calculus II",
     id: "C383",
     topic: "Calculus (Partial Fractions - Repeated Root)",
     difficulty: 2300,
@@ -2777,6 +1474,7 @@ export const mathProblems = [
     answer: "ln(2) + 0.5",
   },
   {
+    category: "Calculus II",
     id: "C384",
     topic: "Calculus (Trigonometric Integral)",
     difficulty: 2050,
@@ -2784,6 +1482,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus II",
     id: "C385",
     topic: "Calculus (Definite Integral)",
     difficulty: 1300,
@@ -2791,6 +1490,7 @@ export const mathProblems = [
     answer: "2+π",
   },
   {
+    category: "Calculus II",
     id: "C386",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1700,
@@ -2798,6 +1498,7 @@ export const mathProblems = [
     answer: "16/3",
   },
   {
+    category: "Calculus II",
     id: "C387",
     topic: "Calculus (Divergence Test)",
     difficulty: 1600,
@@ -2805,6 +1506,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C388",
     topic: "Calculus (Improper Integral)",
     difficulty: 2000,
@@ -2812,6 +1514,7 @@ export const mathProblems = [
     answer: "p ≤ 1",
   },
   {
+    category: "Calculus II",
     id: "C389",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1950,
@@ -2819,6 +1522,7 @@ export const mathProblems = [
     answer: "(2e³+1)/9",
   },
   {
+    category: "Calculus II",
     id: "C390",
     topic: "Calculus (Taylor Series from known series)",
     difficulty: 2300,
@@ -2826,6 +1530,7 @@ export const mathProblems = [
     answer: "-1/6",
   },
   {
+    category: "Calculus II",
     id: "C391",
     topic: "Calculus (Separable Differential Equation)",
     difficulty: 1950,
@@ -2833,6 +1538,7 @@ export const mathProblems = [
     answer: "√28",
   },
   {
+    category: "Calculus II",
     id: "C392",
     topic: "Calculus (U-Substitution)",
     difficulty: 1550,
@@ -2840,6 +1546,7 @@ export const mathProblems = [
     answer: "ln(x²+1)",
   },
   {
+    category: "Calculus II",
     id: "C393",
     topic: "Calculus (Volume of Revolution - Washer)",
     difficulty: 2100,
@@ -2847,6 +1554,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus II",
     id: "C394",
     topic: "Calculus (Root Test)",
     difficulty: 1950,
@@ -2854,6 +1562,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus II",
     id: "C395",
     topic: "Calculus (Integral Test)",
     difficulty: 1900,
@@ -2861,6 +1570,7 @@ export const mathProblems = [
     answer: "converge",
   },
   {
+    category: "Calculus II",
     id: "C396",
     topic: "Calculus (Arc Length)",
     difficulty: 2400,
@@ -2868,6 +1578,7 @@ export const mathProblems = [
     answer: "e - 1/e",
   },
   {
+    category: "Calculus II",
     id: "C397",
     topic: "Calculus (Trigonometric Substitution)",
     difficulty: 2250,
@@ -2875,6 +1586,7 @@ export const mathProblems = [
     answer: "x²-1",
   },
   {
+    category: "Calculus II",
     id: "C398",
     topic: "Calculus (Interval of Convergence)",
     difficulty: 2400,
@@ -2882,6 +1594,7 @@ export const mathProblems = [
     answer: "[1, 3]",
   },
   {
+    category: "Calculus II",
     id: "C399",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1750,
@@ -2889,20 +1602,15 @@ export const mathProblems = [
     answer: "32/3",
   },
   {
+    category: "Calculus II",
     id: "C400",
     topic: "Calculus (Definite Integral)",
     difficulty: 1350,
     problem: "Evaluate $\\int_0^2 (e^x + 1) dx$.",
     answer: "e² + 1",
   },
-{
-    id: "C551",
-    topic: "Calculus (Definite Integral)",
-    difficulty: 1300,
-    problem: "Evaluate the definite integral: $\\int_0^1 (x^2 - x + 1) dx$.",
-    answer: "5/6",
-  },
   {
+    category: "Calculus II",
     id: "C552",
     topic: "Calculus (U-Substitution)",
     difficulty: 1550,
@@ -2910,6 +1618,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus II",
     id: "C553",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1750,
@@ -2917,6 +1626,7 @@ export const mathProblems = [
     answer: "-x/2 * cos(2x) + 1/4 * sin(2x)",
   },
   {
+    category: "Calculus II",
     id: "C554",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1700,
@@ -2924,6 +1634,7 @@ export const mathProblems = [
     answer: "4.5",
   },
   {
+    category: "Calculus II",
     id: "C555",
     topic: "Calculus (Volume of Revolution - Disk)",
     difficulty: 1800,
@@ -2931,6 +1642,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus II",
     id: "C556",
     topic: "Calculus (Geometric Series)",
     difficulty: 1700,
@@ -2938,6 +1650,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus II",
     id: "C557",
     topic: "Calculus (Ratio Test)",
     difficulty: 1850,
@@ -2945,6 +1658,7 @@ export const mathProblems = [
     answer: "1/3",
   },
   {
+    category: "Calculus II",
     id: "C558",
     topic: "Calculus (Improper Integral)",
     difficulty: 2000,
@@ -2952,6 +1666,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus II",
     id: "C559",
     topic: "Calculus (Maclaurin Series)",
     difficulty: 1950,
@@ -2959,6 +1674,7 @@ export const mathProblems = [
     answer: "1/24",
   },
   {
+    category: "Calculus II",
     id: "C560",
     topic: "Calculus (Partial Fractions)",
     difficulty: 2250,
@@ -2966,6 +1682,7 @@ export const mathProblems = [
     answer: "ln(3)",
   },
   {
+    category: "Calculus II",
     id: "C561",
     topic: "Calculus (Trigonometric Integral)",
     difficulty: 1950,
@@ -2973,6 +1690,7 @@ export const mathProblems = [
     answer: "2/3",
   },
   {
+    category: "Calculus II",
     id: "C562",
     topic: "Calculus (Trigonometric Substitution)",
     difficulty: 2200,
@@ -2980,6 +1698,7 @@ export const mathProblems = [
     answer: "√2 - 1",
   },
   {
+    category: "Calculus II",
     id: "C563",
     topic: "Calculus (Interval of Convergence)",
     difficulty: 2400,
@@ -2987,6 +1706,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus II",
     id: "C564",
     topic: "Calculus (Fundamental Theorem of Calculus Part 1)",
     difficulty: 1850,
@@ -2994,6 +1714,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus II",
     id: "C565",
     topic: "Calculus (Separable Differential Equation)",
     difficulty: 1900,
@@ -3001,6 +1722,7 @@ export const mathProblems = [
     answer: "10/e²",
   },
   {
+    category: "Calculus II",
     id: "C566",
     topic: "Calculus (Volume of Revolution - Washer Method)",
     difficulty: 2050,
@@ -3008,6 +1730,7 @@ export const mathProblems = [
     answer: "π/6",
   },
   {
+    category: "Calculus II",
     id: "C567",
     topic: "Calculus (Arc Length)",
     difficulty: 2350,
@@ -3015,6 +1738,7 @@ export const mathProblems = [
     answer: "√5",
   },
   {
+    category: "Calculus II",
     id: "C568",
     topic: "Calculus (p-Series)",
     difficulty: 1600,
@@ -3022,6 +1746,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C569",
     topic: "Calculus (Taylor Series)",
     difficulty: 2150,
@@ -3029,6 +1754,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Calculus II",
     id: "C570",
     topic: "Calculus (Alternating Series)",
     difficulty: 1800,
@@ -3036,6 +1762,7 @@ export const mathProblems = [
     answer: "converge conditionally",
   },
   {
+    category: "Calculus II",
     id: "C571",
     topic: "Calculus (Indefinite Integral)",
     difficulty: 1200,
@@ -3043,6 +1770,7 @@ export const mathProblems = [
     answer: "ln|x| - 1/x",
   },
   {
+    category: "Calculus II",
     id: "C572",
     topic: "Calculus (Average Value of a Function)",
     difficulty: 1700,
@@ -3050,6 +1778,7 @@ export const mathProblems = [
     answer: "e-1",
   },
   {
+    category: "Calculus II",
     id: "C573",
     topic: "Calculus (U-Substitution)",
     difficulty: 1650,
@@ -3057,6 +1786,7 @@ export const mathProblems = [
     answer: "(e-1)/2",
   },
   {
+    category: "Calculus II",
     id: "C574",
     topic: "Calculus (Integration by Parts)",
     difficulty: 1900,
@@ -3064,6 +1794,7 @@ export const mathProblems = [
     answer: "(e^π+1)/2",
   },
   {
+    category: "Calculus II",
     id: "C575",
     topic: "Calculus (Improper Integral - Discontinuity)",
     difficulty: 2050,
@@ -3071,6 +1802,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Calculus II",
     id: "C576",
     topic: "Calculus (Area in Polar Coordinates)",
     difficulty: 2250,
@@ -3078,6 +1810,7 @@ export const mathProblems = [
     answer: "π/12",
   },
   {
+    category: "Calculus II",
     id: "C577",
     topic: "Calculus (Work)",
     difficulty: 2200,
@@ -3085,6 +1818,7 @@ export const mathProblems = [
     answer: "5000",
   },
   {
+    category: "Calculus II",
     id: "C578",
     topic: "Calculus (Comparison Test)",
     difficulty: 2100,
@@ -3092,6 +1826,7 @@ export const mathProblems = [
     answer: "converge",
   },
   {
+    category: "Calculus II",
     id: "C579",
     topic: "Calculus (Radius of Convergence)",
     difficulty: 2300,
@@ -3099,6 +1834,7 @@ export const mathProblems = [
     answer: "∞",
   },
   {
+    category: "Calculus II",
     id: "C580",
     topic: "Calculus (Volume of Revolution - Shell Method)",
     difficulty: 2250,
@@ -3106,6 +1842,7 @@ export const mathProblems = [
     answer: "2π/5",
   },
   {
+    category: "Calculus II",
     id: "C581",
     topic: "Calculus (FTC Part 1 with Chain Rule)",
     difficulty: 2250,
@@ -3113,6 +1850,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C582",
     topic: "Calculus (Sum of a Series)",
     difficulty: 2500,
@@ -3120,6 +1858,7 @@ export const mathProblems = [
     answer: "e",
   },
   {
+    category: "Calculus II",
     id: "C583",
     topic: "Calculus (Partial Fractions)",
     difficulty: 2350,
@@ -3127,6 +1866,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus II",
     id: "C584",
     topic: "Calculus (Trigonometric Integral)",
     difficulty: 2100,
@@ -3134,6 +1874,7 @@ export const mathProblems = [
     answer: "ln|sec(x)|",
   },
   {
+    category: "Calculus II",
     id: "C585",
     topic: "Calculus (Definite Integral)",
     difficulty: 1350,
@@ -3141,6 +1882,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus II",
     id: "C586",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1750,
@@ -3148,6 +1890,7 @@ export const mathProblems = [
     answer: "4/3",
   },
   {
+    category: "Calculus II",
     id: "C587",
     topic: "Calculus (Divergence Test)",
     difficulty: 1650,
@@ -3155,6 +1898,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C588",
     topic: "Calculus (Improper Integral)",
     difficulty: 1950,
@@ -3162,6 +1906,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C589",
     topic: "Calculus (Integration by Parts)",
     difficulty: 2000,
@@ -3169,6 +1914,7 @@ export const mathProblems = [
     answer: "π/2 - 1",
   },
   {
+    category: "Calculus II",
     id: "C590",
     topic: "Calculus (Power Series from Geometric)",
     difficulty: 2200,
@@ -3176,6 +1922,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Calculus II",
     id: "C591",
     topic: "Calculus (Separable Differential Equation)",
     difficulty: 2000,
@@ -3183,6 +1930,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus II",
     id: "C592",
     topic: "Calculus (U-Substitution)",
     difficulty: 1600,
@@ -3190,6 +1938,7 @@ export const mathProblems = [
     answer: "ln(5)/2",
   },
   {
+    category: "Calculus II",
     id: "C593",
     topic: "Calculus (Volume of Revolution - Washer)",
     difficulty: 2150,
@@ -3197,6 +1946,7 @@ export const mathProblems = [
     answer: "8π/5",
   },
   {
+    category: "Calculus II",
     id: "C594",
     topic: "Calculus (Root Test)",
     difficulty: 2000,
@@ -3204,6 +1954,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C595",
     topic: "Calculus (Integral Test)",
     difficulty: 1950,
@@ -3211,6 +1962,7 @@ export const mathProblems = [
     answer: "diverge",
   },
   {
+    category: "Calculus II",
     id: "C596",
     topic: "Calculus (Arc Length)",
     difficulty: 2450,
@@ -3218,6 +1970,7 @@ export const mathProblems = [
     answer: "4/3",
   },
   {
+    category: "Calculus II",
     id: "C597",
     topic: "Calculus (Trigonometric Substitution)",
     difficulty: 2300,
@@ -3225,6 +1978,7 @@ export const mathProblems = [
     answer: "π/(4a)",
   },
   {
+    category: "Calculus II",
     id: "C598",
     topic: "Calculus (Interval of Convergence)",
     difficulty: 2450,
@@ -3232,6 +1986,7 @@ export const mathProblems = [
     answer: "{0}",
   },
   {
+    category: "Calculus II",
     id: "C599",
     topic: "Calculus (Area Between Curves)",
     difficulty: 1800,
@@ -3239,6 +1994,7 @@ export const mathProblems = [
     answer: "2√2",
   },
   {
+    category: "Calculus II",
     id: "C600",
     topic: "Calculus (Definite Integral)",
     difficulty: 1400,
@@ -3253,7 +2009,9 @@ export const mathProblems = [
 
 
 
+
   {
+    category: "Calculus III",
     id: "C20",
     topic: "Calculus (Partial Derivative)",
     difficulty: 1700,
@@ -3261,6 +2019,7 @@ export const mathProblems = [
     answer: "102",
   },
   {
+    category: "Calculus III",
     id: "C21",
     topic: "Calculus (Gradient)",
     difficulty: 1800,
@@ -3268,6 +2027,7 @@ export const mathProblems = [
     answer: "10",
   },
   {
+    category: "Calculus III",
     id: "C22",
     topic: "Calculus (Directional Derivative)",
     difficulty: 1950,
@@ -3275,6 +2035,7 @@ export const mathProblems = [
     answer: "(11/5)*e²",
   },
   {
+    category: "Calculus III",
     id: "C23",
     topic: "Calculus (Double Integral)",
     difficulty: 2050,
@@ -3282,6 +2043,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Calculus III",
     id: "C24",
     topic: "Calculus (Triple Integral)",
     difficulty: 2400,
@@ -3289,6 +2051,7 @@ export const mathProblems = [
     answer: "36π",
   },
   {
+    category: "Calculus III",
     id: "C25",
     topic: "Calculus (Line Integral)",
     difficulty: 2300,
@@ -3296,6 +2059,7 @@ export const mathProblems = [
     answer: "3√5 / 2",
   },
   {
+    category: "Calculus III",
     id: "C26",
     topic: "Calculus (Line Integral)",
     difficulty: 2400,
@@ -3303,6 +2067,7 @@ export const mathProblems = [
     answer: "-π",
   },
   {
+    category: "Calculus III",
     id: "C27",
     topic: "Calculus (Curl of a Vector Field)",
     difficulty: 2500,
@@ -3310,6 +2075,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C28",
     topic: "Calculus (Divergence)",
     difficulty: 2550,
@@ -3317,6 +2083,7 @@ export const mathProblems = [
     answer: "9",
   },
   {
+    category: "Calculus III",
     id: "C29",
     topic: "Calculus (Green's Theorem)",
     difficulty: 2700,
@@ -3324,6 +2091,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus III",
     id: "C30",
     topic: "Calculus (Stokes' Theorem)",
     difficulty: 2950,
@@ -3331,6 +2099,7 @@ export const mathProblems = [
     answer: "-1.5",
   },
   {
+    category: "Calculus III",
     id: "C31",
     topic: "Calculus (Geometric Series)",
     difficulty: 1700,
@@ -3338,6 +2107,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus III",
     id: "C32",
     topic: "Calculus (Taylor Series)",
     difficulty: 2000,
@@ -3345,6 +2115,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus III",
     id: "C33",
     topic: "Calculus (L'Hôpital's Rule)",
     difficulty: 1900,
@@ -3352,6 +2123,7 @@ export const mathProblems = [
     answer: "-1/6",
   },
   {
+    category: "Calculus III",
     id: "C34",
     topic: "Calculus (Volume of Revolution)",
     difficulty: 1800,
@@ -3359,6 +2131,7 @@ export const mathProblems = [
     answer: "8π",
   },
   {
+    category: "Calculus III",
     id: "C35",
     topic: "Calculus (Arc Length)",
     difficulty: 2250,
@@ -3366,6 +2139,7 @@ export const mathProblems = [
     answer: "14/3",
   },
   {
+    category: "Calculus III",
     id: "C47",
     topic: "Calculus (Divergence Theorem)",
     difficulty: 3000,
@@ -3373,6 +2147,7 @@ export const mathProblems = [
     answer: "12π/5",
   },
   {
+    category: "Calculus III",
     id: "C48",
     topic: "Calculus (Jacobian of Transformation)",
     difficulty: 2450,
@@ -3380,6 +2155,7 @@ export const mathProblems = [
     answer: "4(u²+v²)",
   },
   {
+    category: "Calculus III",
     id: "C49",
     topic: "Calculus (Surface Integral of a Scalar Function)",
     difficulty: 2650,
@@ -3387,6 +2163,7 @@ export const mathProblems = [
     answer: "√3 / 6",
   },
   {
+    category: "Calculus III",
     id: "C50",
     topic: "Calculus (Center of Mass)",
     difficulty: 2350,
@@ -3394,6 +2171,7 @@ export const mathProblems = [
     answer: "1.5",
   },
   {
+    category: "Calculus III",
     id: "C79",
     topic: "Calculus (Second Partial Derivatives - Clairaut's Theorem)",
     difficulty: 1750,
@@ -3401,6 +2179,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus III",
     id: "C80",
     topic: "Calculus (Tangent Plane)",
     difficulty: 2000,
@@ -3408,6 +2187,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Calculus III",
     id: "C81",
     topic: "Calculus (Local Extrema - Second Derivative Test)",
     difficulty: 2450,
@@ -3415,6 +2195,7 @@ export const mathProblems = [
     answer: "local minimum",
   },
   {
+    category: "Calculus III",
     id: "C82",
     topic: "Calculus (Lagrange Multipliers)",
     difficulty: 2600,
@@ -3422,6 +2203,7 @@ export const mathProblems = [
     answer: "25",
   },
   {
+    category: "Calculus III",
     id: "C83",
     topic: "Calculus (Double Integral - Polar)",
     difficulty: 2150,
@@ -3429,6 +2211,7 @@ export const mathProblems = [
     answer: "π(1 - e⁻⁹)",
   },
   {
+    category: "Calculus III",
     id: "C84",
     topic: "Calculus (Double Integral - General Region)",
     difficulty: 2300,
@@ -3436,6 +2219,7 @@ export const mathProblems = [
     answer: "(1-cos(1))/2",
   },
   {
+    category: "Calculus III",
     id: "C85",
     topic: "Calculus (Triple Integral - Cylindrical)",
     difficulty: 2500,
@@ -3443,6 +2227,7 @@ export const mathProblems = [
     answer: "3.5π",
   },
   {
+    category: "Calculus III",
     id: "C86",
     topic: "Calculus (Line Integral of a Vector Field)",
     difficulty: 2400,
@@ -3450,6 +2235,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C87",
     topic: "Calculus (Fundamental Theorem for Line Integrals)",
     difficulty: 2350,
@@ -3457,6 +2243,7 @@ export const mathProblems = [
     answer: "34",
   },
   {
+    category: "Calculus III",
     id: "C88",
     topic: "Calculus (Green's Theorem - Area)",
     difficulty: 2750,
@@ -3464,6 +2251,7 @@ export const mathProblems = [
     answer: "πab",
   },
   {
+    category: "Calculus III",
     id: "C89",
     topic: "Calculus (Curl of a Gradient)",
     difficulty: 2550,
@@ -3471,6 +2259,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C90",
     topic: "Calculus (Divergence of a Curl)",
     difficulty: 2650,
@@ -3478,6 +2267,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C91",
     topic: "Calculus (Surface Integral of a Vector Field)",
     difficulty: 2850,
@@ -3485,6 +2275,7 @@ export const mathProblems = [
     answer: "2π/3",
   },
   {
+    category: "Calculus III",
     id: "C92",
     topic: "Calculus (Stokes' Theorem - Simple)",
     difficulty: 2900,
@@ -3492,6 +2283,7 @@ export const mathProblems = [
     answer: "2π",
   },
   {
+    category: "Calculus III",
     id: "C93",
     topic: "Calculus (Divergence Theorem - Simple)",
     difficulty: 2800,
@@ -3499,6 +2291,7 @@ export const mathProblems = [
     answer: "24",
   },
   {
+    category: "Calculus III",
     id: "C94",
     topic: "Calculus (Chain Rule - Multivariable)",
     difficulty: 2000,
@@ -3506,6 +2299,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C95",
     topic: "Calculus (Directional Derivative - Max Rate of Change)",
     difficulty: 1850,
@@ -3513,720 +2307,15 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C96",
     topic: "Calculus (Volume with Double Integrals)",
     difficulty: 2000,
     problem: "Find the volume of the solid under the plane $z=2x+y$ and above the rectangle $R = [0,1] \\times [0,2]$.",
     answer: "4",
   },
-{
-  id: "C137",
-  topic: "Calculus (Partial Derivative)",
-  difficulty: 1650,
-  problem: "Let $f(x, y) = e^{xy^2}$. Find the partial derivative $\\frac{\\partial f}{\\partial y}$ at the point $(1, 2)$.",
-  answer: "4e⁴",
-},
-{
-  id: "C138",
-  topic: "Calculus (Gradient)",
-  difficulty: 1750,
-  problem: "Let $f(x, y) = \\ln(x^2 + y^2)$. Find the gradient vector $\\nabla f$ at the point $(1, 1)$.",
-  answer: "<1, 1>",
-},
-{
-  id: "C139",
-  topic: "Calculus (Double Integral)",
-  difficulty: 2000,
-  problem: "Evaluate $\\int_0^1 \\int_0^2 (x + y) dy dx$.",
-  answer: "3",
-},
-{
-  id: "C140",
-  topic: "Calculus (Vector Operations)",
-  difficulty: 1250,
-  problem: "Let $u = \\langle 1, -2, 3 \\rangle$ and $v = \\langle 3, 0, 5 \\rangle$. Find $2u - v$.",
-  answer: "<-1, -4, 1>",
-},
-{
-  id: "C141",
-  topic: "Calculus (Cross Product)",
-  difficulty: 1550,
-  problem: "Find the cross product $i \\times (i+j)$.",
-  answer: "k",
-},
-{
-  id: "C142",
-  topic: "Calculus (Directional Derivative)",
-  difficulty: 1950,
-  problem: "Find the directional derivative of $f(x, y) = x^2y^3$ at the point $(2,1)$ in the direction of the vector $v = \\langle 1, 1 \\rangle$.",
-  answer: "8√2",
-},
-{
-  id: "C143",
-  topic: "Calculus (Tangent Plane)",
-  difficulty: 2150,
-  problem: "Find the z-intercept of the tangent plane to the surface $z = 3x^2 - y^2 + 2$ at the point $(1, 2, 1)$.",
-  answer: "-1",
-},
-{
-  id: "C144",
-  topic: "Calculus (Local Extrema)",
-  difficulty: 2400,
-  problem: "The function $f(x, y) = xy - x^2 - y^2 - 2x - 2y + 4$ has one critical point. What is the y-coordinate of this point?",
-  answer: "-2",
-},
-{
-  id: "C145",
-  topic: "Calculus (Double Integral - Polar)",
-  difficulty: 2200,
-  problem: "Use polar coordinates to find the volume of the solid under the paraboloid $z = x^2+y^2$ and above the disk $x^2+y^2 \\le 9$.",
-  answer: "81π/2",
-},
-{
-  id: "C146",
-  topic: "Calculus (Triple Integral)",
-  difficulty: 2350,
-  problem: "Evaluate the triple integral of $f(x,y,z) = xyz$ over the cube defined by $0 \\le x \\le 1$, $0 \\le y \\le 2$, and $0 \\le z \\le 3$.",
-  answer: "4.5",
-},
-{
-  id: "C147",
-  topic: "Calculus (Line Integral - Scalar)",
-  difficulty: 2250,
-  problem: "Evaluate $\\int_C x ds$ where C is the line segment from $(1,2)$ to $(4,6)$.",
-  answer: "12.5",
-},
-{
-  id: "C148",
-  topic: "Calculus (Line Integral - Vector Field)",
-  difficulty: 2450,
-  problem: "Evaluate $\\int_C F \\cdot dr$ where $F(x,y) = \\langle y, x \\rangle$ and C is the path $r(t) = \\langle \\cos(t), \\sin(t) \\rangle$ for $0 \\le t \\le \\pi$.",
-  answer: "0",
-},
-{
-  id: "C149",
-  topic: "Calculus (Conservative Vector Fields)",
-  difficulty: 2300,
-  problem: "The vector field $F = \\langle 2xy, x^2 \\rangle$ is conservative. Find a potential function $f(x,y)$ such that $\\nabla f = F$ and $f(0,0)=0$. Evaluate $f(2,3)$.",
-  answer: "12",
-},
-{
-  id: "C150",
-  topic: "Calculus (Green's Theorem)",
-  difficulty: 2750,
-  problem: "Use Green's Theorem to evaluate $\\oint_C (x^2y dx + x dy)$ where C is the circle $x^2+y^2=4$ oriented counter-clockwise.",
-  answer: "-4π",
-},
-{
-  id: "C151",
-  topic: "Calculus (Curl and Divergence)",
-  difficulty: 2500,
-  problem: "Let $F = \\langle x^2, y^2, z^2 \\rangle$. Find the divergence of the curl of F, $\\nabla \\cdot (\\nabla \\times F)$.",
-  answer: "0",
-},
-{
-  id: "C152",
-  topic: "Calculus (Surface Integral)",
-  difficulty: 2850,
-  problem: "Evaluate the surface integral $\\iint_S z^2 dS$ where $S$ is the sphere $x^2+y^2+z^2=1$.",
-  answer: "4π/3",
-},
-{
-  id: "C153",
-  topic: "Calculus (Stokes' Theorem)",
-  difficulty: 2900,
-  problem: "Let $F = \\langle 2y, 3z, x \\rangle$ and $S$ be the part of the paraboloid $z=4-x^2-y^2$ above the xy-plane. Evaluate $\\iint_S (\\nabla \\times F) \\cdot dS$.",
-  answer: "-8π",
-},
-{
-  id: "C154",
-  topic: "Calculus (Divergence Theorem)",
-  difficulty: 2950,
-  problem: "Let $F = \\langle x, 2y, 3z \\rangle$. Use the Divergence Theorem to find the flux of F across the surface of the box bounded by $0 \\le x \\le 1, 0 \\le y \\le 1, 0 \\le z \\le 1$.",
-  answer: "6",
-},
-{
-  id: "C155",
-  topic: "Calculus (Cylindrical Coordinates)",
-  difficulty: 2400,
-  problem: "The point $(x,y,z) = (3, 4, 5)$ is expressed in cylindrical coordinates as $(r, \\theta, z)$. What is the value of r?",
-  answer: "5",
-},
-{
-  id: "C156",
-  topic: "Calculus (Spherical Coordinates)",
-  difficulty: 2600,
-  problem: "A point has spherical coordinates $(\\rho, \\theta, \\phi) = (4, \\pi/4, \\pi/2)$. What is its x-coordinate in Cartesian coordinates?",
-  answer: "2√2",
-},
-{
-  id: "C197",
-  topic: "Calculus (Partial Derivative)",
-  difficulty: 1675,
-  problem: "Let $f(x, y, z) = x \\sin(yz)$. Find the partial derivative $\\frac{\\partial f}{\\partial z}$ at the point $(1, 2, \\pi/2)$.",
-  answer: "0",
-},
-{
-  id: "C198",
-  topic: "Calculus (Gradient)",
-  difficulty: 1775,
-  problem: "Find the gradient of $f(x, y) = x/y$ at the point $(4, 2)$.",
-  answer: "<0.5, -1>",
-},
-{
-  id: "C199",
-  topic: "Calculus (Directional Derivative)",
-  difficulty: 1975,
-  problem: "Find the directional derivative of $f(x, y) = \\sqrt{xy}$ at the point $(2, 8)$ in the direction of the vector $v = \\langle 5, 12 \\rangle$.",
-  answer: "17/13",
-},
-{
-  id: "C200",
-  topic: "Calculus (Chain Rule - Multivariable)",
-  difficulty: 2025,
-  problem: "Let $w = x^2y - y^2x$, where $x=\\cos(t)$ and $y=\\sin(t)$. Find $\\frac{dw}{dt}$ at $t=\\pi/2$.",
-  answer: "-1",
-},
-{
-  id: "C201",
-  topic: "Calculus (Tangent Plane)",
-  difficulty: 2175,
-  problem: "Find the equation of the tangent plane to the surface $x^2+2y^2+3z^2=12$ at the point $(1, 2, 1)$. The equation is $A(x-1)+B(y-2)+C(z-1)=0$. What is $A+B+C$?",
-  answer: "22",
-},
-{
-  id: "C202",
-  topic: "Calculus (Local Extrema)",
-  difficulty: 2425,
-  problem: "Find the z-coordinate of the local minimum of the function $f(x, y) = x^2+y^2+xy+3x-3y+5$.",
-  answer: "-4",
-},
-{
-  id: "C203",
-  topic: "Calculus (Double Integral)",
-  difficulty: 2025,
-  problem: "Evaluate the double integral $\\iint_R (x^2+y^2) dA$ where $R$ is the rectangle $[0,1] \\times [0,3]$.",
-  answer: "10",
-},
-{
-  id: "C204",
-  topic: "Calculus (Double Integral - Order Change)",
-  difficulty: 2350,
-  problem: "Evaluate $\\int_0^1 \\int_{y}^1 e^{x^2} dx dy$.",
-  answer: "(e-1)/2",
-},
-{
-  id: "C205",
-  topic: "Calculus (Double Integral - Polar)",
-  difficulty: 2225,
-  problem: "Use polar coordinates to evaluate $\\iint_D y \\, dA$ where D is the region in the first quadrant bounded by the circle $x^2+y^2=4$.",
-  answer: "8/3",
-},
-{
-  id: "C206",
-  topic: "Calculus (Triple Integral - Cylindrical)",
-  difficulty: 2525,
-  problem: "Find the volume of the solid bounded by the paraboloid $z=x^2+y^2$ and the plane $z=4$.",
-  answer: "8π",
-},
-{
-  id: "C207",
-  topic: "Calculus (Triple Integral - Spherical)",
-  difficulty: 2625,
-  problem: "Use spherical coordinates to evaluate $\\iiint_E z \\, dV$ where E is the region between the spheres $x^2+y^2+z^2=1$ and $x^2+y^2+z^2=4$ in the first octant.",
-  answer: "15π/16",
-},
-{
-  id: "C208",
-  topic: "Calculus (Line Integral - Scalar)",
-  difficulty: 2275,
-  problem: "Evaluate $\\int_C (x^2+y^2) ds$ where $C$ is the circle $x^2+y^2=9$.",
-  answer: "54π",
-},
-{
-  id: "C209",
-  topic: "Calculus (Line Integral - Vector)",
-  difficulty: 2475,
-  problem: "Evaluate $\\int_C F \\cdot dr$ where $F(x,y) = \\langle x, -y \\rangle$ and C is the parabola $y=x^2$ from $(0,0)$ to $(1,1)$.",
-  answer: "1/6",
-},
-{
-  id: "C210",
-  topic: "Calculus (Green's Theorem)",
-  difficulty: 2775,
-  problem: "Use Green's Theorem to evaluate $\\oint_C (3y dx + 7x dy)$ where C is the boundary of the triangle with vertices $(0,0), (1,0),$ and $(0,2)$, oriented counter-clockwise.",
-  answer: "4",
-},
-{
-  id: "C211",
-  topic: "Calculus (Curl)",
-  difficulty: 2525,
-  problem: "Find the curl of the vector field $F = \\langle x, y, -2z \\rangle$.",
-  answer: "<0, 0, 0>",
-},
-{
-  id: "C212",
-  topic: "Calculus (Divergence)",
-  difficulty: 2575,
-  problem: "Find the divergence of the vector field $F = \\langle \\ln(x), e^{yz}, \\arctan(z) \\rangle$ at the point $(1, 0, 1)$.",
-  answer: "1.5",
-},
-{
-  id: "C213",
-  topic: "Calculus (Stokes' Theorem)",
-  difficulty: 2925,
-  problem: "Let $F = \\langle x+y, 2x-z, y+z \\rangle$. Let $S$ be the triangular surface with vertices $(2,0,0), (0,3,0), (0,0,6)$, oriented upward. Evaluate $\\iint_S (\\nabla \\times F) \\cdot dS$.",
-  answer: "21",
-},
-{
-  id: "C214",
-  topic: "Calculus (Divergence Theorem)",
-  difficulty: 2975,
-  problem: "Use the Divergence Theorem to calculate the flux of $F = \\langle x^3, 2, z \\rangle$ across the surface of the cylinder $x^2+y^2=1, 0 \\le z \\le 2$.",
-  answer: "5π/2",
-},
-{
-  id: "C215",
-  topic: "Calculus (Lagrange Multipliers)",
-  difficulty: 2650,
-  problem: "Find the minimum value of $f(x,y)=x^2+y^2$ subject to the constraint $x+2y=5$.",
-  answer: "5",
-},
-{
-  id: "C216",
-  topic: "Calculus (Jacobian)",
-  difficulty: 2450,
-  problem: "Find the Jacobian of the transformation from polar coordinates to Cartesian coordinates: $x=r\\cos\\theta, y=r\\sin\\theta$.",
-  answer: "r",
-},
-{
-  id: "C267",
-  topic: "Calculus (Lagrange Multipliers)",
-  difficulty: 2650,
-  problem: "Use Lagrange multipliers to find the maximum value of the function $f(x, y, z) = xyz$ subject to the constraint $x+y+z=6$ for $x,y,z > 0$.",
-  answer: "8",
-},
-{
-  id: "C268",
-  topic: "Calculus (Partial Derivative)",
-  difficulty: 1750,
-  problem: "Let $f(x, y) = \\arctan(y/x)$. Find the value of the partial derivative $\\frac{\\partial f}{\\partial y}$ at the point $(1, 1)$.",
-  answer: "0.5",
-},
-{
-  id: "C269",
-  topic: "Calculus (Double Integral - Polar)",
-  difficulty: 2250,
-  problem: "Evaluate $\\iint_D x^2+y^2 dA$ where $D$ is the region bounded by the circle $x^2+y^2=4$.",
-  answer: "8π",
-},
-{
-  id: "C270",
-  topic: "Calculus (Double Integral - Order Change)",
-  difficulty: 2400,
-  problem: "Evaluate $\\int_0^8 \\int_{x^{1/3}}^2 \\frac{1}{y^4+1} dy dx$.",
-  answer: "ln(17)/4",
-},
-{
-  id: "C271",
-  topic: "Calculus (Triple Integral - Cylindrical)",
-  difficulty: 2550,
-  problem: "Find the volume of the solid bounded by the paraboloid $z=9-x^2-y^2$ and the xy-plane.",
-  answer: "81π/2",
-},
-{
-  id: "C272",
-  topic: "Calculus (Triple Integral - Spherical)",
-  difficulty: 2650,
-  problem: "Evaluate $\\iiint_E \\sqrt{x^2+y^2+z^2} dV$ where E is the unit ball $x^2+y^2+z^2 \\le 1$.",
-  answer: "π",
-},
-{
-  id: "C273",
-  topic: "Calculus (Line Integral - Scalar)",
-  difficulty: 2350,
-  problem: "Evaluate $\\int_C y ds$ where C is the curve $y=x^2$ from $(0,0)$ to $(1,1)$.",
-  answer: "(5√5 - 1)/12",
-},
-{
-  id: "C274",
-  topic: "Calculus (Line Integral - Vector)",
-  difficulty: 2500,
-  problem: "Evaluate $\\int_C F \\cdot dr$ where $F(x,y) = \\langle x-y, x+y \\rangle$ and C is the line segment from $(0,0)$ to $(1,2)$.",
-  answer: "3.5",
-},
-{
-  id: "C275",
-  topic: "Calculus (Green's Theorem)",
-  difficulty: 2800,
-  problem: "Use Green's Theorem to evaluate $\\oint_C (y dx - x dy)$ where C is the circle $x^2+y^2=a^2$, oriented counter-clockwise.",
-  answer: "-2πa²",
-},
-{
-  id: "C276",
-  topic: "Calculus (Stokes' Theorem)",
-  difficulty: 2950,
-  problem: "Let $F = \\langle x^2y, x^3/3, xy \\rangle$. Let $C$ be the intersection of the cylinder $x^2+y^2=1$ and the plane $z=y$, oriented counter-clockwise when viewed from above. Use Stokes' Theorem to evaluate $\\oint_C F \\cdot dr$.",
-  answer: "0",
-},
-{
-  id: "C277",
-  topic: "Calculus (Divergence Theorem)",
-  difficulty: 3000,
-  problem: "Let $F = \\langle x, y, z \\rangle$. Use the Divergence Theorem to calculate the flux of F across the surface of the cylinder $x^2+y^2 \\le 1, 0 \\le z \\le 2$.",
-  answer: "6π",
-},
-{
-  id: "C278",
-  topic: "Calculus (Curl)",
-  difficulty: 2550,
-  problem: "Find the magnitude of the curl of the vector field $F = \\langle 0, -z, y \\rangle$.",
-  answer: "2",
-},
-{
-  id: "C279",
-  topic: "Calculus (Divergence)",
-  difficulty: 2600,
-  problem: "Find the divergence of the vector field $F = \\frac{\\langle x, y, z \\rangle}{(x^2+y^2+z^2)^{3/2}}$.",
-  answer: "0",
-},
-{
-  id: "C280",
-  topic: "Calculus (Local Extrema)",
-  difficulty: 2450,
-  problem: "The function $f(x, y) = x^2+y^2+2/x+4/y$ has a local minimum in the first quadrant. What is the x-coordinate of this minimum?",
-  answer: "1",
-},
-{
-  id: "C281",
-  topic: "Calculus (Tangent Plane)",
-  difficulty: 2100,
-  problem: "Find the z-intercept of the tangent plane to the ellipsoid $x^2 + 2y^2 + z^2 = 7$ at the point $(2, 1, 1)$.",
-  answer: "7",
-},
-{
-  id: "C282",
-  topic: "Calculus (Chain Rule - Multivariable)",
-  difficulty: 2050,
-  problem: "Let $z = \\sin(x) \\cos(y)$, where $x=st$ and $y=s/t$. Find $\\frac{\\partial z}{\\partial s}$ at $(s,t) = (\\pi, 1)$.",
-  answer: "-1",
-},
-{
-  id: "C283",
-  topic: "Calculus (Directional Derivative)",
-  difficulty: 2000,
-  problem: "Find the directional derivative of $f(x, y, z) = xyz$ at the point $(1, 2, 3)$ in the direction of the vector $v = \\langle 1, 1, 1 \\rangle$.",
-  answer: "11/√3",
-},
-{
-  id: "C284",
-  topic: "Calculus (Conservative Vector Fields)",
-  difficulty: 2400,
-  problem: "The vector field $F = \\langle yz, xz, xy \\rangle$ is conservative. Find a potential function $f(x,y,z)$ such that $\\nabla f = F$ and $f(0,0,0)=0$. Evaluate $f(1,2,3)$.",
-  answer: "6",
-},
-{
-  id: "C285",
-  topic: "Calculus (Surface Integral - Scalar)",
-  difficulty: 2700,
-  problem: "Evaluate the surface integral $\\iint_S 1 \\,dS$ where $S$ is the part of the paraboloid $z=x^2+y^2$ that lies below the plane $z=1$.",
-  answer: "π/6 * (5√5 - 1)",
-},
-{
-  id: "C286",
-  topic: "Calculus (Jacobian)",
-  difficulty: 2500,
-  problem: "Find the Jacobian of the transformation from spherical coordinates to Cartesian coordinates: $x=\\rho\\sin\\phi\\cos\\theta, y=\\rho\\sin\\phi\\sin\\theta, z=\\rho\\cos\\phi$.",
-  answer: "ρ²sin(φ)",
-},
-{
-  id: "C237",
-  topic: "Calculus (Vector Operations)",
-  difficulty: 1150,
-  problem: "Let $a = \\langle 1, 2, 3 \\rangle$ and $b = \\langle -1, 0, 1 \\rangle$. Find the dot product $a \\cdot b$.",
-  answer: "2",
-},
-{
-  id: "C238",
-  topic: "Calculus (Cross Product)",
-  difficulty: 1500,
-  problem: "Find the cross product of $i = \\langle 1,0,0 \\rangle$ and $j = \\langle 0,1,0 \\rangle$.",
-  answer: "<0,0,1>",
-},
-{
-  id: "C239",
-  topic: "Calculus (Equation of a Plane)",
-  difficulty: 1650,
-  problem: "Find the scalar equation of the plane through the point $(1,2,3)$ with normal vector $\\langle 4, 5, 6 \\rangle$. The equation is $Ax+By+Cz=D$. What is D?",
-  answer: "32",
-},
-{
-  id: "C240",
-  topic: "Calculus (Partial Derivative)",
-  difficulty: 1600,
-  problem: "Let $f(x, y) = x^2\\sin(y)$. Find the partial derivative $\\frac{\\partial f}{\\partial x}$ at $(\\pi, \\pi/2)$.",
-  answer: "2π",
-},
-{
-  id: "C241",
-  topic: "Calculus (Gradient)",
-  difficulty: 1750,
-  problem: "Find the gradient of $f(x,y) = x^2 - y^2$ at the point $(2,1)$.",
-  answer: "<4, -2>",
-},
-{
-  id: "C242",
-  topic: "Calculus (Directional Derivative)",
-  difficulty: 1950,
-  problem: "Find the directional derivative of $f(x,y) = 2x^2 + y^2$ at $(1,1)$ in the direction of $v=\\langle 1, -1 \\rangle$.",
-  answer: "√2",
-},
-{
-  id: "C243",
-  topic: "Calculus (Second Partial Derivatives)",
-  difficulty: 1850,
-  problem: "Let $f(x, y) = x^3y^2$. Find the mixed partial derivative $f_{yx}$.",
-  answer: "6x²y",
-},
-{
-  id: "C244",
-  topic: "Calculus (Tangent Plane)",
-  difficulty: 2100,
-  problem: "Find the equation of the tangent plane to the surface $z=xy$ at the point $(2,3,6)$. The equation is $Ax+By-z=D$. What is D?",
-  answer: "6",
-},
-{
-  id: "C245",
-  topic: "Calculus (Local Extrema)",
-  difficulty: 2400,
-  problem: "The function $f(x,y) = x^2+y^2+xy+x$ has a critical point. What is the x-coordinate of this point?",
-  answer: "-2/3",
-},
-{
-  id: "C246",
-  topic: "Calculus (Lagrange Multipliers)",
-  difficulty: 2650,
-  problem: "Find the maximum value of $f(x,y) = x+y$ subject to the constraint $x^2+y^2=2$.",
-  answer: "2",
-},
-{
-  id: "C247",
-  topic: "Calculus (Double Integral)",
-  difficulty: 2050,
-  problem: "Evaluate $\\int_0^2 \\int_0^1 x^2y \\,dx dy$.",
-  answer: "2/3",
-},
-{
-  id: "C248",
-  topic: "Calculus (Double Integral - General Region)",
-  difficulty: 2300,
-  problem: "Evaluate $\\int_0^1 \\int_0^x (x+y) \\,dy dx$.",
-  answer: "0.5",
-},
-{
-  id: "C249",
-  topic: "Calculus (Double Integral - Polar)",
-  difficulty: 2250,
-  problem: "Use polar coordinates to evaluate $\\iint_D (x^2+y^2) dA$ where D is the disk $x^2+y^2 \\le 4$.",
-  answer: "8π",
-},
-{
-  id: "C250",
-  topic: "Calculus (Triple Integral)",
-  difficulty: 2400,
-  problem: "Evaluate $\\int_0^1 \\int_0^1 \\int_0^1 (x+y+z) \\,dx dy dz$.",
-  answer: "1.5",
-},
-{
-  id: "C251",
-  topic: "Calculus (Cylindrical Coordinates)",
-  difficulty: 2500,
-  problem: "Find the volume of the solid bounded by the paraboloid $z=x^2+y^2$ and the plane $z=4$.",
-  answer: "8π",
-},
-{
-  id: "C252",
-  topic: "Calculus (Spherical Coordinates)",
-  difficulty: 2600,
-  problem: "Find the volume of the solid that lies above the cone $z=\\sqrt{x^2+y^2}$ and below the sphere $x^2+y^2+z^2=1$.",
-  answer: "π/3 * (2-√2)",
-},
-{
-  id: "C253",
-  topic: "Calculus (Line Integral - Scalar)",
-  difficulty: 2300,
-  problem: "Evaluate $\\int_C (x+y) ds$ where C is the top half of the unit circle $x^2+y^2=1$ from $(1,0)$ to $(-1,0)$.",
-  answer: "2",
-},
-{
-  id: "C254",
-  topic: "Calculus (Line Integral - Vector Field)",
-  difficulty: 2400,
-  problem: "Evaluate $\\int_C F \\cdot dr$ where $F=\\langle -y, x \\rangle$ and C is the line segment from $(1,0)$ to $(0,1)$.",
-  answer: "1",
-},
-{
-  id: "C255",
-  topic: "Calculus (Conservative Vector Fields)",
-  difficulty: 2350,
-  problem: "Is the vector field $F(x,y) = \\langle e^x \\cos y, -e^x \\sin y \\rangle$ conservative? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "C256",
-  topic: "Calculus (Green's Theorem)",
-  difficulty: 2700,
-  problem: "Use Green's Theorem to evaluate $\\oint_C y^3 dx - x^3 dy$ where C is the circle $x^2+y^2=1$ oriented counter-clockwise.",
-  answer: "-1.5π",
-},
-{
-  id: "C257",
-  topic: "Calculus (Curl)",
-  difficulty: 2550,
-  problem: "Find the curl of the vector field $F = \\langle x, y, z \\rangle$.",
-  answer: "<0,0,0>",
-},
-{
-  id: "C258",
-  topic: "Calculus (Divergence)",
-  difficulty: 2500,
-  problem: "Find the divergence of the vector field $F = \\langle x^2, y^2, z^2 \\rangle$ at the point $(1,2,3)$.",
-  answer: "12",
-},
-{
-  id: "C259",
-  topic: "Calculus (Surface Integral - Scalar)",
-  difficulty: 2800,
-  problem: "Evaluate $\\iint_S 1 dS$ where S is the surface of the cube with side length 2 centered at the origin.",
-  answer: "24",
-},
-{
-  id: "C260",
-  topic: "Calculus (Surface Integral - Vector Field)",
-  difficulty: 2900,
-  problem: "Find the flux of $F=\\langle 0,0,1 \\rangle$ across the part of the paraboloid $z=x^2+y^2$ that lies below the plane $z=1$, with upward orientation.",
-  answer: "π",
-},
-{
-  id: "C261",
-  topic: "Calculus (Stokes' Theorem)",
-  difficulty: 3000,
-  problem: "Let $F = \\langle z, x, y \\rangle$. Let C be the boundary of the triangle with vertices (1,0,0), (0,1,0), (0,0,1), oriented counter-clockwise when viewed from above. Evaluate $\\oint_C F \\cdot dr$.",
-  answer: "-1.5",
-},
-{
-  id: "C262",
-  topic: "Calculus (Divergence Theorem)",
-  difficulty: 2950,
-  problem: "Use the Divergence Theorem to evaluate the flux of $F = \\langle x^3, y^3, z^3 \\rangle$ across the unit sphere $x^2+y^2+z^2=1$.",
-  answer: "1.2π",
-},
-{
-  id: "C263",
-  topic: "Calculus (Angle Between Vectors)",
-  difficulty: 1400,
-  problem: "Find the cosine of the angle between the vectors $u = \\langle 1, 1, 0 \\rangle$ and $v = \\langle 1, 0, 1 \\rangle$.",
-  answer: "0.5",
-},
-{
-  id: "C264",
-  topic: "Calculus (Parametric Line)",
-  difficulty: 1550,
-  problem: "Find a vector parallel to the line passing through points P(1, 4, 6) and Q(2, 5, 5).",
-  answer: "<1, 1, -1>",
-},
-{
-  id: "C265",
-  topic: "Calculus (Chain Rule - Multivariable)",
-  difficulty: 2000,
-  problem: "Let $z=f(x,y)$, $x=s+t$, $y=s-t$. Find $\\frac{\\partial z}{\\partial s}$ in terms of partials of $f$.",
-  answer: "∂f/∂x + ∂f/∂y",
-},
-{
-  id: "C266",
-  topic: "Calculus (Max Rate of Change)",
-  difficulty: 1900,
-  problem: "Find the maximum rate of change of $f(x,y,z) = x/y + y/z$ at the point $(4,2,1)$.",
-  answer: "√6 / 2",
-},
-{
-  id: "C267",
-  topic: "Calculus (Change of Order of Integration)",
-  difficulty: 2350,
-  problem: "Reverse the order of integration for $\\int_0^1 \\int_{y^2}^1 f(x,y) dx dy$.",
-  answer: "∫(0 to 1) ∫(0 to √x) f(x,y) dy dx",
-},
-{
-  id: "C268",
-  topic: "Calculus (Jacobian)",
-  difficulty: 2450,
-  problem: "Find the Jacobian of the transformation from polar coordinates to Cartesian coordinates: $x=r\\cos\\theta, y=r\\sin\\theta$.",
-  answer: "r",
-},
-{
-  id: "C269",
-  topic: "Calculus (Fundamental Theorem for Line Integrals)",
-  difficulty: 2400,
-  problem: "Let $F = \\nabla f$ where $f(x,y,z) = xyz$. Evaluate the line integral of F along any curve from $(0,0,0)$ to $(1,2,3)$.",
-  answer: "6",
-},
-{
-  id: "C270",
-  topic: "Calculus (Curl of a Gradient)",
-  difficulty: 2600,
-  problem: "Let $f$ be any smooth scalar function. What is the curl of the gradient of $f$, $\\nabla \\times (\\nabla f)$?",
-  answer: "0",
-},
-{
-  id: "C271",
-  topic: "Calculus (Divergence of a Curl)",
-  difficulty: 2650,
-  problem: "Let $F$ be any smooth vector field. What is the divergence of the curl of $F$, $\\nabla \\cdot (\\nabla \\times F)$?",
-  answer: "0",
-},
-{
-  id: "C272",
-  topic: "Calculus (Vector Projection)",
-  difficulty: 1600,
-  problem: "Find the vector projection of $b=\\langle 1,1,1 \\rangle$ onto $a=\\langle 2,0,0 \\rangle$.",
-  answer: "<1,0,0>",
-},
-{
-  id: "C273",
-  topic: "Calculus (Triple Integral)",
-  difficulty: 2300,
-  problem: "Find the volume of the tetrahedron bounded by the coordinate planes and the plane $x+y+z=1$.",
-  answer: "1/6",
-},
-{
-  id: "C274",
-  topic: "Calculus (Green's Theorem)",
-  difficulty: 2800,
-  problem: "Evaluate $\\oint_C (e^x - y)dx + (\\cos y + x)dy$ where C is the rectangle with vertices (0,0), (2,0), (2,1), (0,1).",
-  answer: "4",
-},
-{
-  id: "C275",
-  topic: "Calculus (Stokes' Theorem)",
-  difficulty: 2950,
-  problem: "Let $F = \\langle x,y,z \\rangle$. Evaluate $\\iint_S (\\nabla \\times F) \\cdot dS$ for any smooth, oriented surface S.",
-  answer: "0",
-},
-{
-  id: "C276",
-  topic: "Calculus (Divergence Theorem)",
-  difficulty: 2850,
-  problem: "Let $F = \\langle y, z, x \\rangle$. Evaluate the flux of F out of the unit cube $[0,1]^3$.",
-  answer: "0",
-},
-{
-    id: "C401",
-    topic: "Calculus (Partial Derivative)",
-    difficulty: 1650,
-    problem: "Let $f(x, y) = x^2\\cos(y) + y^2\\sin(x)$. Find the partial derivative $f_{x}$ at the point $(\\pi, 0)$.",
-    answer: "-1",
-  },
   {
+    category: "Calculus III",
     id: "C402",
     topic: "Calculus (Gradient)",
     difficulty: 1750,
@@ -4234,6 +2323,7 @@ export const mathProblems = [
     answer: "<4, 12>",
   },
   {
+    category: "Calculus III",
     id: "C403",
     topic: "Calculus (Directional Derivative)",
     difficulty: 1900,
@@ -4241,6 +2331,7 @@ export const mathProblems = [
     answer: "7√2",
   },
   {
+    category: "Calculus III",
     id: "C404",
     topic: "Calculus (Tangent Plane)",
     difficulty: 2050,
@@ -4248,6 +2339,7 @@ export const mathProblems = [
     answer: "-4",
   },
   {
+    category: "Calculus III",
     id: "C405",
     topic: "Calculus (Double Integral)",
     difficulty: 2000,
@@ -4255,6 +2347,7 @@ export const mathProblems = [
     answer: "14",
   },
   {
+    category: "Calculus III",
     id: "C406",
     topic: "Calculus (Double Integral - Polar)",
     difficulty: 2200,
@@ -4262,6 +2355,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus III",
     id: "C407",
     topic: "Calculus (Triple Integral)",
     difficulty: 2350,
@@ -4269,6 +2363,7 @@ export const mathProblems = [
     answer: "24",
   },
   {
+    category: "Calculus III",
     id: "C408",
     topic: "Calculus (Line Integral - Scalar)",
     difficulty: 2300,
@@ -4276,6 +2371,7 @@ export const mathProblems = [
     answer: "3π",
   },
   {
+    category: "Calculus III",
     id: "C409",
     topic: "Calculus (Line Integral - Vector Field)",
     difficulty: 2450,
@@ -4283,6 +2379,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus III",
     id: "C410",
     topic: "Calculus (Curl of a Vector Field)",
     difficulty: 2500,
@@ -4290,6 +2387,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus III",
     id: "C411",
     topic: "Calculus (Divergence)",
     difficulty: 2550,
@@ -4297,6 +2395,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus III",
     id: "C412",
     topic: "Calculus (Green's Theorem)",
     difficulty: 2700,
@@ -4304,6 +2403,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Calculus III",
     id: "C413",
     topic: "Calculus (Stokes' Theorem)",
     difficulty: 2900,
@@ -4311,6 +2411,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C414",
     topic: "Calculus (Divergence Theorem)",
     difficulty: 2950,
@@ -4318,6 +2419,7 @@ export const mathProblems = [
     answer: "12π",
   },
   {
+    category: "Calculus III",
     id: "C415",
     topic: "Calculus (Lagrange Multipliers)",
     difficulty: 2600,
@@ -4325,6 +2427,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus III",
     id: "C416",
     topic: "Calculus (Chain Rule - Multivariable)",
     difficulty: 2000,
@@ -4332,6 +2435,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Calculus III",
     id: "C417",
     topic: "Calculus (Local Extrema - Second Derivative Test)",
     difficulty: 2500,
@@ -4339,6 +2443,7 @@ export const mathProblems = [
     answer: "local minimum",
   },
   {
+    category: "Calculus III",
     id: "C418",
     topic: "Calculus (Double Integral - General Region)",
     difficulty: 2350,
@@ -4346,6 +2451,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus III",
     id: "C419",
     topic: "Calculus (Triple Integral - Cylindrical)",
     difficulty: 2550,
@@ -4353,6 +2459,7 @@ export const mathProblems = [
     answer: "20π",
   },
   {
+    category: "Calculus III",
     id: "C420",
     topic: "Calculus (Triple Integral - Spherical)",
     difficulty: 2650,
@@ -4360,6 +2467,7 @@ export const mathProblems = [
     answer: "2π/3",
   },
   {
+    category: "Calculus III",
     id: "C421",
     topic: "Calculus (Fundamental Theorem for Line Integrals)",
     difficulty: 2400,
@@ -4367,6 +2475,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus III",
     id: "C422",
     topic: "Calculus (Surface Integral of a Scalar Function)",
     difficulty: 2750,
@@ -4374,6 +2483,7 @@ export const mathProblems = [
     answer: "16π",
   },
   {
+    category: "Calculus III",
     id: "C423",
     topic: "Calculus (Vector Operations)",
     difficulty: 1200,
@@ -4381,6 +2491,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Calculus III",
     id: "C424",
     topic: "Calculus (Cross Product)",
     difficulty: 1550,
@@ -4388,6 +2499,7 @@ export const mathProblems = [
     answer: "<i>",
   },
   {
+    category: "Calculus III",
     id: "C425",
     topic: "Calculus (Equation of a Plane)",
     difficulty: 1700,
@@ -4395,6 +2507,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C426",
     topic: "Calculus (Second Partial Derivatives - Clairaut's Theorem)",
     difficulty: 1800,
@@ -4402,6 +2515,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C427",
     topic: "Calculus (Max Rate of Change)",
     difficulty: 1850,
@@ -4409,6 +2523,7 @@ export const mathProblems = [
     answer: "2√5",
   },
   {
+    category: "Calculus III",
     id: "C428",
     topic: "Calculus (Conservative Vector Fields)",
     difficulty: 2350,
@@ -4416,6 +2531,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Calculus III",
     id: "C429",
     topic: "Calculus (Volume with Double Integrals)",
     difficulty: 2100,
@@ -4423,6 +2539,7 @@ export const mathProblems = [
     answer: "24",
   },
   {
+    category: "Calculus III",
     id: "C430",
     topic: "Calculus (Double Integral - Order Change)",
     difficulty: 2400,
@@ -4430,6 +2547,7 @@ export const mathProblems = [
     answer: "e-1",
   },
   {
+    category: "Calculus III",
     id: "C431",
     topic: "Calculus (Line Integral - Vector)",
     difficulty: 2500,
@@ -4437,6 +2555,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C432",
     topic: "Calculus (Green's Theorem - Area)",
     difficulty: 2800,
@@ -4444,6 +2563,7 @@ export const mathProblems = [
     answer: "ab",
   },
   {
+    category: "Calculus III",
     id: "C433",
     topic: "Calculus (Divergence of a Curl)",
     difficulty: 2600,
@@ -4451,6 +2571,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C434",
     topic: "Calculus (Surface Integral of a Vector Field)",
     difficulty: 2850,
@@ -4458,6 +2579,7 @@ export const mathProblems = [
     answer: "π",
   },
   {
+    category: "Calculus III",
     id: "C435",
     topic: "Calculus (Jacobian)",
     difficulty: 2450,
@@ -4465,6 +2587,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Calculus III",
     id: "C436",
     topic: "Calculus (Angle Between Vectors)",
     difficulty: 1450,
@@ -4472,6 +2595,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus III",
     id: "C437",
     topic: "Calculus (Parametric Line)",
     difficulty: 1600,
@@ -4479,6 +2603,7 @@ export const mathProblems = [
     answer: "-1/3",
   },
   {
+    category: "Calculus III",
     id: "C438",
     topic: "Calculus (Local Extrema)",
     difficulty: 2450,
@@ -4486,6 +2611,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C439",
     topic: "Calculus (Double Integral)",
     difficulty: 2050,
@@ -4493,6 +2619,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C440",
     topic: "Calculus (Curl)",
     difficulty: 2550,
@@ -4500,6 +2627,7 @@ export const mathProblems = [
     answer: "<0, 0, 0>",
   },
   {
+    category: "Calculus III",
     id: "C441",
     topic: "Calculus (Divergence)",
     difficulty: 2600,
@@ -4507,6 +2635,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C442",
     topic: "Calculus (Stokes' Theorem)",
     difficulty: 2950,
@@ -4514,6 +2643,7 @@ export const mathProblems = [
     answer: "-2π",
   },
   {
+    category: "Calculus III",
     id: "C443",
     topic: "Calculus (Divergence Theorem)",
     difficulty: 3000,
@@ -4521,6 +2651,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C444",
     topic: "Calculus (Lagrange Multipliers)",
     difficulty: 2650,
@@ -4528,6 +2659,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus III",
     id: "C445",
     topic: "Calculus (Partial Derivative)",
     difficulty: 1700,
@@ -4535,6 +2667,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C446",
     topic: "Calculus (Gradient)",
     difficulty: 1800,
@@ -4542,6 +2675,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C447",
     topic: "Calculus (Tangent Plane)",
     difficulty: 2100,
@@ -4549,6 +2683,7 @@ export const mathProblems = [
     answer: "horizontal",
   },
   {
+    category: "Calculus III",
     id: "C448",
     topic: "Calculus (Double Integral - Polar)",
     difficulty: 2250,
@@ -4556,6 +2691,7 @@ export const mathProblems = [
     answer: "π/4",
   },
   {
+    category: "Calculus III",
     id: "C449",
     topic: "Calculus (Line Integral - Scalar)",
     difficulty: 2350,
@@ -4563,20 +2699,15 @@ export const mathProblems = [
     answer: "√3 / 2",
   },
   {
+    category: "Calculus III",
     id: "C450",
     topic: "Calculus (Green's Theorem)",
     difficulty: 2750,
     problem: "Let $F=\\langle -y/(x^2+y^2), x/(x^2+y^2) \\rangle$. Evaluate $\\oint_C F \\cdot dr$ where C is the unit circle. Hint: Green's Theorem does not apply directly.",
     answer: "2π",
   },
-{
-    id: "C601",
-    topic: "Calculus (Partial Derivative)",
-    difficulty: 1700,
-    problem: "Let $f(x, y, z) = xyz$. Find the partial derivative $f_{xyz}$.",
-    answer: "1",
-  },
   {
+    category: "Calculus III",
     id: "C602",
     topic: "Calculus (Gradient)",
     difficulty: 1750,
@@ -4584,6 +2715,7 @@ export const mathProblems = [
     answer: "<0, 0>",
   },
   {
+    category: "Calculus III",
     id: "C603",
     topic: "Calculus (Directional Derivative)",
     difficulty: 1950,
@@ -4591,6 +2723,7 @@ export const mathProblems = [
     answer: "1/√2",
   },
   {
+    category: "Calculus III",
     id: "C604",
     topic: "Calculus (Tangent Plane)",
     difficulty: 2100,
@@ -4598,6 +2731,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus III",
     id: "C605",
     topic: "Calculus (Double Integral)",
     difficulty: 2050,
@@ -4605,6 +2739,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus III",
     id: "C606",
     topic: "Calculus (Double Integral - Polar)",
     difficulty: 2250,
@@ -4612,6 +2747,7 @@ export const mathProblems = [
     answer: "π",
   },
   {
+    category: "Calculus III",
     id: "C607",
     topic: "Calculus (Triple Integral)",
     difficulty: 2400,
@@ -4619,6 +2755,7 @@ export const mathProblems = [
     answer: "1/6",
   },
   {
+    category: "Calculus III",
     id: "C608",
     topic: "Calculus (Line Integral - Scalar)",
     difficulty: 2350,
@@ -4626,6 +2763,7 @@ export const mathProblems = [
     answer: "10π",
   },
   {
+    category: "Calculus III",
     id: "C609",
     topic: "Calculus (Line Integral - Vector Field)",
     difficulty: 2500,
@@ -4633,6 +2771,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus III",
     id: "C610",
     topic: "Calculus (Curl of a Vector Field)",
     difficulty: 2550,
@@ -4640,6 +2779,7 @@ export const mathProblems = [
     answer: "<1, 1, 1>",
   },
   {
+    category: "Calculus III",
     id: "C611",
     topic: "Calculus (Divergence)",
     difficulty: 2600,
@@ -4647,6 +2787,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Calculus III",
     id: "C612",
     topic: "Calculus (Green's Theorem)",
     difficulty: 2750,
@@ -4654,6 +2795,7 @@ export const mathProblems = [
     answer: "3π",
   },
   {
+    category: "Calculus III",
     id: "C613",
     topic: "Calculus (Stokes' Theorem)",
     difficulty: 2950,
@@ -4661,6 +2803,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C614",
     topic: "Calculus (Divergence Theorem)",
     difficulty: 3000,
@@ -4668,6 +2811,7 @@ export const mathProblems = [
     answer: "π",
   },
   {
+    category: "Calculus III",
     id: "C615",
     topic: "Calculus (Lagrange Multipliers)",
     difficulty: 2650,
@@ -4675,6 +2819,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus III",
     id: "C616",
     topic: "Calculus (Chain Rule - Multivariable)",
     difficulty: 2050,
@@ -4682,6 +2827,7 @@ export const mathProblems = [
     answer: "12",
   },
   {
+    category: "Calculus III",
     id: "C617",
     topic: "Calculus (Local Extrema)",
     difficulty: 2500,
@@ -4689,6 +2835,7 @@ export const mathProblems = [
     answer: "saddle point",
   },
   {
+    category: "Calculus III",
     id: "C618",
     topic: "Calculus (Double Integral - General Region)",
     difficulty: 2400,
@@ -4696,6 +2843,7 @@ export const mathProblems = [
     answer: "1/3",
   },
   {
+    category: "Calculus III",
     id: "C619",
     topic: "Calculus (Triple Integral - Cylindrical)",
     difficulty: 2600,
@@ -4703,6 +2851,7 @@ export const mathProblems = [
     answer: "π/2",
   },
   {
+    category: "Calculus III",
     id: "C620",
     topic: "Calculus (Triple Integral - Spherical)",
     difficulty: 2700,
@@ -4710,6 +2859,7 @@ export const mathProblems = [
     answer: "4π/3",
   },
   {
+    category: "Calculus III",
     id: "C621",
     topic: "Calculus (Fundamental Theorem for Line Integrals)",
     difficulty: 2450,
@@ -4717,6 +2867,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Calculus III",
     id: "C622",
     topic: "Calculus (Surface Integral of a Scalar Function)",
     difficulty: 2800,
@@ -4724,6 +2875,7 @@ export const mathProblems = [
     answer: "64π",
   },
   {
+    category: "Calculus III",
     id: "C623",
     topic: "Calculus (Vector Operations)",
     difficulty: 1250,
@@ -4731,6 +2883,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Calculus III",
     id: "C624",
     topic: "Calculus (Cross Product)",
     difficulty: 1600,
@@ -4738,6 +2891,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus III",
     id: "C625",
     topic: "Calculus (Equation of a Plane)",
     difficulty: 1750,
@@ -4745,6 +2899,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Calculus III",
     id: "C626",
     topic: "Calculus (Second Partial Derivatives)",
     difficulty: 1850,
@@ -4752,6 +2907,7 @@ export const mathProblems = [
     answer: "6xy²",
   },
   {
+    category: "Calculus III",
     id: "C627",
     topic: "Calculus (Max Rate of Change)",
     difficulty: 1900,
@@ -4759,6 +2915,7 @@ export const mathProblems = [
     answer: "√13",
   },
   {
+    category: "Calculus III",
     id: "C628",
     topic: "Calculus (Conservative Vector Fields)",
     difficulty: 2400,
@@ -4766,6 +2923,7 @@ export const mathProblems = [
     answer: "xy",
   },
   {
+    category: "Calculus III",
     id: "C629",
     topic: "Calculus (Volume with Double Integrals)",
     difficulty: 2150,
@@ -4773,6 +2931,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C630",
     topic: "Calculus (Double Integral - Order Change)",
     difficulty: 2450,
@@ -4780,6 +2939,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C631",
     topic: "Calculus (Line Integral - Vector)",
     difficulty: 2550,
@@ -4787,6 +2947,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C632",
     topic: "Calculus (Green's Theorem - Area)",
     difficulty: 2850,
@@ -4794,6 +2955,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Calculus III",
     id: "C633",
     topic: "Calculus (Curl of a Gradient)",
     difficulty: 2650,
@@ -4801,6 +2963,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C634",
     topic: "Calculus (Surface Integral of a Vector Field)",
     difficulty: 2900,
@@ -4808,6 +2971,7 @@ export const mathProblems = [
     answer: "4π",
   },
   {
+    category: "Calculus III",
     id: "C635",
     topic: "Calculus (Jacobian)",
     difficulty: 2500,
@@ -4815,6 +2979,7 @@ export const mathProblems = [
     answer: "r",
   },
   {
+    category: "Calculus III",
     id: "C636",
     topic: "Calculus (Angle Between Vectors)",
     difficulty: 1500,
@@ -4822,6 +2987,7 @@ export const mathProblems = [
     answer: "90",
   },
   {
+    category: "Calculus III",
     id: "C637",
     topic: "Calculus (Parametric Line)",
     difficulty: 1650,
@@ -4829,6 +2995,7 @@ export const mathProblems = [
     answer: "<2, -1, 2>",
   },
   {
+    category: "Calculus III",
     id: "C638",
     topic: "Calculus (Local Extrema)",
     difficulty: 2550,
@@ -4836,6 +3003,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C639",
     topic: "Calculus (Double Integral)",
     difficulty: 2100,
@@ -4843,6 +3011,7 @@ export const mathProblems = [
     answer: "2/3",
   },
   {
+    category: "Calculus III",
     id: "C640",
     topic: "Calculus (Curl)",
     difficulty: 2600,
@@ -4850,6 +3019,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Calculus III",
     id: "C641",
     topic: "Calculus (Divergence)",
     difficulty: 2650,
@@ -4857,6 +3027,7 @@ export const mathProblems = [
     answer: "2x+2y+2z",
   },
   {
+    category: "Calculus III",
     id: "C642",
     topic: "Calculus (Stokes' Theorem)",
     difficulty: 3000,
@@ -4864,6 +3035,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C643",
     topic: "Calculus (Divergence Theorem)",
     difficulty: 3000,
@@ -4871,6 +3043,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Calculus III",
     id: "C644",
     topic: "Calculus (Lagrange Multipliers)",
     difficulty: 2700,
@@ -4878,6 +3051,7 @@ export const mathProblems = [
     answer: "1/√3",
   },
   {
+    category: "Calculus III",
     id: "C645",
     topic: "Calculus (Partial Derivative)",
     difficulty: 1750,
@@ -4885,6 +3059,7 @@ export const mathProblems = [
     answer: "e^(x+y)",
   },
   {
+    category: "Calculus III",
     id: "C646",
     topic: "Calculus (Gradient)",
     difficulty: 1850,
@@ -4892,6 +3067,7 @@ export const mathProblems = [
     answer: "<-2, 0>",
   },
   {
+    category: "Calculus III",
     id: "C647",
     topic: "Calculus (Tangent Plane)",
     difficulty: 2150,
@@ -4899,6 +3075,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Calculus III",
     id: "C648",
     topic: "Calculus (Double Integral - Polar)",
     difficulty: 2300,
@@ -4906,6 +3083,7 @@ export const mathProblems = [
     answer: "2π/3",
   },
   {
+    category: "Calculus III",
     id: "C649",
     topic: "Calculus (Line Integral - Scalar)",
     difficulty: 2400,
@@ -4913,6 +3091,7 @@ export const mathProblems = [
     answer: "1/√2",
   },
   {
+    category: "Calculus III",
     id: "C650",
     topic: "Calculus (Green's Theorem)",
     difficulty: 2800,
@@ -4929,6 +3108,7 @@ export const mathProblems = [
 
 
   {
+    category: "Differential Equations",
     id: "DE01",
     topic: "Differential Equations (Classification)",
     difficulty: 1250,
@@ -4936,6 +3116,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Differential Equations",
     id: "DE02",
     topic: "Differential Equations (Classification)",
     difficulty: 1350,
@@ -4943,6 +3124,7 @@ export const mathProblems = [
     answer: "nonlinear",
   },
   {
+    category: "Differential Equations",
     id: "DE03",
     topic: "Differential Equations (Verifying Solutions)",
     difficulty: 1400,
@@ -4950,6 +3132,7 @@ export const mathProblems = [
     answer: "2 or 3",
   },
   {
+    category: "Differential Equations",
     id: "DE04",
     topic: "Differential Equations (Separable)",
     difficulty: 1550,
@@ -4957,6 +3140,7 @@ export const mathProblems = [
     answer: "sqrt(x²+C)",
   },
   {
+    category: "Differential Equations",
     id: "DE05",
     topic: "Differential Equations (Separable IVP)",
     difficulty: 1650,
@@ -4964,6 +3148,7 @@ export const mathProblems = [
     answer: "3e²",
   },
   {
+    category: "Differential Equations",
     id: "DE06",
     topic: "Differential Equations (Separable)",
     difficulty: 1700,
@@ -4971,6 +3156,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Differential Equations",
     id: "DE07",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1750,
@@ -4978,6 +3164,7 @@ export const mathProblems = [
     answer: "e^(2x)",
   },
   {
+    category: "Differential Equations",
     id: "DE08",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1850,
@@ -4985,6 +3172,7 @@ export const mathProblems = [
     answer: "x",
   },
   {
+    category: "Differential Equations",
     id: "DE09",
     topic: "Differential Equations (Linear First-Order IVP)",
     difficulty: 2000,
@@ -4992,6 +3180,7 @@ export const mathProblems = [
     answer: "e-1",
   },
   {
+    category: "Differential Equations",
     id: "DE10",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 1800,
@@ -4999,6 +3188,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE11",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 1900,
@@ -5006,6 +3196,7 @@ export const mathProblems = [
     answer: "y*cos(x) + 2x*e^y",
   },
   {
+    category: "Differential Equations",
     id: "DE12",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 2100,
@@ -5013,6 +3204,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE13",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1600,
@@ -5020,6 +3212,7 @@ export const mathProblems = [
     answer: "r²+3r-4=0",
   },
   {
+    category: "Differential Equations",
     id: "DE14",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1700,
@@ -5027,6 +3220,7 @@ export const mathProblems = [
     answer: "2, 2",
   },
   {
+    category: "Differential Equations",
     id: "DE15",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1800,
@@ -5034,6 +3228,7 @@ export const mathProblems = [
     answer: "-1 ± 2i",
   },
   {
+    category: "Differential Equations",
     id: "DE16",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 1850,
@@ -5041,6 +3236,7 @@ export const mathProblems = [
     answer: "e + 1/e",
   },
   {
+    category: "Differential Equations",
     id: "DE17",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 1950,
@@ -5048,6 +3244,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE18",
     topic: "Differential Equations (Wronskian)",
     difficulty: 1900,
@@ -5055,6 +3252,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Differential Equations",
     id: "DE19",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2000,
@@ -5062,6 +3260,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE20",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 1900,
@@ -5069,6 +3268,7 @@ export const mathProblems = [
     answer: "Ae^(3x)",
   },
   {
+    category: "Differential Equations",
     id: "DE21",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2000,
@@ -5076,6 +3276,7 @@ export const mathProblems = [
     answer: "Acos(x) + Bsin(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE22",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2100,
@@ -5083,6 +3284,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Differential Equations",
     id: "DE23",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2300,
@@ -5090,6 +3292,7 @@ export const mathProblems = [
     answer: "Ax²e^x",
   },
   {
+    category: "Differential Equations",
     id: "DE24",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2200,
@@ -5097,6 +3300,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Differential Equations",
     id: "DE25",
     topic: "Differential Equations (Variation of Parameters)",
     difficulty: 2400,
@@ -5104,6 +3308,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE26",
     topic: "Differential Equations (Variation of Parameters)",
     difficulty: 2600,
@@ -5111,6 +3316,7 @@ export const mathProblems = [
     answer: "-e^(-x)/(2x)",
   },
   {
+    category: "Differential Equations",
     id: "DE27",
     topic: "Differential Equations (Springs - Undamped)",
     difficulty: 2200,
@@ -5118,6 +3324,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Differential Equations",
     id: "DE28",
     topic: "Differential Equations (Springs - Damped)",
     difficulty: 2300,
@@ -5125,6 +3332,7 @@ export const mathProblems = [
     answer: "overdamped",
   },
   {
+    category: "Differential Equations",
     id: "DE29",
     topic: "Differential Equations (Springs - Damped)",
     difficulty: 2350,
@@ -5132,6 +3340,7 @@ export const mathProblems = [
     answer: "critically damped",
   },
   {
+    category: "Differential Equations",
     id: "DE30",
     topic: "Differential Equations (Springs - Damped)",
     difficulty: 2400,
@@ -5139,6 +3348,7 @@ export const mathProblems = [
     answer: "underdamped",
   },
   {
+    category: "Differential Equations",
     id: "DE31",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1700,
@@ -5146,6 +3356,7 @@ export const mathProblems = [
     answer: "1/(s-3)",
   },
   {
+    category: "Differential Equations",
     id: "DE32",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1750,
@@ -5153,6 +3364,7 @@ export const mathProblems = [
     answer: "2/(s²+4)",
   },
   {
+    category: "Differential Equations",
     id: "DE33",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1800,
@@ -5160,6 +3372,7 @@ export const mathProblems = [
     answer: "6/s⁴",
   },
   {
+    category: "Differential Equations",
     id: "DE34",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 1900,
@@ -5167,6 +3380,7 @@ export const mathProblems = [
     answer: "e^(5t)",
   },
   {
+    category: "Differential Equations",
     id: "DE35",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 2000,
@@ -5174,6 +3388,7 @@ export const mathProblems = [
     answer: "cos(3t)",
   },
   {
+    category: "Differential Equations",
     id: "DE36",
     topic: "Differential Equations (Inverse Laplace - Partial Fractions)",
     difficulty: 2200,
@@ -5181,6 +3396,7 @@ export const mathProblems = [
     answer: "1 - e^(-t)",
   },
   {
+    category: "Differential Equations",
     id: "DE37",
     topic: "Differential Equations (Laplace - s-shift)",
     difficulty: 2100,
@@ -5188,6 +3404,7 @@ export const mathProblems = [
     answer: "(s+1)/((s+1)²+1)",
   },
   {
+    category: "Differential Equations",
     id: "DE38",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2300,
@@ -5195,6 +3412,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE39",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2450,
@@ -5202,6 +3420,7 @@ export const mathProblems = [
     answer: "cos(t)",
   },
   {
+    category: "Differential Equations",
     id: "DE40",
     topic: "Differential Equations (Laplace - Unit Step Function)",
     difficulty: 2500,
@@ -5209,6 +3428,7 @@ export const mathProblems = [
     answer: "e^(-2s)/s",
   },
   {
+    category: "Differential Equations",
     id: "DE41",
     topic: "Differential Equations (Laplace - t-shift)",
     difficulty: 2600,
@@ -5216,6 +3436,7 @@ export const mathProblems = [
     answer: "2e^(-s)/s³",
   },
   {
+    category: "Differential Equations",
     id: "DE42",
     topic: "Differential Equations (Laplace - Dirac Delta)",
     difficulty: 2700,
@@ -5223,6 +3444,7 @@ export const mathProblems = [
     answer: "e^(-3s)",
   },
   {
+    category: "Differential Equations",
     id: "DE43",
     topic: "Differential Equations (Laplace - IVP with Delta)",
     difficulty: 2800,
@@ -5230,6 +3452,7 @@ export const mathProblems = [
     answer: "1/e",
   },
   {
+    category: "Differential Equations",
     id: "DE44",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2300,
@@ -5237,6 +3460,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE45",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2400,
@@ -5244,6 +3468,7 @@ export const mathProblems = [
     answer: "3, -2",
   },
   {
+    category: "Differential Equations",
     id: "DE46",
     topic: "Differential Equations (Systems of ODEs - Phase Plane)",
     difficulty: 2500,
@@ -5251,6 +3476,7 @@ export const mathProblems = [
     answer: "node",
   },
   {
+    category: "Differential Equations",
     id: "DE47",
     topic: "Differential Equations (Systems of ODEs - Phase Plane)",
     difficulty: 2550,
@@ -5258,6 +3484,7 @@ export const mathProblems = [
     answer: "saddle point",
   },
   {
+    category: "Differential Equations",
     id: "DE48",
     topic: "Differential Equations (Systems of ODEs - Phase Plane)",
     difficulty: 2650,
@@ -5265,6 +3492,7 @@ export const mathProblems = [
     answer: "spiral",
   },
   {
+    category: "Differential Equations",
     id: "DE49",
     topic: "Differential Equations (Series Solutions)",
     difficulty: 2600,
@@ -5272,6 +3500,7 @@ export const mathProblems = [
     answer: "n-1",
   },
   {
+    category: "Differential Equations",
     id: "DE50",
     topic: "Differential Equations (Series Solutions)",
     difficulty: 2750,
@@ -5279,6 +3508,7 @@ export const mathProblems = [
     answer: "e^x",
   },
   {
+    category: "Differential Equations",
     id: "DE51",
     topic: "Differential Equations (Verifying Solutions)",
     difficulty: 1450,
@@ -5286,6 +3516,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE52",
     topic: "Differential Equations (Separable IVP)",
     difficulty: 1700,
@@ -5293,6 +3524,7 @@ export const mathProblems = [
     answer: "-0.5",
   },
   {
+    category: "Differential Equations",
     id: "DE53",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1800,
@@ -5300,6 +3532,7 @@ export const mathProblems = [
     answer: "e^(-3x)",
   },
   {
+    category: "Differential Equations",
     id: "DE54",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1650,
@@ -5307,6 +3540,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Differential Equations",
     id: "DE55",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2150,
@@ -5314,6 +3548,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Differential Equations",
     id: "DE56",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1850,
@@ -5321,6 +3556,7 @@ export const mathProblems = [
     answer: "5/s",
   },
   {
+    category: "Differential Equations",
     id: "DE57",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 1950,
@@ -5328,6 +3564,7 @@ export const mathProblems = [
     answer: "t²",
   },
   {
+    category: "Differential Equations",
     id: "DE58",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2450,
@@ -5335,6 +3572,7 @@ export const mathProblems = [
     answer: "2, -1",
   },
   {
+    category: "Differential Equations",
     id: "DE59",
     topic: "Differential Equations (Euler's Method)",
     difficulty: 1900,
@@ -5342,6 +3580,7 @@ export const mathProblems = [
     answer: "1.1",
   },
   {
+    category: "Differential Equations",
     id: "DE60",
     topic: "Differential Equations (Logistic Equation)",
     difficulty: 2250,
@@ -5349,6 +3588,7 @@ export const mathProblems = [
     answer: "500",
   },
   {
+    category: "Differential Equations",
     id: "DE61",
     topic: "Differential Equations (Separable)",
     difficulty: 1600,
@@ -5356,6 +3596,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Differential Equations",
     id: "DE62",
     topic: "Differential Equations (Linear First-Order IVP)",
     difficulty: 2050,
@@ -5363,6 +3604,7 @@ export const mathProblems = [
     answer: "2.5",
   },
   {
+    category: "Differential Equations",
     id: "DE63",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2000,
@@ -5370,6 +3612,7 @@ export const mathProblems = [
     answer: "2e",
   },
   {
+    category: "Differential Equations",
     id: "DE64",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2350,
@@ -5377,6 +3620,7 @@ export const mathProblems = [
     answer: "Ax*cos(2x) + Bx*sin(2x)",
   },
   {
+    category: "Differential Equations",
     id: "DE65",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2500,
@@ -5384,6 +3628,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Differential Equations",
     id: "DE66",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2500,
@@ -5391,6 +3636,7 @@ export const mathProblems = [
     answer: "<1, 1>",
   },
   {
+    category: "Differential Equations",
     id: "DE67",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2050,
@@ -5398,6 +3644,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE68",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 1950,
@@ -5405,6 +3652,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Differential Equations",
     id: "DE69",
     topic: "Differential Equations (Laplace - s-shift)",
     difficulty: 2150,
@@ -5412,6 +3660,7 @@ export const mathProblems = [
     answer: "t*e^(2t)",
   },
   {
+    category: "Differential Equations",
     id: "DE70",
     topic: "Differential Equations (Springs - Resonance)",
     difficulty: 2700,
@@ -5419,6 +3668,7 @@ export const mathProblems = [
     answer: "ω = ω₀",
   },
   {
+    category: "Differential Equations",
     id: "DE71",
     topic: "Differential Equations (Classification)",
     difficulty: 1300,
@@ -5426,6 +3676,7 @@ export const mathProblems = [
     answer: "nonlinear",
   },
   {
+    category: "Differential Equations",
     id: "DE72",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1750,
@@ -5433,6 +3684,7 @@ export const mathProblems = [
     answer: "-3",
   },
   {
+    category: "Differential Equations",
     id: "DE73",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1900,
@@ -5440,6 +3692,7 @@ export const mathProblems = [
     answer: "s/(s²-a²)",
   },
   {
+    category: "Differential Equations",
     id: "DE74",
     topic: "Differential Equations (Systems of ODEs - Stability)",
     difficulty: 2600,
@@ -5447,6 +3700,7 @@ export const mathProblems = [
     answer: "stable",
   },
   {
+    category: "Differential Equations",
     id: "DE75",
     topic: "Differential Equations (Separable IVP)",
     difficulty: 1750,
@@ -5454,6 +3708,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE76",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1900,
@@ -5461,6 +3716,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE77",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2050,
@@ -5468,6 +3724,7 @@ export const mathProblems = [
     answer: "Ax²+Bx+C",
   },
   {
+    category: "Differential Equations",
     id: "DE78",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 2250,
@@ -5475,6 +3732,7 @@ export const mathProblems = [
     answer: "cos(t) + sin(t)",
   },
   {
+    category: "Differential Equations",
     id: "DE79",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2100,
@@ -5482,6 +3740,7 @@ export const mathProblems = [
     answer: "Ce^(-2x)",
   },
   {
+    category: "Differential Equations",
     id: "DE80",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2550,
@@ -5489,6 +3748,7 @@ export const mathProblems = [
     answer: "e²",
   },
   {
+    category: "Differential Equations",
     id: "DE81",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2700,
@@ -5496,6 +3756,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE82",
     topic: "Differential Equations (Verifying Solutions)",
     difficulty: 1500,
@@ -5503,6 +3764,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE83",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1850,
@@ -5510,6 +3772,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Differential Equations",
     id: "DE84",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2250,
@@ -5517,6 +3780,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Differential Equations",
     id: "DE85",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 1950,
@@ -5524,6 +3788,7 @@ export const mathProblems = [
     answer: "2s/(s²+1)²",
   },
   {
+    category: "Differential Equations",
     id: "DE86",
     topic: "Differential Equations (Inverse Laplace - Partial Fractions)",
     difficulty: 2300,
@@ -5531,6 +3796,7 @@ export const mathProblems = [
     answer: "e^(2t) - e^t",
   },
   {
+    category: "Differential Equations",
     id: "DE87",
     topic: "Differential Equations (Euler's Method)",
     difficulty: 1950,
@@ -5538,6 +3804,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Differential Equations",
     id: "DE88",
     topic: "Differential Equations (Separable)",
     difficulty: 1750,
@@ -5545,6 +3812,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Differential Equations",
     id: "DE89",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1950,
@@ -5552,6 +3820,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE90",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2100,
@@ -5559,6 +3828,7 @@ export const mathProblems = [
     answer: "e^(-10)",
   },
   {
+    category: "Differential Equations",
     id: "DE91",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2150,
@@ -5566,6 +3836,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Differential Equations",
     id: "DE92",
     topic: "Differential Equations (Laplace - IVP with Step Function)",
     difficulty: 2850,
@@ -5573,6 +3844,7 @@ export const mathProblems = [
     answer: "1/e² + 1 - 1/e",
   },
   {
+    category: "Differential Equations",
     id: "DE93",
     topic: "Differential Equations (Systems of ODEs - Phase Plane)",
     difficulty: 2700,
@@ -5580,6 +3852,7 @@ export const mathProblems = [
     answer: "center",
   },
   {
+    category: "Differential Equations",
     id: "DE94",
     topic: "Differential Equations (Series Solutions)",
     difficulty: 2800,
@@ -5587,6 +3860,7 @@ export const mathProblems = [
     answer: "cos(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE95",
     topic: "Differential Equations (Classification)",
     difficulty: 1400,
@@ -5594,6 +3868,7 @@ export const mathProblems = [
     answer: "linear",
   },
   {
+    category: "Differential Equations",
     id: "DE96",
     topic: "Differential Equations (Separable IVP)",
     difficulty: 1800,
@@ -5601,6 +3876,7 @@ export const mathProblems = [
     answer: "√7",
   },
   {
+    category: "Differential Equations",
     id: "DE97",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1900,
@@ -5608,6 +3884,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Differential Equations",
     id: "DE98",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2400,
@@ -5615,6 +3892,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Differential Equations",
     id: "DE99",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 2350,
@@ -5622,6 +3900,7 @@ export const mathProblems = [
     answer: "u(t-1)(t-1)",
   },
   {
+    category: "Differential Equations",
     id: "DE100",
     topic: "Differential Equations (Systems of ODEs - Stability)",
     difficulty: 2650,
@@ -5629,6 +3908,7 @@ export const mathProblems = [
     answer: "unstable",
   },
   {
+    category: "Differential Equations",
     id: "DE101",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 1850,
@@ -5636,6 +3916,7 @@ export const mathProblems = [
     answer: "sec(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE102",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 2000,
@@ -5643,6 +3924,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE103",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2150,
@@ -5650,6 +3932,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE104",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2450,
@@ -5657,6 +3940,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE105",
     topic: "Differential Equations (Variation of Parameters)",
     difficulty: 2650,
@@ -5664,6 +3948,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Differential Equations",
     id: "DE106",
     topic: "Differential Equations (Laplace - s-shift)",
     difficulty: 2200,
@@ -5671,6 +3956,7 @@ export const mathProblems = [
     answer: "2/(s+3)³",
   },
   {
+    category: "Differential Equations",
     id: "DE107",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2600,
@@ -5678,6 +3964,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Differential Equations",
     id: "DE108",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2750,
@@ -5685,6 +3972,7 @@ export const mathProblems = [
     answer: "goes to infinity",
   },
   {
+    category: "Differential Equations",
     id: "DE109",
     topic: "Differential Equations (Logistic Equation)",
     difficulty: 2300,
@@ -5692,6 +3980,7 @@ export const mathProblems = [
     answer: "50",
   },
   {
+    category: "Differential Equations",
     id: "DE110",
     topic: "Differential Equations (Separable)",
     difficulty: 1800,
@@ -5699,6 +3988,7 @@ export const mathProblems = [
     answer: "sin(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE111",
     topic: "Differential Equations (Linear First-Order IVP)",
     difficulty: 2100,
@@ -5706,6 +3996,7 @@ export const mathProblems = [
     answer: "0.5 + 0.5/e",
   },
   {
+    category: "Differential Equations",
     id: "DE112",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 1950,
@@ -5713,6 +4004,7 @@ export const mathProblems = [
     answer: "1, 2",
   },
   {
+    category: "Differential Equations",
     id: "DE113",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2500,
@@ -5720,6 +4012,7 @@ export const mathProblems = [
     answer: "(Ax²+Bx)cos(x) + (Cx²+Dx)sin(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE114",
     topic: "Differential Equations (Laplace - Convolution)",
     difficulty: 2900,
@@ -5727,6 +4020,7 @@ export const mathProblems = [
     answer: "1/s²",
   },
   {
+    category: "Differential Equations",
     id: "DE115",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2800,
@@ -5734,6 +4028,7 @@ export const mathProblems = [
     answer: "-c₁sin(t) + c₂cos(t)",
   },
   {
+    category: "Differential Equations",
     id: "DE116",
     topic: "Differential Equations (Verifying Solutions)",
     difficulty: 1550,
@@ -5741,6 +4036,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Differential Equations",
     id: "DE117",
     topic: "Differential Equations (Separable IVP)",
     difficulty: 1850,
@@ -5748,6 +4044,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Differential Equations",
     id: "DE118",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2200,
@@ -5755,6 +4052,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Differential Equations",
     id: "DE119",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2200,
@@ -5762,6 +4060,7 @@ export const mathProblems = [
     answer: "true",
   },
   {
+    category: "Differential Equations",
     id: "DE120",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 2400,
@@ -5769,6 +4068,7 @@ export const mathProblems = [
     answer: "2sinh(t)/t",
   },
   {
+    category: "Differential Equations",
     id: "DE121",
     topic: "Differential Equations (Systems of ODEs - Fundamental Matrix)",
     difficulty: 2850,
@@ -5776,6 +4076,7 @@ export const mathProblems = [
     answer: "e^(2t)",
   },
   {
+    category: "Differential Equations",
     id: "DE122",
     topic: "Differential Equations (Classification)",
     difficulty: 1450,
@@ -5783,6 +4084,7 @@ export const mathProblems = [
     answer: "linear",
   },
   {
+    category: "Differential Equations",
     id: "DE123",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 2150,
@@ -5790,6 +4092,7 @@ export const mathProblems = [
     answer: "e",
   },
   {
+    category: "Differential Equations",
     id: "DE124",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 2000,
@@ -5797,6 +4100,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Differential Equations",
     id: "DE125",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2550,
@@ -5804,6 +4108,7 @@ export const mathProblems = [
     answer: "Ax*cosh(x) + Bx*sinh(x)",
   },
   {
+    category: "Differential Equations",
     id: "DE126",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2650,
@@ -5811,6 +4116,7 @@ export const mathProblems = [
     answer: "e-1",
   },
   {
+    category: "Differential Equations",
     id: "DE127",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2900,
@@ -5818,6 +4124,7 @@ export const mathProblems = [
     answer: "circle",
   },
   {
+    category: "Differential Equations",
     id: "DE128",
     topic: "Differential Equations (Separable)",
     difficulty: 1850,
@@ -5825,6 +4132,7 @@ export const mathProblems = [
     answer: "x³/3",
   },
   {
+    category: "Differential Equations",
     id: "DE129",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 2150,
@@ -5832,6 +4140,7 @@ export const mathProblems = [
     answer: "xy",
   },
   {
+    category: "Differential Equations",
     id: "DE130",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2250,
@@ -5839,6 +4148,7 @@ export const mathProblems = [
     answer: "-e^(2π)",
   },
   {
+    category: "Differential Equations",
     id: "DE131",
     topic: "Differential Equations (Laplace Transform - Basic)",
     difficulty: 2000,
@@ -5846,6 +4156,7 @@ export const mathProblems = [
     answer: "1/(s-1)²",
   },
   {
+    category: "Differential Equations",
     id: "DE132",
     topic: "Differential Equations (Inverse Laplace Transform)",
     difficulty: 2450,
@@ -5853,6 +4164,7 @@ export const mathProblems = [
     answer: "t*sin(t)/2",
   },
   {
+    category: "Differential Equations",
     id: "DE133",
     topic: "Differential Equations (Systems of ODEs - Stability)",
     difficulty: 2700,
@@ -5860,6 +4172,7 @@ export const mathProblems = [
     answer: "stable",
   },
   {
+    category: "Differential Equations",
     id: "DE134",
     topic: "Differential Equations (Series Solutions)",
     difficulty: 2850,
@@ -5867,6 +4180,7 @@ export const mathProblems = [
     answer: "e^x",
   },
   {
+    category: "Differential Equations",
     id: "DE135",
     topic: "Differential Equations (Verifying Solutions)",
     difficulty: 1600,
@@ -5874,6 +4188,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Differential Equations",
     id: "DE136",
     topic: "Differential Equations (Linear First-Order IVP)",
     difficulty: 2200,
@@ -5881,6 +4196,7 @@ export const mathProblems = [
     answer: "0.5e^(-π) + 0.5",
   },
   {
+    category: "Differential Equations",
     id: "DE137",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 2050,
@@ -5888,6 +4204,7 @@ export const mathProblems = [
     answer: "(c₁+c₂x)e^(3x)",
   },
   {
+    category: "Differential Equations",
     id: "DE138",
     topic: "Differential Equations (Undetermined Coefficients)",
     difficulty: 2600,
@@ -5895,6 +4212,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Differential Equations",
     id: "DE139",
     topic: "Differential Equations (Laplace - IVP)",
     difficulty: 2700,
@@ -5902,6 +4220,7 @@ export const mathProblems = [
     answer: "e⁻²",
   },
   {
+    category: "Differential Equations",
     id: "DE140",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 2950,
@@ -5909,6 +4228,7 @@ export const mathProblems = [
     answer: "improper node",
   },
   {
+    category: "Differential Equations",
     id: "DE141",
     topic: "Differential Equations (Separable)",
     difficulty: 1900,
@@ -5916,6 +4236,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE142",
     topic: "Differential Equations (Exact Equations)",
     difficulty: 2200,
@@ -5923,6 +4244,7 @@ export const mathProblems = [
     answer: "x³y²",
   },
   {
+    category: "Differential Equations",
     id: "DE143",
     topic: "Differential Equations (Homogeneous 2nd Order)",
     difficulty: 2100,
@@ -5930,6 +4252,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Differential Equations",
     id: "DE144",
     topic: "Differential Equations (Wronskian)",
     difficulty: 2250,
@@ -5937,6 +4260,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Differential Equations",
     id: "DE145",
     topic: "Differential Equations (Laplace - s-shift)",
     difficulty: 2250,
@@ -5944,6 +4268,7 @@ export const mathProblems = [
     answer: "e^(-t)sin(t)",
   },
   {
+    category: "Differential Equations",
     id: "DE146",
     topic: "Differential Equations (Laplace - t-shift)",
     difficulty: 2650,
@@ -5951,6 +4276,7 @@ export const mathProblems = [
     answer: "u(t-π)sin(t-π)",
   },
   {
+    category: "Differential Equations",
     id: "DE147",
     topic: "Differential Equations (Systems of ODEs)",
     difficulty: 3000,
@@ -5958,6 +4284,7 @@ export const mathProblems = [
     answer: "e^t",
   },
   {
+    category: "Differential Equations",
     id: "DE148",
     topic: "Differential Equations (Classification)",
     difficulty: 1500,
@@ -5965,6 +4292,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Differential Equations",
     id: "DE149",
     topic: "Differential Equations (Linear First-Order)",
     difficulty: 2250,
@@ -5972,6 +4300,7 @@ export const mathProblems = [
     answer: "1.5",
   },
   {
+    category: "Differential Equations",
     id: "DE150",
     topic: "Differential Equations (Homogeneous 2nd Order IVP)",
     difficulty: 2300,
@@ -5989,7 +4318,10 @@ export const mathProblems = [
 
 
 
+
+
   {
+    category: "Linear Algebra1",
     id: "LA01",
     topic: "Linear Algebra (Matrix Multiplication)",
     difficulty: 1200,
@@ -5997,6 +4329,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA02",
     topic: "Linear Algebra (Matrix Transpose)",
     difficulty: 1150,
@@ -6004,6 +4337,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA03",
     topic: "Linear Algebra (Dot Product)",
     difficulty: 1050,
@@ -6011,6 +4345,7 @@ export const mathProblems = [
     answer: "-20",
   },
   {
+    category: "Linear Algebra1",
     id: "LA04",
     topic: "Linear Algebra (Determinant 2x2)",
     difficulty: 1300,
@@ -6018,6 +4353,7 @@ export const mathProblems = [
     answer: "-11",
   },
   {
+    category: "Linear Algebra1",
     id: "LA05",
     topic: "Linear Algebra (Determinant 3x3)",
     difficulty: 1750,
@@ -6025,6 +4361,7 @@ export const mathProblems = [
     answer: "22",
   },
   {
+    category: "Linear Algebra1",
     id: "LA06",
     topic: "Linear Algebra (Matrix Inverse 2x2)",
     difficulty: 1550,
@@ -6032,6 +4369,7 @@ export const mathProblems = [
     answer: "-2",
   },
     {
+      category: "Linear Algebra1",
     id: "LA20",
     topic: "Linear Algebra (Cross Product)",
     difficulty: 1500,
@@ -6039,6 +4377,7 @@ export const mathProblems = [
     answer: "3√6",
   },
   {
+    category: "Linear Algebra1",
     id: "LA21",
     topic: "Linear Algebra (Area of Parallelogram)",
     difficulty: 1600,
@@ -6046,6 +4385,7 @@ export const mathProblems = [
     answer: "11",
   },
   {
+    category: "Linear Algebra1",
     id: "LA22",
     topic: "Linear Algebra (Subspace Check)",
     difficulty: 1800,
@@ -6053,6 +4393,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA23",
     topic: "Linear Algebra (Column Space)",
     difficulty: 2100,
@@ -6060,6 +4401,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA24",
     topic: "Linear Algebra (Kernel of a Transformation)",
     difficulty: 2050,
@@ -6067,6 +4409,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA32",
     topic: "Linear Algebra (Solving Systems)",
     difficulty: 1350,
@@ -6074,6 +4417,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra1",
     id: "LA33",
     topic: "Linear Algebra (Linear Combination)",
     difficulty: 1450,
@@ -6081,615 +4425,15 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA34",
     topic: "Linear Algebra (Properties of Transpose)",
     difficulty: 1550,
     problem: "Let MATRIX(A = [[1, 2], [3, 4]]) and MATRIX(B = [[0, 1], [1, 0]]). Find the element in the second row, first column of $(AB)^T$.",
     answer: "4",
   },
-{
-  id: "LA57",
-  topic: "Linear Algebra (Matrix Addition)",
-  difficulty: 1050,
-  problem: "Let MATRIX(A = [[1, 5], [-2, 3]]) and MATRIX(B = [[0, -1], [4, -1]]). Find $A+B$. What is the element in the second row, first column?",
-  answer: "2",
-},
-{
-  id: "LA58",
-  topic: "Linear Algebra (Scalar Multiplication)",
-  difficulty: 1100,
-  problem: "Let MATRIX(A = [[1, 2, 3], [4, 5, 6]]). Find the element in the second row, third column of $3A$.",
-  answer: "18",
-},
-{
-  id: "LA59",
-  topic: "Linear Algebra (Matrix-Vector Product)",
-  difficulty: 1200,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]) and vector $v = \\langle 5, -1 \\rangle$. Find the first component of the vector $Av$.",
-  answer: "3",
-},
-{
-  id: "LA60",
-  topic: "Linear Algebra (Trace of a Matrix)",
-  difficulty: 1150,
-  problem: "Find the trace of the matrix MATRIX(A = [[5, 2, 8], [1, -3, 0], [4, 9, 1]]).",
-  answer: "3",
-},
-{
-  id: "LA61",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1300,
-  problem: "Let MATRIX(A = [[1, 0], [2, 1]]) and MATRIX(B = [[4, 1], [3, 2]]). Find the product $AB$. What is the entry in the second row, second column?",
-  answer: "4",
-},
-{
-  id: "LA62",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1700,
-  problem: "Find the determinant of the matrix MATRIX(A = [[1, 0, 2], [-1, 3, 0], [0, 2, 1]]).",
-  answer: "-5",
-},
-{
-  id: "LA63",
-  topic: "Linear Algebra (Matrix Inverse 2x2)",
-  difficulty: 1600,
-  problem: "Let MATRIX(A = [[1, 2], [1, 3]]). Find the element in the first row, first column of $A^{-1}$.",
-  answer: "3",
-},
-{
-  id: "LA64",
-  topic: "Linear Algebra (Solving Systems with Inverse)",
-  difficulty: 1800,
-  problem: "The solution to $Ax=b$ is $x=A^{-1}b$. Given MATRIX(A⁻¹ = [[3, -2], [-1, 1]]) and $b = \\langle 1, 2 \\rangle$, find the first component of the solution vector $x$.",
-  answer: "-1",
-},
-{
-  id: "LA65",
-  topic: "Linear Algebra (Properties of Transpose)",
-  difficulty: 1400,
-  problem: "Let $A$ and $B$ be $2 \\times 2$ matrices. If the element in the first row, second column of $A$ is 5, what is the element in the second row, first column of $A^T$?",
-  answer: "5",
-},
-{
-  id: "LA66",
-  topic: "Linear Algebra (Symmetric Matrix)",
-  difficulty: 1250,
-  problem: "For what value of $k$ is the matrix MATRIX(A = [[2, 7], [k, 5]]) symmetric?",
-  answer: "7",
-},
-{
-  id: "LA67",
-  topic: "Linear Algebra (Skew-Symmetric Matrix)",
-  difficulty: 1500,
-  problem: "For what value of $k$ is the matrix MATRIX(A = [[0, -3], [3, k]]) skew-symmetric?",
-  answer: "0",
-},
-{
-  id: "LA68",
-  topic: "Linear Algebra (System of Equations)",
-  difficulty: 1350,
-  problem: "Find the value of $z$ for the system: $x+y+z=6$, $x-y=0$, $y+z=5$.",
-  answer: "3",
-},
-{
-  id: "LA69",
-  topic: "Linear Algebra (Augmented Matrix)",
-  difficulty: 1450,
-  problem: "A system of equations is represented by the augmented matrix MATRIX([[1, 2 | 5], [0, 1 | 2]]). What is the value of $x$?",
-  answer: "1",
-},
-{
-  id: "LA70",
-  topic: "Linear Algebra (Properties of Determinants)",
-  difficulty: 1900,
-  problem: "If $A$ is a $3 \\times 3$ matrix with $\\det(A)=2$, what is $\\det(3A)$?",
-  answer: "54",
-},
-{
-  id: "LA71",
-  topic: "Linear Algebra (Determinant of Product)",
-  difficulty: 1850,
-  problem: "If $A$ and $B$ are $2 \\times 2$ matrices with $\\det(A)=4$ and $\\det(B)=-3$, what is $\\det(AB)$?",
-  answer: "-12",
-},
-{
-  id: "LA72",
-  topic: "Linear Algebra (Inverse of Product)",
-  difficulty: 2000,
-  problem: "Let $A, B$ be invertible matrices. The expression $(AB)^{-1}$ is equivalent to which of the following: $A^{-1}B^{-1}$, $B^{-1}A^{-1}$, or $A B$?",
-  answer: "B⁻¹A⁻¹",
-},
-{
-  id: "LA73",
-  topic: "Linear Algebra (Elementary Matrices)",
-  difficulty: 2200,
-  problem: "Let $E$ be the $2 \\times 2$ elementary matrix that swaps two rows. What is the determinant of $E$?",
-  answer: "-1",
-},
-{
-  id: "LA74",
-  topic: "Linear Algebra (LU Decomposition)",
-  difficulty: 2400,
-  problem: "Let MATRIX(A = [[2, 1], [4, 5]]). In the LU decomposition $A=LU$, where L is lower triangular with 1s on the diagonal, what is the entry in the second row, first column of L?",
-  answer: "2",
-},
-{
-  id: "LA75",
-  topic: "Linear Algebra (Adjugate Matrix)",
-  difficulty: 2300,
-  problem: "For MATRIX(A = [[a, b], [c, d]]), the adjugate matrix is MATRIX([[d, -b], [-c, a]]). If $A^{-1} = \\frac{1}{\\det(A)} \\text{adj}(A)$, what is the element in the first row, second column of the inverse of MATRIX([[1, 2], [3, 4]])?",
-  answer: "1",
-},
-{
-  id: "LA76",
-  topic: "Linear Algebra (Powers of a Diagonal Matrix)",
-  difficulty: 1650,
-  problem: "Let MATRIX(D = [[2, 0], [0, 3]]). Find the element in the second row, second column of $D^3$.",
-  answer: "27",
-},
-{
-  id: "LA97",
-  topic: "Linear Algebra (Matrix-Vector Product)",
-  difficulty: 1225,
-  problem: "Let MATRIX(A = [[-1, 3, 0], [2, 1, 4]]) and vector $v = \\langle 2, -1, 1 \\rangle$. Find the second component of the vector $Av$.",
-  answer: "7",
-},
-{
-  id: "LA98",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1325,
-  problem: "Let MATRIX(A = [[2, 1], [-1, 0]]) and MATRIX(B = [[1, -3], [2, 2]]). Find the product $BA$. What is the entry in the first row, first column?",
-  answer: "5",
-},
-{
-  id: "LA99",
-  topic: "Linear Algebra (Determinant 2x2)",
-  difficulty: 1275,
-  problem: "Find the determinant of MATRIX(A = [[8, 5], [-2, 3]]).",
-  answer: "34",
-},
-{
-  id: "LA100",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1725,
-  problem: "Find the determinant of MATRIX(A = [[2, 1, 3], [1, 0, 1], [0, 2, -1]]).",
-  answer: "3",
-},
-{
-  id: "LA101",
-  topic: "Linear Algebra (Matrix Inverse 2x2)",
-  difficulty: 1625,
-  problem: "Let MATRIX(A = [[5, 3], [3, 2]]). Find the element in the second row, first column of $A^{-1}$.",
-  answer: "-3",
-},
-{
-  id: "LA102",
-  topic: "Linear Algebra (Solving Systems)",
-  difficulty: 1425,
-  problem: "Solve the system of equations: $x + y + z = 2$, $2x - y + z = 0$, $x+2y-z=4$. What is the value of $x$?",
-  answer: "0",
-},
-{
-  id: "LA103",
-  topic: "Linear Algebra (Properties of Inverse)",
-  difficulty: 1925,
-  problem: "If $A$ is an invertible matrix and $A^2 = A$, what is $\\det(A)$?",
-  answer: "1",
-},
-{
-  id: "LA104",
-  topic: "Linear Algebra (Row Echelon Form)",
-  difficulty: 1525,
-  problem: "How many pivots does the matrix MATRIX(A = [[1, 2, 3], [0, 0, 4], [0, 0, 0]]) have?",
-  answer: "2",
-},
-{
-  id: "LA105",
-  topic: "Linear Algebra (Matrix Power)",
-  difficulty: 1475,
-  problem: "Let MATRIX(A = [[1, 1], [0, 1]]). Find the element in the first row, second column of $A^3$.",
-  answer: "3",
-},
-{
-  id: "LA106",
-  topic: "Linear Algebra (Trace)",
-  difficulty: 1175,
-  problem: "Let MATRIX(A = [[1,2],[3,4]]) and MATRIX(B = [[5,6],[7,8]]). What is the trace of $A+B$?",
-  answer: "18",
-},
-{
-  id: "LA127",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1250,
-  problem: "Let MATRIX(A = [[1, -1], [0, 2]]) and MATRIX(B = [[3, 0], [1, 5]]). Find the element in the second row, second column of the product $AB$.",
-  answer: "10",
-},
-{
-  id: "LA128",
-  topic: "Linear Algebra (Dot Product)",
-  difficulty: 1100,
-  problem: "Find the angle (in degrees) between the vectors $u = \\langle 1, 1 \\rangle$ and $v = \\langle 1, 0 \\rangle$.",
-  answer: "45",
-},
-{
-  id: "LA129",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1750,
-  problem: "Find the determinant of the matrix MATRIX(A = [[1, 2, 1], [3, 0, 2], [-1, 1, 1]]).",
-  answer: "-9",
-},
-{
-  id: "LA130",
-  topic: "Linear Algebra (Matrix Inverse 2x2)",
-  difficulty: 1600,
-  problem: "Let MATRIX(A = [[-1, 1], [3, -2]]). Find the element in the first row, second column of $A^{-1}$.",
-  answer: "1",
-},
-{
-  id: "LA131",
-  topic: "Linear Algebra (Solving Systems)",
-  difficulty: 1400,
-  problem: "For what value of $h$ does the system $x+2y=3$ and $2x+hy=6$ have infinitely many solutions?",
-  answer: "4",
-},
-{
-  id: "LA132",
-  topic: "Linear Algebra (Matrix Power)",
-  difficulty: 1500,
-  problem: "Let MATRIX(A = [[1, 0], [2, 1]]). Find the element in the second row, first column of $A^4$.",
-  answer: "8",
-},
-{
-  id: "LA133",
-  topic: "Linear Algebra (Trace)",
-  difficulty: 1200,
-  problem: "Let MATRIX(A = [[1,2],[3,4]]) and MATRIX(B = [[-1,0],[1,0]]). What is the trace of $A^T - B$?",
-  answer: "6",
-},
-{
-  id: "LA134",
-  topic: "Linear Algebra (Properties of Determinants)",
-  difficulty: 1950,
-  problem: "Let $A$ be a $4 \\times 4$ matrix with $\\det(A) = 3$. What is $\\det(A^{-1})$?",
-  answer: "1/3",
-},
-{
-  id: "LA135",
-  topic: "Linear Algebra (Cross Product)",
-  difficulty: 1550,
-  problem: "Find a unit vector orthogonal to both $u = \\langle 1, 0, 0 \\rangle$ and $v = \\langle 0, 1, 0 \\rangle$.",
-  answer: "<0, 0, 1>",
-},
-{
-  id: "LA136",
-  topic: "Linear Algebra (Symmetric Matrix)",
-  difficulty: 1300,
-  problem: "Let $A$ be a $2 \\times 2$ matrix. Which of the following is always symmetric: $A^2$, $A-A^T$, or $A+A^T$?",
-  answer: "A+A^T",
-},
-{
-  id: "LA137",
-  topic: "Linear Algebra (Matrix-Vector Product)",
-  difficulty: 1250,
-  problem: "Let MATRIX(A = [[1, 2, 3], [4, 5, 6]]). Find a vector $x$ such that $Ax = \\langle 6, 15 \\rangle$. What is the sum of the components of $x$?",
-  answer: "3",
-},
-{
-  id: "LA138",
-  topic: "Linear Algebra (System of Equations)",
-  difficulty: 1500,
-  problem: "Find the value of $y$ for the system: $x - 2y + z = 0$, $2y - 8z = 8$, $5x - 5z = 10$.",
-  answer: "0",
-},
-{
-  id: "LA139",
-  topic: "Linear Algebra (Properties of Inverse)",
-  difficulty: 2000,
-  problem: "If $A$ is an invertible matrix and $A^T A = I$, what is $A^{-1}$ in terms of $A$ and its transpose?",
-  answer: "A^T",
-},
-{
-  id: "LA140",
-  topic: "Linear Algebra (Row Echelon Form)",
-  difficulty: 1600,
-  problem: "The augmented matrix of a system is MATRIX([[1, 2, 3 | 4], [0, 1, 5 | 6], [0, 0, 0 | 0]]). How many solutions does this system have?",
-  answer: "infinitely many",
-},
-{
-  id: "LA141",
-  topic: "Linear Algebra (Linear Combination)",
-  difficulty: 1450,
-  problem: "Express the vector $w = \\langle -1, 8 \\rangle$ as a linear combination of $u = \\langle 1, 2 \\rangle$ and $v = \\langle -1, 1 \\rangle$. If $w = c_1u + c_2v$, what is the value of $c_2$?",
-  answer: "3",
-},
-{
-  id: "LA97",
-  topic: "Linear Algebra (Matrix Addition)",
-  difficulty: 1050,
-  problem: "Let MATRIX(A = [[1, -1], [2, 0]]) and MATRIX(B = [[3, 1], [-2, 5]]). Find $A+B$. What is the entry in row 1, col 1?",
-  answer: "4",
-},
-{
-  id: "LA98",
-  topic: "Linear Algebra (Scalar Multiplication)",
-  difficulty: 1100,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]). Find $-2A$. What is the entry in row 2, col 2?",
-  answer: "-8",
-},
-{
-  id: "LA99",
-  topic: "Linear Algebra (Matrix-Vector Product)",
-  difficulty: 1200,
-  problem: "Let MATRIX(A = [[1, 2], [0, 3]]) and $v = \\langle 1, -1 \\rangle$. Find the second component of $Av$.",
-  answer: "-3",
-},
-{
-  id: "LA100",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1300,
-  problem: "Let MATRIX(A = [[1, 0], [1, 1]]) and MATRIX(B = [[1, 2], [3, 4]]). Find the entry in row 2, col 1 of $AB$.",
-  answer: "4",
-},
-{
-  id: "LA101",
-  topic: "Linear Algebra (Matrix Transpose)",
-  difficulty: 1150,
-  problem: "Find the transpose of MATRIX(A = [[1, 2, 3], [4, 5, 6]]). What is the entry in row 2, col 2?",
-  answer: "5",
-},
-{
-  id: "LA102",
-  topic: "Linear Algebra (Determinant 2x2)",
-  difficulty: 1250,
-  problem: "Find the determinant of MATRIX(A = [[-1, 2], [-3, 4]]).",
-  answer: "2",
-},
-{
-  id: "LA103",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1700,
-  problem: "Find the determinant of the identity matrix $I_3$.",
-  answer: "1",
-},
-{
-  id: "LA104",
-  topic: "Linear Algebra (Matrix Inverse 2x2)",
-  difficulty: 1650,
-  problem: "Find the inverse of MATRIX(A = [[1, 1], [1, 2]]). What is the entry in row 1, col 2?",
-  answer: "-1",
-},
-{
-  id: "LA105",
-  topic: "Linear Algebra (Solving Systems)",
-  difficulty: 1400,
-  problem: "Solve the system $x+y=5$, $x-y=1$. What is the value of x?",
-  answer: "3",
-},
-{
-  id: "LA106",
-  topic: "Linear Algebra (Trace)",
-  difficulty: 1200,
-  problem: "Let MATRIX(A = [[1, 7, 4], [8, 2, 5], [9, 6, 3]]). Find the trace of A.",
-  answer: "6",
-},
-{
-  id: "LA107",
-  topic: "Linear Algebra (Properties of Transpose)",
-  difficulty: 1500,
-  problem: "Let $A$ and $B$ be $n \\times n$ matrices. The expression $(A+B)^T$ is equal to...",
-  answer: "A^T + B^T",
-},
-{
-  id: "LA108",
-  topic: "Linear Algebra (Symmetric Matrix)",
-  difficulty: 1350,
-  problem: "Is the matrix MATRIX(A = [[1, 2], [3, 4]]) symmetric? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA109",
-  topic: "Linear Algebra (Upper Triangular Matrix)",
-  difficulty: 1300,
-  problem: "What is the determinant of the matrix MATRIX(A = [[2, 3, 4], [0, 5, 6], [0, 0, 7]])?",
-  answer: "70",
-},
-{
-  id: "LA110",
-  topic: "Linear Algebra (Properties of Determinants)",
-  difficulty: 1950,
-  problem: "If $A$ is an invertible $n \\times n$ matrix, what is $\\det(A^{-1})$ in terms of $\\det(A)$?",
-  answer: "1/det(A)",
-},
-{
-  id: "LA111",
-  topic: "Linear Algebra (Matrix Powers)",
-  difficulty: 1450,
-  problem: "Let MATRIX(A = [[1, 1], [0, 1]]). Find $A^2$. What is the entry in row 1, col 2?",
-  answer: "2",
-},
-{
-  id: "LA112",
-  topic: "Linear Algebra (Invertibility)",
-  difficulty: 1550,
-  problem: "For what value of $k$ is the matrix MATRIX(A = [[1, 2], [3, k]]) not invertible?",
-  answer: "6",
-},
-{
-  id: "LA113",
-  topic: "Linear Algebra (Solving Systems)",
-  difficulty: 1600,
-  problem: "The system $x+y=2$, $2x+2y=k$ has infinitely many solutions. What is k?",
-  answer: "4",
-},
-{
-  id: "LA114",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1400,
-  problem: "If A is a $3 \\times 2$ matrix and B is a $2 \\times 4$ matrix, what are the dimensions of the product AB?",
-  answer: "3x4",
-},
-{
-  id: "LA115",
-  topic: "Linear Algebra (Identity Matrix)",
-  difficulty: 1100,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]) and $I$ be the $2 \\times 2$ identity matrix. Find the entry in row 2, col 1 of $AI$.",
-  answer: "3",
-},
-{
-  id: "LA116",
-  topic: "Linear Algebra (Cramer's Rule)",
-  difficulty: 1900,
-  problem: "Use Cramer's rule for the system $x+y=3, 2x-y=0$. To solve for x, you compute $\\det(A_x)/\\det(A)$. What is $\\det(A_x)$?",
-  answer: "-3",
-},
-{
-  id: "LA117",
-  topic: "Linear Algebra (Adjugate Matrix)",
-  difficulty: 2200,
-  problem: "Find the adjugate of MATRIX(A = [[1, 2], [3, 4]]). What is the entry in row 2, col 1?",
-  answer: "-3",
-},
-{
-  id: "LA118",
-  topic: "Linear Algebra (Elementary Row Operations)",
-  difficulty: 1800,
-  problem: "If you swap two rows of a $3 \\times 3$ matrix A to get matrix B, what is the relationship between $\\det(A)$ and $\\det(B)$?",
-  answer: "det(B) = -det(A)",
-},
-{
-  id: "LA119",
-  topic: "Linear Algebra (LU Decomposition)",
-  difficulty: 2450,
-  problem: "For MATRIX(A = [[1, 2], [3, 8]]), find the LU decomposition. What is the entry in row 2, col 2 of the upper triangular matrix U?",
-  answer: "2",
-},
-{
-  id: "LA120",
-  topic: "Linear Algebra (Matrix Multiplication is not Commutative)",
-  difficulty: 1500,
-  problem: "Let MATRIX(A = [[1, 1], [0, 0]]) and MATRIX(B = [[0, 1], [1, 0]]). Find the entry in row 1, col 1 of $AB - BA$.",
-  answer: "0",
-},
-{
-  id: "LA121",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1800,
-  problem: "Find the determinant of MATRIX(A = [[1, 2, 3], [4, 5, 6], [0, 0, 0]]).",
-  answer: "0",
-},
-{
-  id: "LA122",
-  topic: "Linear Algebra (Matrix Inverse 3x3)",
-  difficulty: 2300,
-  problem: "Let A be an invertible matrix with inverse MATRIX(A⁻¹ = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]). What is the entry in row 3, col 2 of $(A^T)^{-1}$?",
-  answer: "6",
-},
-{
-  id: "LA123",
-  topic: "Linear Algebra (Properties of Determinants)",
-  difficulty: 2000,
-  problem: "Let A be a $4 \\times 4$ matrix with $\\det(A)=-2$. What is $\\det(A^T)$?",
-  answer: "-2",
-},
-{
-  id: "LA124",
-  topic: "Linear Algebra (Solving Matrix Equations)",
-  difficulty: 1750,
-  problem: "If MATRIX([[a, b], [c, d]]) * MATRIX([[1], [2]]) = MATRIX([[5], [11]]), and $a=1, b=2$, what is $c$?",
-  answer: "3",
-},
-{
-  id: "LA125",
-  topic: "Linear Algebra (Trace of Product)",
-  difficulty: 2100,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]) and MATRIX(B = [[1, 0], [0, 0]]). Find the trace of $AB$.",
-  answer: "1",
-},
-{
-  id: "LA126",
-  topic: "Linear Algebra (Zero Matrix)",
-  difficulty: 1050,
-  problem: "Let A be any $2 \\times 2$ matrix and Z be the $2 \\times 2$ zero matrix. What is $A+Z$?",
-  answer: "A",
-},
-{
-  id: "LA127",
-  topic: "Linear Algebra (Determinant)",
-  difficulty: 1600,
-  problem: "If a $3 \\times 3$ matrix has two identical rows, what is its determinant?",
-  answer: "0",
-},
-{
-  id: "LA128",
-  topic: "Linear Algebra (Matrix Inverse)",
-  difficulty: 1700,
-  problem: "If $A^2 = I$ (the identity matrix), what is the inverse of A?",
-  answer: "A",
-},
-{
-  id: "LA129",
-  topic: "Linear Algebra (System with No Solution)",
-  difficulty: 1550,
-  problem: "For what value of $k$ does the system $x+y=1$, $x+y=k$ have no solution?",
-  answer: "any k ≠ 1",
-},
-{
-  id: "LA130",
-  topic: "Linear Algebra (Matrix Multiplication)",
-  difficulty: 1350,
-  problem: "Find the product MATRIX([[1, 2]]) * MATRIX([[3], [4]]).",
-  answer: "[[11]]",
-},
-{
-  id: "LA131",
-  topic: "Linear Algebra (Determinant 3x3)",
-  difficulty: 1750,
-  problem: "Find the determinant of MATRIX(A = [[1, 1, 1], [1, 2, 3], [1, 3, 6]]).",
-  answer: "1",
-},
-{
-  id: "LA132",
-  topic: "Linear Algebra (Matrix Inverse 2x2)",
-  difficulty: 1650,
-  problem: "The matrix MATRIX(A = [[a, b], [c, d]]) has inverse $\\frac{1}{ad-bc}$MATRIX([[d, -b], [-c, a]]). Find the entry in row 2, col 2 of the inverse of MATRIX([[2, 1], [5, 3]]).",
-  answer: "2",
-},
-{
-  id: "LA133",
-  topic: "Linear Algebra (Properties of Determinants)",
-  difficulty: 2050,
-  problem: "Let A and B be $3 \\times 3$ matrices with $\\det(A)=2$ and $\\det(B)=5$. What is $\\det(A^T B)$?",
-  answer: "10",
-},
-{
-  id: "LA134",
-  topic: "Linear Algebra (Solving Systems)",
-  difficulty: 1450,
-  problem: "The augmented matrix of a system is MATRIX([[1, 0, 1 | 4], [0, 1, 2 | 5], [0, 0, 0 | 0]]). This system has how many solutions? (0, 1, or infinitely many)",
-  answer: "infinitely many",
-},
-{
-  id: "LA135",
-  topic: "Linear Algebra (Transpose of Product)",
-  difficulty: 1600,
-  problem: "The expression $(ABC)^T$ is equal to...",
-  answer: "C^T B^T A^T",
-},
-{
-  id: "LA136",
-  topic: "Linear Algebra (Determinant of Inverse)",
-  difficulty: 1900,
-  problem: "A matrix A has determinant 4. What is the determinant of $A^{-1}$?",
-  answer: "0.25",
-},
-{
-    id: "LA201",
-    topic: "Linear Algebra (Matrix Multiplication)",
-    difficulty: 1250,
-    problem: "Let MATRIX(A = [[1, -1], [2, 3]]) and MATRIX(B = [[1, 0], [0, 1]]). Find the element in the first row, first column of the product $AB$.",
-    answer: "1",
-  },
   {
+    category: "Linear Algebra1",
     id: "LA202",
     topic: "Linear Algebra (Matrix Transpose)",
     difficulty: 1100,
@@ -6697,6 +4441,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA203",
     topic: "Linear Algebra (Dot Product)",
     difficulty: 1050,
@@ -6704,6 +4449,7 @@ export const mathProblems = [
     answer: "12",
   },
   {
+    category: "Linear Algebra1",
     id: "LA204",
     topic: "Linear Algebra (Determinant 2x2)",
     difficulty: 1300,
@@ -6711,6 +4457,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA205",
     topic: "Linear Algebra (Determinant 3x3)",
     difficulty: 1700,
@@ -6718,6 +4465,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA206",
     topic: "Linear Algebra (Matrix Inverse 2x2)",
     difficulty: 1550,
@@ -6725,6 +4473,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA207",
     topic: "Linear Algebra (Solving Systems)",
     difficulty: 1350,
@@ -6732,6 +4481,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra1",
     id: "LA208",
     topic: "Linear Algebra (Properties of Determinants)",
     difficulty: 1900,
@@ -6739,6 +4489,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA209",
     topic: "Linear Algebra (Trace of a Matrix)",
     difficulty: 1150,
@@ -6746,6 +4497,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra1",
     id: "LA210",
     topic: "Linear Algebra (Symmetric Matrix)",
     difficulty: 1250,
@@ -6753,6 +4505,7 @@ export const mathProblems = [
     answer: "symmetric",
   },
   {
+    category: "Linear Algebra1",
     id: "LA211",
     topic: "Linear Algebra (Matrix Power)",
     difficulty: 1400,
@@ -6760,6 +4513,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA212",
     topic: "Linear Algebra (Matrix Addition)",
     difficulty: 1050,
@@ -6767,6 +4521,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA213",
     topic: "Linear Algebra (Determinant of Product)",
     difficulty: 1800,
@@ -6774,6 +4529,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Linear Algebra1",
     id: "LA214",
     topic: "Linear Algebra (Invertibility)",
     difficulty: 1500,
@@ -6781,6 +4537,7 @@ export const mathProblems = [
     answer: "any k",
   },
   {
+    category: "Linear Algebra1",
     id: "LA215",
     topic: "Linear Algebra (Upper Triangular Matrix)",
     difficulty: 1350,
@@ -6788,6 +4545,7 @@ export const mathProblems = [
     answer: "-6",
   },
   {
+    category: "Linear Algebra1",
     id: "LA216",
     topic: "Linear Algebra (Matrix-Vector Product)",
     difficulty: 1200,
@@ -6795,6 +4553,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Linear Algebra1",
     id: "LA217",
     topic: "Linear Algebra (Properties of Inverse)",
     difficulty: 1950,
@@ -6802,6 +4561,7 @@ export const mathProblems = [
     answer: "B⁻¹A⁻¹",
   },
   {
+    category: "Linear Algebra1",
     id: "LA218",
     topic: "Linear Algebra (Row Echelon Form)",
     difficulty: 1450,
@@ -6809,6 +4569,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra1",
     id: "LA219",
     topic: "Linear Algebra (Determinant 3x3)",
     difficulty: 1750,
@@ -6816,6 +4577,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA220",
     topic: "Linear Algebra (Solving Matrix Equations)",
     difficulty: 1650,
@@ -6823,6 +4585,7 @@ export const mathProblems = [
     answer: "A⁻¹B",
   },
   {
+    category: "Linear Algebra1",
     id: "LA221",
     topic: "Linear Algebra (Properties of Determinants)",
     difficulty: 2000,
@@ -6830,6 +4593,7 @@ export const mathProblems = [
     answer: "80",
   },
   {
+    category: "Linear Algebra1",
     id: "LA222",
     topic: "Linear Algebra (Matrix Inverse 2x2)",
     difficulty: 1600,
@@ -6837,6 +4601,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA223",
     topic: "Linear Algebra (Cross Product)",
     difficulty: 1500,
@@ -6844,6 +4609,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA224",
     topic: "Linear Algebra (Solving Systems)",
     difficulty: 1400,
@@ -6851,20 +4617,15 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA225",
     topic: "Linear Algebra (Trace of Product)",
     difficulty: 2050,
     problem: "Let MATRIX(A = [[1, 0], [0, 0]]) and MATRIX(B = [[0, 0], [0, 1]]). Find the trace of $AB$.",
     answer: "0",
   },
-{
-    id: "LA301",
-    topic: "Linear Algebra (Matrix Multiplication)",
-    difficulty: 1300,
-    problem: "Let MATRIX(A = [[1, 2], [1, 0]]) and MATRIX(B = [[3, 1], [0, 1]]). Find the element in the second row, first column of the product $AB$.",
-    answer: "3",
-  },
   {
+    category: "Linear Algebra1",
     id: "LA302",
     topic: "Linear Algebra (Matrix Transpose)",
     difficulty: 1150,
@@ -6872,6 +4633,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Linear Algebra1",
     id: "LA303",
     topic: "Linear Algebra (Dot Product)",
     difficulty: 1100,
@@ -6879,6 +4641,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Linear Algebra1",
     id: "LA304",
     topic: "Linear Algebra (Determinant 2x2)",
     difficulty: 1350,
@@ -6886,6 +4649,7 @@ export const mathProblems = [
     answer: "a²+b²",
   },
   {
+    category: "Linear Algebra1",
     id: "LA305",
     topic: "Linear Algebra (Determinant 3x3)",
     difficulty: 1750,
@@ -6893,6 +4657,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA306",
     topic: "Linear Algebra (Matrix Inverse 2x2)",
     difficulty: 1600,
@@ -6900,6 +4665,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA307",
     topic: "Linear Algebra (Solving Systems)",
     difficulty: 1400,
@@ -6907,6 +4673,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra1",
     id: "LA308",
     topic: "Linear Algebra (Properties of Determinants)",
     difficulty: 1950,
@@ -6914,6 +4681,7 @@ export const mathProblems = [
     answer: "4*det(A)",
   },
   {
+    category: "Linear Algebra1",
     id: "LA309",
     topic: "Linear Algebra (Trace of a Matrix)",
     difficulty: 1200,
@@ -6921,6 +4689,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA310",
     topic: "Linear Algebra (Skew-Symmetric Matrix)",
     difficulty: 1300,
@@ -6928,6 +4697,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA311",
     topic: "Linear Algebra (Matrix Power)",
     difficulty: 1450,
@@ -6935,6 +4705,7 @@ export const mathProblems = [
     answer: "[[1, 0], [0, 1]]",
   },
   {
+    category: "Linear Algebra1",
     id: "LA312",
     topic: "Linear Algebra (Matrix Addition)",
     difficulty: 1100,
@@ -6942,6 +4713,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra1",
     id: "LA313",
     topic: "Linear Algebra (Determinant of Inverse)",
     difficulty: 1850,
@@ -6949,6 +4721,7 @@ export const mathProblems = [
     answer: "0.1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA314",
     topic: "Linear Algebra (Invertibility)",
     difficulty: 1550,
@@ -6956,6 +4729,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra1",
     id: "LA315",
     topic: "Linear Algebra (Lower Triangular Matrix)",
     difficulty: 1400,
@@ -6963,6 +4737,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Linear Algebra1",
     id: "LA316",
     topic: "Linear Algebra (Matrix-Vector Product)",
     difficulty: 1250,
@@ -6970,6 +4745,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA317",
     topic: "Linear Algebra (Properties of Transpose)",
     difficulty: 1500,
@@ -6977,6 +4753,7 @@ export const mathProblems = [
     answer: "(A⁻¹)^T",
   },
   {
+    category: "Linear Algebra1",
     id: "LA318",
     topic: "Linear Algebra (Row Echelon Form)",
     difficulty: 1500,
@@ -6984,6 +4761,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra1",
     id: "LA319",
     topic: "Linear Algebra (Determinant 3x3)",
     difficulty: 1800,
@@ -6991,6 +4769,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA320",
     topic: "Linear Algebra (Solving Matrix Equations)",
     difficulty: 1700,
@@ -6998,6 +4777,7 @@ export const mathProblems = [
     answer: "A⁻¹",
   },
   {
+    category: "Linear Algebra1",
     id: "LA321",
     topic: "Linear Algebra (Properties of Determinants)",
     difficulty: 2050,
@@ -7005,6 +4785,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra1",
     id: "LA322",
     topic: "Linear Algebra (Matrix Inverse 2x2)",
     difficulty: 1650,
@@ -7012,6 +4793,7 @@ export const mathProblems = [
     answer: "-c",
   },
   {
+    category: "Linear Algebra1",
     id: "LA323",
     topic: "Linear Algebra (Cross Product)",
     difficulty: 1550,
@@ -7019,6 +4801,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra1",
     id: "LA324",
     topic: "Linear Algebra (Solving Systems)",
     difficulty: 1450,
@@ -7026,6 +4809,7 @@ export const mathProblems = [
     answer: "infinitely many",
   },
   {
+    category: "Linear Algebra1",
     id: "LA325",
     topic: "Linear Algebra (Trace of Product)",
     difficulty: 2100,
@@ -7041,6 +4825,7 @@ export const mathProblems = [
 
 
   {
+    category: "Linear Algebra2",
     id: "LA10",
     topic: "Linear Algebra (Linear Independence)",
     difficulty: 1800,
@@ -7048,6 +4833,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA11",
     topic: "Linear Algebra (Eigenvalues 2x2)",
     difficulty: 1900,
@@ -7055,6 +4841,7 @@ export const mathProblems = [
     answer: "9",
   },
   {
+    category: "Linear Algebra2",
     id: "LA12",
     topic: "Linear Algebra (Eigenvalues 3x3)",
     difficulty: 2250,
@@ -7062,6 +4849,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA13",
     topic: "Linear Algebra (Eigenvector)",
     difficulty: 2000,
@@ -7069,6 +4857,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA14",
     topic: "Linear Algebra (Diagonalization)",
     difficulty: 2650,
@@ -7076,6 +4865,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA15",
     topic: "Linear Algebra (Orthogonality)",
     difficulty: 1950,
@@ -7083,6 +4873,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA16",
     topic: "Linear Algebra (Projection)",
     difficulty: 2350,
@@ -7090,6 +4881,7 @@ export const mathProblems = [
     answer: "5/√3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA17",
     topic: "Linear Algebra (System of ODEs)",
     difficulty: 2800,
@@ -7097,6 +4889,7 @@ export const mathProblems = [
     answer: "-3.5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA18",
     topic: "Linear Algebra (Change of Basis)",
     difficulty: 2750,
@@ -7104,6 +4897,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA19",
     topic: "Linear Algebra (Rank)",
     difficulty: 2000,
@@ -7111,6 +4905,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA25",
     topic: "Linear Algebra (Matrix of a Linear Transformation)",
     difficulty: 2200,
@@ -7118,6 +4913,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA26",
     topic: "Linear Algebra (Properties of Determinants)",
     difficulty: 1850,
@@ -7125,6 +4921,7 @@ export const mathProblems = [
     answer: "-16",
   },
   {
+    category: "Linear Algebra2",
     id: "LA27",
     topic: "Linear Algebra (Gram-Schmidt Process)",
     difficulty: 2400,
@@ -7132,6 +4929,7 @@ export const mathProblems = [
     answer: "-0.44",
   },
   {
+    category: "Linear Algebra2",
     id: "LA28",
     topic: "Linear Algebra (Least Squares)",
     difficulty: 2500,
@@ -7139,6 +4937,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA29",
     topic: "Linear Algebra (Eigenvalues of Symmetric Matrix)",
     difficulty: 1900,
@@ -7146,6 +4945,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA30",
     topic: "Linear Algebra (Orthogonal Matrix)",
     difficulty: 2300,
@@ -7153,6 +4953,7 @@ export const mathProblems = [
     answer: "1/√2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA31",
     topic: "Linear Algebra (Cayley-Hamilton Theorem)",
     difficulty: 2850,
@@ -7160,6 +4961,7 @@ export const mathProblems = [
     answer: "7",
   },
   {
+    category: "Linear Algebra2",
     id: "LA35",
     topic: "Linear Algebra (Cramer's Rule)",
     difficulty: 1850,
@@ -7167,6 +4969,7 @@ export const mathProblems = [
     answer: "-3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA36",
     topic: "Linear Algebra (Vector Space Axioms)",
     difficulty: 2100,
@@ -7174,6 +4977,7 @@ export const mathProblems = [
     answer: "distributivity",
   },
   {
+    category: "Linear Algebra2",
     id: "LA37",
     topic: "Linear Algebra (Span)",
     difficulty: 1950,
@@ -7181,6 +4985,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA38",
     topic: "Linear Algebra (Rank-Nullity Theorem)",
     difficulty: 2050,
@@ -7188,6 +4993,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA39",
     topic: "Linear Algebra (Change of Basis)",
     difficulty: 2500,
@@ -7195,6 +5001,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA40",
     topic: "Linear Algebra (Orthogonal Projection)",
     difficulty: 2200,
@@ -7202,6 +5009,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Linear Algebra2",
     id: "LA41",
     topic: "Linear Algebra (Eigenvalues of Inverse)",
     difficulty: 2150,
@@ -7209,6 +5017,7 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA42",
     topic: "Linear Algebra (Eigenvalues and Trace)",
     difficulty: 1950,
@@ -7216,6 +5025,7 @@ export const mathProblems = [
     answer: "7",
   },
   {
+    category: "Linear Algebra2",
     id: "LA43",
     topic: "Linear Algebra (Eigenvalues and Determinant)",
     difficulty: 2000,
@@ -7223,6 +5033,7 @@ export const mathProblems = [
     answer: "-15",
   },
   {
+    category: "Linear Algebra2",
     id: "LA44",
     topic: "Linear Algebra (Diagonalization)",
     difficulty: 2700,
@@ -7230,6 +5041,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA45",
     topic: "Linear Algebra (Symmetric Matrices)",
     difficulty: 1800,
@@ -7237,6 +5049,7 @@ export const mathProblems = [
     answer: "A = A^T",
   },
   {
+    category: "Linear Algebra2",
     id: "LA46",
     topic: "Linear Algebra (Orthogonal Matrices)",
     difficulty: 2400,
@@ -7244,6 +5057,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA47",
     topic: "Linear Algebra (Positive Definite Matrices)",
     difficulty: 2800,
@@ -7251,6 +5065,7 @@ export const mathProblems = [
     answer: "-4 < c < 4",
   },
   {
+    category: "Linear Algebra2",
     id: "LA48",
     topic: "Linear Algebra (QR Factorization)",
     difficulty: 2900,
@@ -7258,6 +5073,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA49",
     topic: "Linear Algebra (Singular Value Decomposition - SVD)",
     difficulty: 2950,
@@ -7265,6 +5081,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA50",
     topic: "Linear Algebra (Adjacency Matrix)",
     difficulty: 2300,
@@ -7272,6 +5089,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Linear Algebra2",
     id: "LA51",
     topic: "Linear Algebra (Markov Matrices)",
     difficulty: 2550,
@@ -7279,6 +5097,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA52",
     topic: "Linear Algebra (Complex Eigenvalues)",
     difficulty: 2650,
@@ -7286,6 +5105,7 @@ export const mathProblems = [
     answer: "i",
   },
   {
+    category: "Linear Algebra2",
     id: "LA53",
     topic: "Linear Algebra (Projection Matrix)",
     difficulty: 2750,
@@ -7293,6 +5113,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra2",
     id: "LA54",
     topic: "Linear Algebra (Isomorphism)",
     difficulty: 2450,
@@ -7300,6 +5121,7 @@ export const mathProblems = [
     answer: "R⁴",
   },
   {
+    category: "Linear Algebra2",
     id: "LA55",
     topic: "Linear Algebra (Inner Product Space)",
     difficulty: 2600,
@@ -7307,685 +5129,15 @@ export const mathProblems = [
     answer: "0.5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA56",
     topic: "Linear Algebra (Matrix Exponential)",
     difficulty: 3000,
     problem: "Let MATRIX(A = [[1, 1], [0, 1]]). Compute the matrix exponential $e^{At}$. What is the element in the first row, second column at $t=1$?",
     answer: "e",
   },
-{
-  id: "LA77",
-  topic: "Linear Algebra (Linear Independence)",
-  difficulty: 1750,
-  problem: "Are the vectors $\\langle 1, 2, 3 \\rangle$, $\\langle 4, 5, 6 \\rangle$, and $\\langle 7, 8, 9 \\rangle$ linearly independent? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA78",
-  topic: "Linear Algebra (Subspace)",
-  difficulty: 1900,
-  problem: "Is the set of all vectors $\\langle x, y \\rangle$ in $\\mathbb{R}^2$ such that $x \\ge 0$ a subspace of $\\mathbb{R}^2$? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA79",
-  topic: "Linear Algebra (Basis)",
-  difficulty: 1800,
-  problem: "What is the dimension of the vector space $P_4$, the set of all polynomials of degree at most 4?",
-  answer: "5",
-},
-{
-  id: "LA80",
-  topic: "Linear Algebra (Column Space)",
-  difficulty: 2050,
-  problem: "Find a basis for the column space of MATRIX(A = [[1, 2], [3, 6]]). What is the dimension of this space?",
-  answer: "1",
-},
-{
-  id: "LA81",
-  topic: "Linear Algebra (Null Space)",
-  difficulty: 2100,
-  problem: "Find the dimension of the null space (kernel) of MATRIX(A = [[1, 2, 3], [0, 1, 2], [0, 0, 0]]).",
-  answer: "1",
-},
-{
-  id: "LA82",
-  topic: "Linear Algebra (Rank-Nullity Theorem)",
-  difficulty: 2000,
-  problem: "A $5 \\times 7$ matrix $A$ has a null space of dimension 3. What is the rank of $A$?",
-  answer: "4",
-},
-{
-  id: "LA83",
-  topic: "Linear Algebra (Orthogonality)",
-  difficulty: 1600,
-  problem: "Find the value of $k$ such that the vectors $\\langle 1, k, 3 \\rangle$ and $\\langle 2, -4, 2 \\rangle$ are orthogonal.",
-  answer: "2",
-},
-{
-  id: "LA84",
-  topic: "Linear Algebra (Vector Norm)",
-  difficulty: 1300,
-  problem: "Find the length (magnitude) of the vector $v = \\langle 3, 0, -4 \\rangle$.",
-  answer: "5",
-},
-{
-  id: "LA85",
-  topic: "Linear Algebra (Eigenvalues)",
-  difficulty: 1950,
-  problem: "Find the sum of the eigenvalues of the matrix MATRIX(A = [[3, 2], [1, 4]]).",
-  answer: "7",
-},
-{
-  id: "LA86",
-  topic: "Linear Algebra (Eigenvector Check)",
-  difficulty: 1700,
-  problem: "Is $\\langle 1, 1 \\rangle$ an eigenvector of the matrix MATRIX(A = [[2, 1], [1, 2]])? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA87",
-  topic: "Linear Algebra (Eigenvalues of Triangular Matrix)",
-  difficulty: 1500,
-  problem: "What are the eigenvalues of the matrix MATRIX(A = [[-1, 2, 4], [0, 5, 8], [0, 0, -3]])? (Enter the smallest value).",
-  answer: "-3",
-},
-{
-  id: "LA88",
-  topic: "Linear Algebra (Diagonalization)",
-  difficulty: 2500,
-  problem: "Is the matrix MATRIX(A = [[1, 1], [0, 1]]) diagonalizable? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA89",
-  topic: "Linear Algebra (Change of Basis)",
-  difficulty: 2600,
-  problem: "Let $B = \\{\\langle 1, 0 \\rangle, \\langle 1, 1 \\rangle\\}$ be a basis for $\\mathbb{R}^2$. The vector $v = \\langle 3, 2 \\rangle$ can be written as $c_1b_1 + c_2b_2$. What is $c_1$?",
-  answer: "1",
-},
-{
-  id: "LA90",
-  topic: "Linear Algebra (Projection)",
-  difficulty: 2200,
-  problem: "Find the scalar projection of $b = \\langle 2, 3 \\rangle$ onto $a = \\langle 1, 1 \\rangle$.",
-  answer: "5/√2",
-},
-{
-  id: "LA91",
-  topic: "Linear Algebra (Gram-Schmidt)",
-  difficulty: 2700,
-  problem: "Apply the Gram-Schmidt process to the vectors $v_1 = \\langle 3, 0 \\rangle$ and $v_2 = \\langle 1, 2 \\rangle$ to get an orthogonal basis $\{u_1, u_2\}$. What is the second vector, $u_2$?",
-  answer: "<0, 2>",
-},
-{
-  id: "LA92",
-  topic: "Linear Algebra (Orthogonal Matrix)",
-  difficulty: 2350,
-  problem: "Let $Q$ be an orthogonal matrix. If $v$ is a column vector, what is the length of $Qv$ compared to the length of $v$? (e.g., 'longer', 'shorter', 'same')",
-  answer: "same",
-},
-{
-  id: "LA93",
-  topic: "Linear Algebra (Least Squares)",
-  difficulty: 2800,
-  problem: "Find the least-squares line $y = \\beta_0 + \\beta_1 x$ that best fits the data points (0,1), (1,2), and (2,4). What is the value of the slope, $\\beta_1$?",
-  answer: "1.5",
-},
-{
-  id: "LA94",
-  topic: "Linear Algebra (Inner Product Space)",
-  difficulty: 2650,
-  problem: "In the vector space $P_2$ with inner product $\\langle p, q \\rangle = \\int_{-1}^1 p(x)q(x)dx$, are the polynomials $p(x)=1$ and $q(x)=x$ orthogonal? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA95",
-  topic: "Linear Algebra (Spectral Theorem)",
-  difficulty: 2450,
-  problem: "According to the Spectral Theorem, a real symmetric matrix is always... (one word)",
-  answer: "diagonalizable",
-},
-{
-  id: "LA96",
-  topic: "Linear Algebra (Singular Values)",
-  difficulty: 2950,
-  problem: "Find the singular values of the matrix MATRIX(A = [[0, 2], [0, 0]]). What is the largest singular value?",
-  answer: "2",
-},
-{
-  id: "LA107",
-  topic: "Linear Algebra (Linear Independence)",
-  difficulty: 1775,
-  problem: "For what value of $h$ is the vector $\\langle 1, 3, h \\rangle$ in the span of $\\langle 1, 2, 3 \\rangle$ and $\\langle 0, 1, 1 \\rangle$?",
-  answer: "4",
-},
-{
-  id: "LA108",
-  topic: "Linear Algebra (Subspace Check)",
-  difficulty: 1925,
-  problem: "Is the set of all $2 \\times 2$ matrices with determinant 0 a subspace of the vector space of all $2 \\times 2$ matrices? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA109",
-  topic: "Linear Algebra (Basis)",
-  difficulty: 1825,
-  problem: "Do the vectors $\\langle 1, 1, 0 \\rangle, \\langle 1, 0, 1 \\rangle, \\langle 0, 1, 1 \\rangle$ form a basis for $\\mathbb{R}^3$? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA110",
-  topic: "Linear Algebra (Rank)",
-  difficulty: 2025,
-  problem: "What is the rank of the matrix MATRIX(A = [[1, 1, 1], [1, 1, 1], [1, 1, 1]])?",
-  answer: "1",
-},
-{
-  id: "LA111",
-  topic: "Linear Algebra (Null Space)",
-  difficulty: 2125,
-  problem: "Find a basis vector for the null space of the matrix MATRIX(A = [[1, 2, -3]]). What is the second component of this vector?",
-  answer: "2",
-},
-{
-  id: "LA112",
-  topic: "Linear Algebra (Orthogonality)",
-  difficulty: 1625,
-  problem: "Let $u = \\langle 1, 2 \\rangle$ and $v = \\langle -4, x \\rangle$. For what value of $x$ are the vectors orthogonal?",
-  answer: "2",
-},
-{
-  id: "LA113",
-  topic: "Linear Algebra (Eigenvalues)",
-  difficulty: 1975,
-  problem: "Find the product of the eigenvalues of the matrix MATRIX(A = [[4, -1], [2, 1]]).",
-  answer: "6",
-},
-{
-  id: "LA114",
-  topic: "Linear Algebra (Eigenvector)",
-  difficulty: 2175,
-  problem: "The matrix MATRIX(A = [[1, 6], [5, 2]]) has an eigenvalue of 7. Find the first component of a corresponding eigenvector $\\langle x, y \\rangle$ if the second component is 5.",
-  answer: "6",
-},
-{
-  id: "LA115",
-  topic: "Linear Algebra (Diagonalization)",
-  difficulty: 2525,
-  problem: "Let MATRIX(A = [[2, 3], [0, 5]]). $A$ is diagonalizable as $PDP^{-1}$. What is the value in the first row, first column of the diagonal matrix $D$? (Assume eigenvalues are ordered from smallest to largest).",
-  answer: "2",
-},
-{
-  id: "LA116",
-  topic: "Linear Algebra (Projection)",
-  difficulty: 2225,
-  problem: "Find the projection of vector $u = \\langle 1, 1, 0 \\rangle$ onto vector $v = \\langle 1, 2, 2 \\rangle$. What is the first component of the resulting vector?",
-  answer: "1/3",
-},
-{
-  id: "LA117",
-  topic: "Linear Algebra (Change of Basis)",
-  difficulty: 2625,
-  problem: "In $\\mathbb{R}^2$, let $B = \\{ \\langle 2,1 \\rangle, \\langle 1,1 \\rangle \\}$ be a basis. The vector $v$ has coordinates $[v]_B = \\langle 3, -1 \\rangle$. What is the first component of $v$ in the standard basis?",
-  answer: "5",
-},
-{
-  id: "LA118",
-  topic: "Linear Algebra (Orthogonal Complement)",
-  difficulty: 2200,
-  problem: "Let W be the subspace of $\\mathbb{R}^3$ spanned by $\\langle 1, 0, 0 \\rangle$ and $\\langle 0, 1, 0 \\rangle$. What is the dimension of the orthogonal complement $W^\\perp$?",
-  answer: "1",
-},
-{
-  id: "LA119",
-  topic: "Linear Algebra (Eigenvalues of Powers)",
-  difficulty: 2275,
-  problem: "A matrix $A$ has an eigenvalue $\\lambda = 2$. What is the corresponding eigenvalue of the matrix $A^3 - A + I$?",
-  answer: "7",
-},
-{
-  id: "LA120",
-  topic: "Linear Algebra (Gram-Schmidt)",
-  difficulty: 2725,
-  problem: "Let $v_1 = \\langle 1, 1, 0 \\rangle, v_2 = \\langle 1, 2, 0 \\rangle$. Apply the Gram-Schmidt process to get an orthonormal basis $\{q_1, q_2\}$. What is the second component of $q_2$?",
-  answer: "1/√2",
-},
-{
-  id: "LA121",
-  topic: "Linear Algebra (Least Squares)",
-  difficulty: 2825,
-  problem: "Find the least squares solution $\\hat{x}$ to the system $Ax=b$ where MATRIX(A = [[1, 0], [0, 1], [1, 1]]) and $b = \\langle 1, 1, 0 \\rangle$. What is the first component of $\\hat{x}$?",
-  answer: "0.5",
-},
-{
-  id: "LA122",
-  topic: "Linear Algebra (Linear Transformation)",
-  difficulty: 2000,
-  problem: "Let $T: \\mathbb{R}^2 \\to \\mathbb{R}^2$ be a linear transformation such that $T(\\langle 1,0 \\rangle) = \\langle 2,3 \\rangle$ and $T(\\langle 0,1 \\rangle) = \\langle 4,5 \\rangle$. Find $T(\\langle 1,1 \\rangle)$. What is the first component?",
-  answer: "6",
-},
-{
-  id: "LA123",
-  topic: "Linear Algebra (Inner Product)",
-  difficulty: 2675,
-  problem: "In the space of polynomials $P_2$ with inner product $\\langle p, q \\rangle = \\int_0^1 p(x)q(x)dx$, find the squared norm $||x||^2$ of the polynomial $p(x)=x$.",
-  answer: "1/3",
-},
-{
-  id: "LA124",
-  topic: "Linear Algebra (SVD)",
-  difficulty: 2975,
-  problem: "The matrix MATRIX(A = [[1, 1], [0, 0]]) has a singular value decomposition $A=U\\Sigma V^T$. What is the largest singular value, $\\sigma_1$, in the diagonal matrix $\\Sigma$?",
-  answer: "√2",
-},
-{
-  id: "LA125",
-  topic: "Linear Algebra (Cayley-Hamilton)",
-  difficulty: 2875,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]). The characteristic polynomial is $\\lambda^2 - 5\\lambda - 2 = 0$. By the Cayley-Hamilton theorem, $A^2 - 5A - 2I = 0$. What is the trace of $A^2$?",
-  answer: "29",
-},
-{
-  id: "LA126",
-  topic: "Linear Algebra (Definiteness)",
-  difficulty: 2750,
-  problem: "The matrix MATRIX(A = [[1, 2], [2, k]]) is positive definite if its eigenvalues are positive. For what values of $k$ is this true?",
-  answer: "k > 4",
-},
-{
-  id: "LA142",
-  topic: "Linear Algebra (Eigenvalues)",
-  difficulty: 2050,
-  problem: "For what value of $k$ does the matrix MATRIX(A = [[1, k], [1, 1]]) have an eigenvalue of 3?",
-  answer: "4",
-},
-{
-  id: "LA143",
-  topic: "Linear Algebra (Eigenvector)",
-  difficulty: 2100,
-  problem: "The matrix MATRIX(A = [[4, -2], [1, 1]]) has an eigenvector $\\langle 2, 1 \\rangle$. What is the corresponding eigenvalue?",
-  answer: "3",
-},
-{
-  id: "LA144",
-  topic: "Linear Algebra (Diagonalization)",
-  difficulty: 2600,
-  problem: "A $2 \\times 2$ matrix has eigenvalues 1 and 2, with corresponding eigenvectors $\\langle 1, 0 \\rangle$ and $\\langle 1, 1 \\rangle$. If $A = PDP^{-1}$, what is the element in the first row, first column of $A$?",
-  answer: "1",
-},
-{
-  id: "LA145",
-  topic: "Linear Algebra (Linear Independence)",
-  difficulty: 1850,
-  problem: "For what value of $h$ are the vectors $\\langle 1, -1, 3 \\rangle, \\langle -5, 7, 8 \\rangle, \\langle 1, 1, h \\rangle$ linearly dependent?",
-  answer: "13",
-},
-{
-  id: "LA146",
-  topic: "Linear Algebra (Subspace Check)",
-  difficulty: 1950,
-  problem: "Is the set of all polynomials $p(t)$ in $P_2$ such that $p(0)=0$ a subspace of $P_2$? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA147",
-  topic: "Linear Algebra (Basis)",
-  difficulty: 1900,
-  problem: "Find the dimension of the vector space of all $2 \\times 2$ skew-symmetric matrices.",
-  answer: "1",
-},
-{
-  id: "LA148",
-  topic: "Linear Algebra (Rank-Nullity Theorem)",
-  difficulty: 2100,
-  problem: "A linear transformation $T: P_3 \\to \\mathbb{R}^2$ has a range of dimension 2. What is the dimension of the kernel of T?",
-  answer: "2",
-},
-{
-  id: "LA149",
-  topic: "Linear Algebra (Projection)",
-  difficulty: 2250,
-  problem: "Find the projection of vector $y = \\langle 1, 5 \\rangle$ onto the line spanned by the vector $u = \\langle -1, 1 \\rangle$. What is the second component of the resulting vector?",
-  answer: "2",
-},
-{
-  id: "LA150",
-  topic: "Linear Algebra (Properties of Rank)",
-  difficulty: 2400,
-  problem: "If $A$ is a $3 \\times 5$ matrix of rank 3, what is the rank of $A^T A$?",
-  answer: "3",
-},
-{
-  id: "LA151",
-  topic: "Linear Algebra (Orthogonal Matrix)",
-  difficulty: 2350,
-  problem: "Let MATRIX(Q = [[cos(θ), -sin(θ)], [sin(θ), cos(θ)]]). What is the determinant of $Q$?",
-  answer: "1",
-},
-{
-  id: "LA152",
-  topic: "Linear Algebra (Change of Basis)",
-  difficulty: 2550,
-  problem: "In $\\mathbb{R}^2$, let basis $B = \\{ \\langle 1,2 \\rangle, \\langle 3,5 \\rangle \\}$. The vector $x$ has coordinates $[x]_B = \\langle 2, -1 \\rangle$. What is the first component of $x$ in the standard basis?",
-  answer: "-1",
-},
-{
-  id: "LA153",
-  topic: "Linear Algebra (Inner Product Space)",
-  difficulty: 2700,
-  problem: "In the space $C[0,1]$ with inner product $\\langle f, g \\rangle = \\int_0^1 f(x)g(x)dx$, find the cosine of the angle between $f(x)=1$ and $g(x)=\\sqrt{x}$.",
-  answer: "√3 / 2",
-},
-{
-  id: "LA154",
-  topic: "Linear Algebra (Positive Definite Matrices)",
-  difficulty: 2850,
-  problem: "For the symmetric matrix MATRIX(A = [[k, 2], [2, 1]]), for what range of values of $k$ is this matrix positive definite?",
-  answer: "k > 4",
-},
-{
-  id: "LA155",
-  topic: "Linear Algebra (Eigenvalues of Powers)",
-  difficulty: 2200,
-  problem: "A matrix $A$ has eigenvalues -1 and 3. What is the trace of $A^2$?",
-  answer: "10",
-},
-{
-  id: "LA156",
-  topic: "Linear Algebra (Singular Values)",
-  difficulty: 2950,
-  problem: "Find the singular values of the matrix MATRIX(A = [[1, 1], [1, 1]]). What is the largest singular value?",
-  answer: "2",
-},
-{
-  id: "LA137",
-  topic: "Linear Algebra (Vector Space)",
-  difficulty: 1800,
-  problem: "Is the set of all $2 \\times 2$ matrices with determinant 0 a subspace of the vector space of all $2 \\times 2$ matrices? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA138",
-  topic: "Linear Algebra (Linear Combination)",
-  difficulty: 1500,
-  problem: "If $\\langle 3, 5 \\rangle = c_1 \\langle 1, 1 \\rangle + c_2 \\langle 1, -1 \\rangle$, what is the value of $c_1$?",
-  answer: "4",
-},
-{
-  id: "LA139",
-  topic: "Linear Algebra (Span)",
-  difficulty: 1700,
-  problem: "Do the vectors $\\langle 1, 1 \\rangle$ and $\\langle -1, -1 \\rangle$ span $\\mathbb{R}^2$? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA140",
-  topic: "Linear Algebra (Linear Independence)",
-  difficulty: 1650,
-  problem: "Are the vectors $\\langle 1, 0, 1 \\rangle$, $\\langle 0, 1, 1 \\rangle$, and $\\langle 1, 1, 0 \\rangle$ linearly independent in $\\mathbb{R}^3$? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA141",
-  topic: "Linear Algebra (Basis)",
-  difficulty: 1750,
-  problem: "How many vectors are in a basis for the vector space of $3 \\times 3$ matrices?",
-  answer: "9",
-},
-{
-  id: "LA142",
-  topic: "Linear Algebra (Dimension)",
-  difficulty: 1600,
-  problem: "What is the dimension of the subspace of $\\mathbb{R}^3$ spanned by the vectors $\\langle 1, 0, 0 \\rangle$ and $\\langle 0, 1, 0 \\rangle$?",
-  answer: "2",
-},
-{
-  id: "LA143",
-  topic: "Linear Algebra (Column Space)",
-  difficulty: 2000,
-  problem: "Find the dimension of the column space of MATRIX(A = [[1, 2, 3], [2, 4, 6]]).",
-  answer: "1",
-},
-{
-  id: "LA144",
-  topic: "Linear Algebra (Null Space)",
-  difficulty: 2100,
-  problem: "Find a basis for the null space of MATRIX(A = [[1, 2, 0]]). One basis vector is $\\langle a, b, c \\rangle$. If $c=1$, what is $b$?",
-  answer: "0",
-},
-{
-  id: "LA145",
-  topic: "Linear Algebra (Rank-Nullity Theorem)",
-  difficulty: 2050,
-  problem: "Let $T: \\mathbb{R}^7 \\to \\mathbb{R}^4$ be a linear transformation. If the dimension of the kernel of T is 3, what is the rank of T?",
-  answer: "4",
-},
-{
-  id: "LA146",
-  topic: "Linear Algebra (Orthogonality)",
-  difficulty: 1550,
-  problem: "Is the set of vectors $\{ \\langle 1, 1 \\rangle, \\langle 1, -1 \\rangle \}$ an orthogonal set? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA147",
-  topic: "Linear Algebra (Orthogonal Projection)",
-  difficulty: 2250,
-  problem: "Find the orthogonal projection of $y = \\langle 1, 7 \\rangle$ onto the vector $u = \\langle 1, 1 \\rangle$.",
-  answer: "<4, 4>",
-},
-{
-  id: "LA148",
-  topic: "Linear Algebra (Gram-Schmidt)",
-  difficulty: 2600,
-  problem: "Use the Gram-Schmidt process on $v_1 = \\langle 1, 1, 0 \\rangle, v_2 = \\langle 1, 0, 1 \\rangle$. The resulting orthogonal vectors are $u_1=v_1$ and $u_2$. Find $u_2$.",
-  answer: "<0.5, -0.5, 1>",
-},
-{
-  id: "LA149",
-  topic: "Linear Algebra (Eigenvalues 2x2)",
-  difficulty: 1900,
-  problem: "Find the smaller eigenvalue of the matrix MATRIX(A = [[1, 2], [4, 3]]).",
-  answer: "-1",
-},
-{
-  id: "LA150",
-  topic: "Linear Algebra (Eigenvectors)",
-  difficulty: 2150,
-  problem: "The matrix MATRIX(A = [[4, 1], [2, 3]]) has an eigenvalue of 5. Find a corresponding eigenvector.",
-  answer: "<1, 1>",
-},
-{
-  id: "LA151",
-  topic: "Linear Algebra (Characteristic Polynomial)",
-  difficulty: 2000,
-  problem: "Find the characteristic polynomial of MATRIX(A = [[1, 2], [3, 4]]).",
-  answer: "λ² - 5λ - 2",
-},
-{
-  id: "LA152",
-  topic: "Linear Algebra (Diagonalization)",
-  difficulty: 2550,
-  problem: "Let MATRIX(A = [[2, 1], [1, 2]]). The matrix A is diagonalizable as $PDP^{-1}$. What is the largest value on the diagonal of D?",
-  answer: "3",
-},
-{
-  id: "LA153",
-  topic: "Linear Algebra (Linear Transformation)",
-  difficulty: 1850,
-  problem: "Let $T: \\mathbb{R}^2 \\to \\mathbb{R}^2$ be a reflection across the x-axis. Find the standard matrix for T.",
-  answer: "[[1, 0], [0, -1]]",
-},
-{
-  id: "LA154",
-  topic: "Linear Algebra (Kernel of Transformation)",
-  difficulty: 2200,
-  problem: "Let $T: \\mathbb{R}^3 \\to \\mathbb{R}^3$ be the projection onto the xy-plane. What is the kernel of T?",
-  answer: "the z-axis",
-},
-{
-  id: "LA155",
-  topic: "Linear Algebra (Inner Product)",
-  difficulty: 1950,
-  problem: "In the space $P_2$, with inner product $\\langle p, q \\rangle = \\int_0^1 p(x)q(x)dx$, find the inner product of $p(x)=x$ and $q(x)=x^2$.",
-  answer: "0.25",
-},
-{
-  id: "LA156",
-  topic: "Linear Algebra (Change of Basis)",
-  difficulty: 2700,
-  problem: "Let $B = \\{ \\langle 1, 2 \\rangle, \\langle 3, 4 \\rangle \\}$ be a basis. The coordinate vector of $v$ with respect to $B$ is $[v]_B = \\langle 1, 1 \\rangle$. Find the vector $v$ in the standard basis.",
-  answer: "<4, 6>",
-},
-{
-  id: "LA157",
-  topic: "Linear Algebra (Orthogonal Matrix)",
-  difficulty: 2400,
-  problem: "If Q is an orthogonal matrix, what is $Q^T Q$?",
-  answer: "I",
-},
-{
-  id: "LA158",
-  topic: "Linear Algebra (Spectral Theorem)",
-  difficulty: 2500,
-  problem: "The eigenvalues of a real symmetric matrix are always... (one word)",
-  answer: "real",
-},
-{
-  id: "LA159",
-  topic: "Linear Algebra (Least Squares)",
-  difficulty: 2850,
-  problem: "Find the least-squares solution to the system MATRIX([[1, 1], [1, 0]]) * $x$ = MATRIX([[2], [0]]). What is the first component of the solution vector $\\hat{x}$?",
-  answer: "2/3",
-},
-{
-  id: "LA160",
-  topic: "Linear Algebra (Eigenvalues and Trace)",
-  difficulty: 1800,
-  problem: "The eigenvalues of a $2 \\times 2$ matrix are 3 and -1. What is the trace of the matrix?",
-  answer: "2",
-},
-{
-  id: "LA161",
-  topic: "Linear Algebra (Eigenvalues and Determinant)",
-  difficulty: 1850,
-  problem: "The eigenvalues of a $2 \\times 2$ matrix are 3 and -1. What is the determinant of the matrix?",
-  answer: "-3",
-},
-{
-  id: "LA162",
-  topic: "Linear Algebra (Subspace Check)",
-  difficulty: 1900,
-  problem: "Is the set of all vectors $\\langle x, y, z \\rangle$ where $x+y+z=1$ a subspace of $\\mathbb{R}^3$? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA163",
-  topic: "Linear Algebra (Dimension of Null Space)",
-  difficulty: 2150,
-  problem: "What is the dimension of the null space of the matrix MATRIX(A = [[1, 1, 1, 1], [1, 1, 1, 1]])?",
-  answer: "3",
-},
-{
-  id: "LA164",
-  topic: "Linear Algebra (Orthonormal Basis)",
-  difficulty: 2100,
-  problem: "Let $\{u_1, u_2\}$ be an orthonormal basis for $\\mathbb{R}^2$. What is the value of the dot product $u_1 \\cdot u_2$?",
-  answer: "0",
-},
-{
-  id: "LA165",
-  topic: "Linear Algebra (Eigenvalues of Powers)",
-  difficulty: 2200,
-  problem: "If a matrix A has an eigenvalue of 2, what is an eigenvalue of $A^3$?",
-  answer: "8",
-},
-{
-  id: "LA166",
-  topic: "Linear Algebra (Diagonalization)",
-  difficulty: 2650,
-  problem: "A $3 \\times 3$ matrix has 3 linearly independent eigenvectors. Is the matrix diagonalizable? (yes/no)",
-  answer: "yes",
-},
-{
-  id: "LA167",
-  topic: "Linear Algebra (Range of Transformation)",
-  difficulty: 2250,
-  problem: "Let $T: \\mathbb{R}^2 \\to \\mathbb{R}^3$ be defined by $T(x,y) = (x, y, x+y)$. What is the dimension of the range of T?",
-  answer: "2",
-},
-{
-  id: "LA168",
-  topic: "Linear Algebra (Positive Definite Matrix)",
-  difficulty: 2900,
-  problem: "A symmetric matrix has eigenvalues 1 and -2. Is the matrix positive definite? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA169",
-  topic: "Linear Algebra (QR Factorization)",
-  difficulty: 2950,
-  problem: "In the QR factorization of an invertible matrix A, what can be said about the columns of Q?",
-  answer: "they form an orthonormal basis",
-},
-{
-  id: "LA170",
-  topic: "Linear Algebra (Singular Value Decomposition)",
-  difficulty: 3000,
-  problem: "Find the singular values of the matrix MATRIX(A = [[-1, 0], [0, 0]]).",
-  answer: "1",
-},
-{
-  id: "LA171",
-  topic: "Linear Algebra (Markov Matrix)",
-  difficulty: 2600,
-  problem: "What is the sum of the entries in any column of a Markov matrix?",
-  answer: "1",
-},
-{
-  id: "LA172",
-  topic: "Linear Algebra (Cayley-Hamilton Theorem)",
-  difficulty: 2800,
-  problem: "Let MATRIX(A = [[1, 2], [3, 4]]). The characteristic equation is $\\lambda^2 - 5\\lambda - 2 = 0$. By the Cayley-Hamilton theorem, $A^2 - 5A - kI = 0$. What is k?",
-  answer: "2",
-},
-{
-  id: "LA173",
-  topic: "Linear Algebra (Linear Independence)",
-  difficulty: 1700,
-  problem: "If a set of vectors in $\\mathbb{R}^n$ contains the zero vector, can the set be linearly independent? (yes/no)",
-  answer: "no",
-},
-{
-  id: "LA174",
-  topic: "Linear Algebra (Rank)",
-  difficulty: 1950,
-  problem: "What is the rank of a $3 \\times 3$ invertible matrix?",
-  answer: "3",
-},
-{
-  id: "LA175",
-  topic: "Linear Algebra (Eigenvectors)",
-  difficulty: 2300,
-  problem: "If $v$ is an eigenvector of A with eigenvalue 3, what is $Av$?",
-  answer: "3v",
-},
-{
-  id: "LA176",
-  topic: "Linear Algebra (Diagonal Matrix)",
-  difficulty: 1400,
-  problem: "What is the nullity (dimension of null space) of the $3 \\times 3$ identity matrix?",
-  answer: "0",
-},
-{
-    id: "LA226",
-    topic: "Linear Algebra (Linear Independence)",
-    difficulty: 1800,
-    problem: "Are the vectors $\\langle 1, 2, 3 \\rangle$ and $\\langle 2, 4, 6 \\rangle$ in $\\mathbb{R}^3$ linearly independent? (yes/no)",
-    answer: "no",
-  },
   {
+    category: "Linear Algebra2",
     id: "LA227",
     topic: "Linear Algebra (Span)",
     difficulty: 1750,
@@ -7993,6 +5145,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA228",
     topic: "Linear Algebra (Basis)",
     difficulty: 1850,
@@ -8000,6 +5153,7 @@ export const mathProblems = [
     answer: "6",
   },
   {
+    category: "Linear Algebra2",
     id: "LA229",
     topic: "Linear Algebra (Rank)",
     difficulty: 1950,
@@ -8007,6 +5161,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra2",
     id: "LA230",
     topic: "Linear Algebra (Null Space)",
     difficulty: 2050,
@@ -8014,6 +5169,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra2",
     id: "LA231",
     topic: "Linear Algebra (Orthogonality)",
     difficulty: 1600,
@@ -8021,6 +5177,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA232",
     topic: "Linear Algebra (Eigenvalues 2x2)",
     difficulty: 1900,
@@ -8028,6 +5185,7 @@ export const mathProblems = [
     answer: "-2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA233",
     topic: "Linear Algebra (Eigenvector)",
     difficulty: 2000,
@@ -8035,6 +5193,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA234",
     topic: "Linear Algebra (Diagonalization)",
     difficulty: 2600,
@@ -8042,6 +5201,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA235",
     topic: "Linear Algebra (Projection)",
     difficulty: 2300,
@@ -8049,6 +5209,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA236",
     topic: "Linear Algebra (Rank-Nullity Theorem)",
     difficulty: 2000,
@@ -8056,6 +5217,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA237",
     topic: "Linear Algebra (Change of Basis)",
     difficulty: 2500,
@@ -8063,6 +5225,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA238",
     topic: "Linear Algebra (Eigenvalues and Trace)",
     difficulty: 1950,
@@ -8070,6 +5233,7 @@ export const mathProblems = [
     answer: "7",
   },
   {
+    category: "Linear Algebra2",
     id: "LA239",
     topic: "Linear Algebra (Eigenvalues and Determinant)",
     difficulty: 2000,
@@ -8077,6 +5241,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Linear Algebra2",
     id: "LA240",
     topic: "Linear Algebra (Orthogonal Matrix)",
     difficulty: 2300,
@@ -8084,6 +5249,7 @@ export const mathProblems = [
     answer: "Q^T",
   },
   {
+    category: "Linear Algebra2",
     id: "LA241",
     topic: "Linear Algebra (Linear Transformation)",
     difficulty: 1800,
@@ -8091,6 +5257,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra2",
     id: "LA242",
     topic: "Linear Algebra (Eigenvalues of Powers)",
     difficulty: 2150,
@@ -8098,6 +5265,7 @@ export const mathProblems = [
     answer: "9",
   },
   {
+    category: "Linear Algebra2",
     id: "LA243",
     topic: "Linear Algebra (Subspace Check)",
     difficulty: 1900,
@@ -8105,6 +5273,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA244",
     topic: "Linear Algebra (Gram-Schmidt Process)",
     difficulty: 2450,
@@ -8112,6 +5281,7 @@ export const mathProblems = [
     answer: "<0, 1>",
   },
   {
+    category: "Linear Algebra2",
     id: "LA245",
     topic: "Linear Algebra (Least Squares)",
     difficulty: 2550,
@@ -8119,6 +5289,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra2",
     id: "LA246",
     topic: "Linear Algebra (Singular Values)",
     difficulty: 2900,
@@ -8126,6 +5297,7 @@ export const mathProblems = [
     answer: "5",
   },
   {
+    category: "Linear Algebra2",
     id: "LA247",
     topic: "Linear Algebra (Inner Product Space)",
     difficulty: 2650,
@@ -8133,6 +5305,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Linear Algebra2",
     id: "LA248",
     topic: "Linear Algebra (Cayley-Hamilton Theorem)",
     difficulty: 2800,
@@ -8140,6 +5313,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA249",
     topic: "Linear Algebra (Vector Norm)",
     difficulty: 1300,
@@ -8147,6 +5321,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA250",
     topic: "Linear Algebra (Eigenvalues of Triangular Matrix)",
     difficulty: 1600,
@@ -8154,6 +5329,7 @@ export const mathProblems = [
     answer: "4",
   },
   {
+    category: "Linear Algebra2",
     id: "LA326",
     topic: "Linear Algebra (Linear Independence)",
     difficulty: 1850,
@@ -8161,6 +5337,7 @@ export const mathProblems = [
     answer: "dependent",
   },
   {
+    category: "Linear Algebra2",
     id: "LA327",
     topic: "Linear Algebra (Span)",
     difficulty: 1800,
@@ -8168,6 +5345,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA328",
     topic: "Linear Algebra (Basis)",
     difficulty: 1900,
@@ -8175,6 +5353,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA329",
     topic: "Linear Algebra (Rank)",
     difficulty: 2000,
@@ -8182,6 +5361,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA330",
     topic: "Linear Algebra (Null Space)",
     difficulty: 2100,
@@ -8189,6 +5369,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA331",
     topic: "Linear Algebra (Orthogonality)",
     difficulty: 1650,
@@ -8196,6 +5377,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA332",
     topic: "Linear Algebra (Eigenvalues 2x2)",
     difficulty: 1950,
@@ -8203,6 +5385,7 @@ export const mathProblems = [
     answer: "8",
   },
   {
+    category: "Linear Algebra2",
     id: "LA333",
     topic: "Linear Algebra (Eigenvector)",
     difficulty: 2050,
@@ -8210,6 +5393,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Linear Algebra2",
     id: "LA334",
     topic: "Linear Algebra (Diagonalization)",
     difficulty: 2650,
@@ -8217,6 +5401,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA335",
     topic: "Linear Algebra (Projection)",
     difficulty: 2350,
@@ -8224,6 +5409,7 @@ export const mathProblems = [
     answer: "<1, 0, 0>",
   },
   {
+    category: "Linear Algebra2",
     id: "LA336",
     topic: "Linear Algebra (Rank-Nullity Theorem)",
     difficulty: 2050,
@@ -8231,6 +5417,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA337",
     topic: "Linear Algebra (Change of Basis)",
     difficulty: 2550,
@@ -8238,6 +5425,7 @@ export const mathProblems = [
     answer: "<1, 1>",
   },
   {
+    category: "Linear Algebra2",
     id: "LA338",
     topic: "Linear Algebra (Eigenvalues and Trace)",
     difficulty: 2000,
@@ -8245,6 +5433,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA339",
     topic: "Linear Algebra (Eigenvalues and Determinant)",
     difficulty: 2050,
@@ -8252,6 +5441,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Linear Algebra2",
     id: "LA340",
     topic: "Linear Algebra (Orthogonal Matrix)",
     difficulty: 2350,
@@ -8259,6 +5449,7 @@ export const mathProblems = [
     answer: "orthonormal",
   },
   {
+    category: "Linear Algebra2",
     id: "LA341",
     topic: "Linear Algebra (Linear Transformation)",
     difficulty: 1850,
@@ -8266,6 +5457,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Linear Algebra2",
     id: "LA342",
     topic: "Linear Algebra (Eigenvalues of Inverse)",
     difficulty: 2200,
@@ -8273,6 +5465,7 @@ export const mathProblems = [
     answer: "2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA343",
     topic: "Linear Algebra (Subspace Check)",
     difficulty: 1950,
@@ -8280,6 +5473,7 @@ export const mathProblems = [
     answer: "no",
   },
   {
+    category: "Linear Algebra2",
     id: "LA344",
     topic: "Linear Algebra (Gram-Schmidt Process)",
     difficulty: 2500,
@@ -8287,6 +5481,7 @@ export const mathProblems = [
     answer: "-0.2",
   },
   {
+    category: "Linear Algebra2",
     id: "LA345",
     topic: "Linear Algebra (Least Squares)",
     difficulty: 2600,
@@ -8294,6 +5489,7 @@ export const mathProblems = [
     answer: "A^T b",
   },
   {
+    category: "Linear Algebra2",
     id: "LA346",
     topic: "Linear Algebra (Singular Values)",
     difficulty: 2950,
@@ -8301,6 +5497,7 @@ export const mathProblems = [
     answer: "1, 1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA347",
     topic: "Linear Algebra (Inner Product Space)",
     difficulty: 2700,
@@ -8308,6 +5505,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Linear Algebra2",
     id: "LA348",
     topic: "Linear Algebra (Spectral Theorem)",
     difficulty: 2400,
@@ -8315,6 +5513,7 @@ export const mathProblems = [
     answer: "orthogonal",
   },
   {
+    category: "Linear Algebra2",
     id: "LA349",
     topic: "Linear Algebra (Vector Norm)",
     difficulty: 1350,
@@ -8322,6 +5521,7 @@ export const mathProblems = [
     answer: "0.8",
   },
   {
+    category: "Linear Algebra2",
     id: "LA350",
     topic: "Linear Algebra (Eigenvalues of Singular Matrix)",
     difficulty: 1700,
@@ -8337,6 +5537,7 @@ export const mathProblems = [
 
 
   {
+    category: "Complex Analysis",
     id: "CA01",
     topic: "Complex Analysis (Arithmetic)",
     difficulty: 1500,
@@ -8344,6 +5545,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA02",
     topic: "Complex Analysis (Arithmetic)",
     difficulty: 1550,
@@ -8351,6 +5553,7 @@ export const mathProblems = [
     answer: "13",
   },
   {
+    category: "Complex Analysis",
     id: "CA03",
     topic: "Complex Analysis (Euler's Formula)",
     difficulty: 1600,
@@ -8358,6 +5561,7 @@ export const mathProblems = [
     answer: "i",
   },
   {
+    category: "Complex Analysis",
     id: "CA04",
     topic: "Complex Analysis (Polar Form)",
     difficulty: 1650,
@@ -8365,6 +5569,7 @@ export const mathProblems = [
     answer: "pi",
   },
   {
+    category: "Complex Analysis",
     id: "CA05",
     topic: "Complex Analysis (Arithmetic)",
     difficulty: 1700,
@@ -8372,6 +5577,7 @@ export const mathProblems = [
     answer: "7+i",
   },
   {
+    category: "Complex Analysis",
     id: "CA06",
     topic: "Complex Analysis (Conjugate)",
     difficulty: 1550,
@@ -8379,6 +5585,7 @@ export const mathProblems = [
     answer: "25",
   },
   {
+    category: "Complex Analysis",
     id: "CA07",
     topic: "Complex Analysis (De Moivre's Theorem)",
     difficulty: 1800,
@@ -8386,6 +5593,7 @@ export const mathProblems = [
     answer: "i",
   },
   {
+    category: "Complex Analysis",
     id: "CA08",
     topic: "Complex Analysis (Roots of Unity)",
     difficulty: 1900,
@@ -8393,6 +5601,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA09",
     topic: "Complex Analysis (Functions)",
     difficulty: 1750,
@@ -8400,6 +5609,7 @@ export const mathProblems = [
     answer: "3+4i",
   },
   {
+    category: "Complex Analysis",
     id: "CA10",
     topic: "Complex Analysis (Functions)",
     difficulty: 1850,
@@ -8407,6 +5617,7 @@ export const mathProblems = [
     answer: "i*sinh(1)",
   },
   {
+    category: "Complex Analysis",
     id: "CA11",
     topic: "Complex Analysis (Cauchy-Riemann)",
     difficulty: 1900,
@@ -8414,6 +5625,7 @@ export const mathProblems = [
     answer: "3x²-3y²",
   },
   {
+    category: "Complex Analysis",
     id: "CA12",
     topic: "Complex Analysis (Analyticity)",
     difficulty: 1950,
@@ -8421,6 +5633,7 @@ export const mathProblems = [
     answer: "yes",
   },
   {
+    category: "Complex Analysis",
     id: "CA13",
     topic: "Complex Analysis (Derivatives)",
     difficulty: 1800,
@@ -8428,6 +5641,7 @@ export const mathProblems = [
     answer: "-5",
   },
   {
+    category: "Complex Analysis",
     id: "CA14",
     topic: "Complex Analysis (Harmonic Functions)",
     difficulty: 2000,
@@ -8435,6 +5649,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA15",
     topic: "Complex Analysis (Logarithm)",
     difficulty: 2100,
@@ -8442,6 +5657,7 @@ export const mathProblems = [
     answer: "i*pi",
   },
   {
+    category: "Complex Analysis",
     id: "CA16",
     topic: "Complex Analysis (Contour Integral)",
     difficulty: 2050,
@@ -8449,6 +5665,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA17",
     topic: "Complex Analysis (Contour Integral)",
     difficulty: 2150,
@@ -8456,6 +5673,7 @@ export const mathProblems = [
     answer: "2*pi*i",
   },
   {
+    category: "Complex Analysis",
     id: "CA18",
     topic: "Complex Analysis (Cauchy's Theorem)",
     difficulty: 2200,
@@ -8463,6 +5681,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA19",
     topic: "Complex Analysis (Cauchy's Integral Formula)",
     difficulty: 2300,
@@ -8470,6 +5689,7 @@ export const mathProblems = [
     answer: "e",
   },
   {
+    category: "Complex Analysis",
     id: "CA20",
     topic: "Complex Analysis (Cauchy's Integral Formula)",
     difficulty: 2400,
@@ -8477,6 +5697,7 @@ export const mathProblems = [
     answer: "-2*pi*i",
   },
   {
+    category: "Complex Analysis",
     id: "CA21",
     topic: "Complex Analysis (Cauchy's Formula for Derivatives)",
     difficulty: 2500,
@@ -8484,6 +5705,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA22",
     topic: "Complex Analysis (Liouville's Theorem)",
     difficulty: 2450,
@@ -8491,6 +5713,7 @@ export const mathProblems = [
     answer: "constant",
   },
   {
+    category: "Complex Analysis",
     id: "CA23",
     topic: "Complex Analysis (Taylor Series)",
     difficulty: 2350,
@@ -8498,6 +5721,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA24",
     topic: "Complex Analysis (Taylor Series)",
     difficulty: 2400,
@@ -8505,6 +5729,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA25",
     topic: "Complex Analysis (Laurent Series)",
     difficulty: 2550,
@@ -8512,6 +5737,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA26",
     topic: "Complex Analysis (Singularities)",
     difficulty: 2100,
@@ -8519,6 +5745,7 @@ export const mathProblems = [
     answer: "removable",
   },
   {
+    category: "Complex Analysis",
     id: "CA27",
     topic: "Complex Analysis (Singularities)",
     difficulty: 2200,
@@ -8526,6 +5753,7 @@ export const mathProblems = [
     answer: "3",
   },
   {
+    category: "Complex Analysis",
     id: "CA28",
     topic: "Complex Analysis (Singularities)",
     difficulty: 2250,
@@ -8533,6 +5761,7 @@ export const mathProblems = [
     answer: "essential",
   },
   {
+    category: "Complex Analysis",
     id: "CA29",
     topic: "Complex Analysis (Residues)",
     difficulty: 2450,
@@ -8540,6 +5769,7 @@ export const mathProblems = [
     answer: "-i/2",
   },
   {
+    category: "Complex Analysis",
     id: "CA30",
     topic: "Complex Analysis (Residues)",
     difficulty: 2550,
@@ -8547,6 +5777,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA31",
     topic: "Complex Analysis (Residue Theorem)",
     difficulty: 2650,
@@ -8554,6 +5785,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA32",
     topic: "Complex Analysis (Residue Theorem)",
     difficulty: 2700,
@@ -8561,6 +5793,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA33",
     topic: "Complex Analysis (Residues at Infinity)",
     difficulty: 2800,
@@ -8568,6 +5801,7 @@ export const mathProblems = [
     answer: "0",
   },
   {
+    category: "Complex Analysis",
     id: "CA34",
     topic: "Complex Analysis (Real Integrals)",
     difficulty: 2850,
@@ -8575,6 +5809,7 @@ export const mathProblems = [
     answer: "pi",
   },
   {
+    category: "Complex Analysis",
     id: "CA35",
     topic: "Complex Analysis (Real Integrals)",
     difficulty: 2900,
@@ -8582,6 +5817,7 @@ export const mathProblems = [
     answer: "2*pi/sqrt(3)",
   },
   {
+    category: "Complex Analysis",
     id: "CA36",
     topic: "Complex Analysis (Mappings)",
     difficulty: 2100,
@@ -8589,6 +5825,7 @@ export const mathProblems = [
     answer: "the positive real axis",
   },
   {
+    category: "Complex Analysis",
     id: "CA37",
     topic: "Complex Analysis (Mappings)",
     difficulty: 2300,
@@ -8596,6 +5833,7 @@ export const mathProblems = [
     answer: "the unit circle",
   },
   {
+    category: "Complex Analysis",
     id: "CA38",
     topic: "Complex Analysis (Argument Principle)",
     difficulty: 2950,
@@ -8603,6 +5841,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA39",
     topic: "Complex Analysis (Fundamental Theorem of Algebra)",
     difficulty: 1900,
@@ -8610,6 +5849,7 @@ export const mathProblems = [
     answer: "7",
   },
   {
+    category: "Complex Analysis",
     id: "CA40",
     topic: "Complex Analysis (Cauchy-Riemann in Polar)",
     difficulty: 2400,
@@ -8617,6 +5857,7 @@ export const mathProblems = [
     answer: "1/r",
   },
   {
+    category: "Complex Analysis",
     id: "CA41",
     topic: "Complex Analysis (Arithmetic)",
     difficulty: 1600,
@@ -8624,6 +5865,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Complex Analysis",
     id: "CA42",
     topic: "Complex Analysis (Derivatives)",
     difficulty: 1850,
@@ -8631,6 +5873,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Complex Analysis",
     id: "CA43",
     topic: "Complex Analysis (Contour Integral)",
     difficulty: 2200,
@@ -8638,6 +5881,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA44",
     topic: "Complex Analysis (Cauchy's Integral Formula)",
     difficulty: 2350,
@@ -8645,6 +5889,7 @@ export const mathProblems = [
     answer: "-1",
   },
   {
+    category: "Complex Analysis",
     id: "CA45",
     topic: "Complex Analysis (Residues)",
     difficulty: 2600,
@@ -8652,6 +5897,7 @@ export const mathProblems = [
     answer: "-1/6",
   },
   {
+    category: "Complex Analysis",
     id: "CA46",
     topic: "Complex Analysis (Residue Theorem)",
     difficulty: 2750,
@@ -8659,6 +5905,7 @@ export const mathProblems = [
     answer: "6*pi*i",
   },
   {
+    category: "Complex Analysis",
     id: "CA47",
     topic: "Complex Analysis (Euler's Formula)",
     difficulty: 1700,
@@ -8666,6 +5913,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA48",
     topic: "Complex Analysis (Singularities)",
     difficulty: 2150,
@@ -8673,6 +5921,7 @@ export const mathProblems = [
     answer: "simple pole",
   },
   {
+    category: "Complex Analysis",
     id: "CA49",
     topic: "Complex Analysis (Cauchy's Formula for Derivatives)",
     difficulty: 2550,
@@ -8680,6 +5929,7 @@ export const mathProblems = [
     answer: "1",
   },
   {
+    category: "Complex Analysis",
     id: "CA50",
     topic: "Complex Analysis (Real Integrals)",
     difficulty: 2950,
