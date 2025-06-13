@@ -1007,7 +1007,7 @@ export const mathProblems = [
     topic: "Calculus (U-Substitution)",
     difficulty: 1550,
     problem: "Evaluate $\\int_0^1 x(x^2 + 1)^3 dx$.",
-    answer: "3.75",
+    answer: "1.875",
   },
   {
     category: "Calculus II",
