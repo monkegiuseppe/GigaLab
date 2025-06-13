@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import QuantumPlayground from './pages/QuantumPlayground';
 import Calculator from './pages/calculator';
 import EloMath from './pages/EloMath';
+import Quantum from './pages/Quantum';
 
 // Using HashRouter instead of BrowserRouter for GitHub Pages compatibility
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/atom" element={<QuantumPlayground />} />
         <Route path="/calculator" element={<Calculator />} />
         <Route path="/elo-math" element={<EloMath />} />
+        <Route path="/quantum" element={<Quantum />} />
         {/* Add more routes as you develop new simulations */}
       </Routes>
     </Router>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, XCircle, SkipForward, BrainCircuit, RefreshCw, Notebook, Info, X, SlidersHorizontal, Check } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, SkipForward, BrainCircuit, RefreshCw, Notebook, Info, X, SlidersHorizontal, Check, ChevronRight } from "lucide-react";
 import { mathProblems } from "../lib/elomath/mathProblems";
 import { calculateNewElo } from "../lib/elomath/Elo";
 import Notepad from "../components/Notepad";
@@ -12,17 +12,42 @@ import ProblemRenderer from '../components/ProblemRenderer';
 const isAnswerCorrect = (userAnswer, correctAnswer) => {
   const cleanUserAnswer = userAnswer.trim();
   const cleanCorrectAnswer = String(correctAnswer).trim();
-  const userNum = parseFloat(cleanUserAnswer);
-  const correctNum = parseFloat(cleanCorrectAnswer);
+
+  // Helper to safely evaluate a string that might be a fraction or a number
+  const parseToNumber = (str) => {
+    // Check for a simple fraction format like "a/b" without any letters.
+    if (str.includes('/') && !str.match(/[a-zA-Z]/)) {
+      const parts = str.split('/');
+      if (parts.length === 2) {
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (!isNaN(num) && !isNaN(den) && den !== 0) {
+          return num / den;
+        }
+      }
+    }
+    // Fallback for decimals and integers
+    return parseFloat(str);
+  };
+
+  const userNum = parseToNumber(cleanUserAnswer);
+  const correctNum = parseToNumber(cleanCorrectAnswer);
+
+  // Primary check: Compare numerical values if both are valid numbers.
   if (!isNaN(userNum) && !isNaN(correctNum)) {
     return Math.abs(userNum - correctNum) < 0.001;
   }
+
+  // Fallback for symbolic answers like 'pi', 'sqrt(2)', etc.
   try {
     const evalCorrect = new Function('return ' + cleanCorrectAnswer.replace('π', 'Math.PI').replace('√', 'Math.sqrt').replace('^','**').replace('e', 'Math.E'));
-    if (Math.abs(userNum - evalCorrect()) < 0.001) return true;
+    if (!isNaN(userNum) && Math.abs(userNum - evalCorrect()) < 0.001) return true;
   } catch (e) {}
+  
+  // Final fallback: case-insensitive string comparison for word-based answers.
   return cleanUserAnswer.replace(/[\s()<>]/g, '').toLowerCase() === cleanCorrectAnswer.replace(/[\s()<>]/g, '').toLowerCase();
 };
+
 
 const allCategories = ["Calculus I", "Calculus II", "Calculus III", "Differential Equations", "Linear Algebra1", "Linear Algebra2", "Complex Analysis"];
 
