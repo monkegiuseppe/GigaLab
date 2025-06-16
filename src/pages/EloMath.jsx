@@ -6,6 +6,7 @@ import { mathProblems } from "../lib/elomath/mathProblems";
 import { calculateNewElo } from "../lib/elomath/Elo";
 import Notepad from "../components/Notepad";
 import ProblemRenderer from '../components/ProblemRenderer';
+import ReactGA from "react-ga4";
 
 // --- Utility Functions ---
 
@@ -261,6 +262,15 @@ export default function EloMath() {
     if (correct) {
       setSessionStats(prev => ({ ...prev, correct: prev.correct + 1 }));
       setFeedback({ type: 'correct', message: `Correct! ELO ${eloChange >= 0 ? '+' : ''}${eloChange}`, correctAnswer: currentProblem.answer });
+
+      // ---  GOOGLE ANALYTICS EVENT TRACKING  ---
+      ReactGA.event({
+        category: 'EloMath',
+        action: 'problem_completed_correctly',
+        label: currentProblem.topic, // Useful for seeing which topics are most completed
+        value: currentProblem.difficulty // Track the difficulty of completed problems
+      });
+
     } else {
       setSessionStats(prev => ({ ...prev, incorrect: prev.incorrect + 1 }));
       setFeedback({ type: 'incorrect', message: `Incorrect. ELO ${eloChange}`, correctAnswer: currentProblem.answer });
