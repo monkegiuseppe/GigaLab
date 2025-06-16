@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "cross-env VITE_GA_MEASUREMENT_ID=$VITE_GA_MEASUREMENT_ID vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
@@ -66,7 +66,6 @@
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
-    "react-ga4": "^2.1.0",
     "react-hook-form": "^7.57.0",
     "react-katex": "^3.1.0",
     "react-mathquill": "^1.0.3",

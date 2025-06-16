@@ -5,34 +5,25 @@ import Calculator from './pages/calculator';
 import EloMath from './pages/EloMath';
 import Quantum from './pages/Quantum';
 import { useEffect } from 'react';
-import ReactGA from 'react-ga4';
 
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
-
-// Component to track route changes
+// Component to track route changes using gtag
 const RouteChangeTracker = () => {
   const location = useLocation();
  
-   useEffect(() => {
-     // Send a pageview event to Google Analytics
-     ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
-   }, [location]);
+  useEffect(() => {
+    // Send pageview to Google Analytics using gtag
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('config', 'G-JLHG9V26Y1', {
+        page_path: location.pathname + location.search,
+      });
+    }
+  }, [location]);
  
-   return null; // This component does not render anything
+  return null;
 };
 
 // Using HashRouter instead of BrowserRouter for GitHub Pages compatibility
 export default function App() {
-  // The useEffect hook for initializing GA goes INSIDE the App component
-  useEffect(() => {
-    // Initialize Google Analytics
-    if (GA_MEASUREMENT_ID) {
-      ReactGA.initialize(GA_MEASUREMENT_ID);
-      console.log("GA Initialized");
-    }
-  }, []); // The empty dependency array [] means this runs only once when the component mounts
-
-  // And the component returns the router JSX
   return (
     <Router>
       <RouteChangeTracker />
