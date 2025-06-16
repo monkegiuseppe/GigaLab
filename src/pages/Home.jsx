@@ -2,6 +2,7 @@ import { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Heart, ExternalLink } from "lucide-react"
 import { Link } from 'react-router-dom'
+import useThrottle from '../hooks/useThrottle.js'
 
 // Simulation data for each card
 const simulations = [
@@ -93,6 +94,8 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
 
     setMousePosition({ x: normalizedX, y: normalizedY })
   }
+
+  const throttledMouseMove = useThrottle(handleMouseMove, 16);
 
   const handleMouseEnter = (e) => {
     setIsHovering(true)
