@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,8 +24,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
