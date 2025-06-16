@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route,} from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import QuantumPlayground from './pages/QuantumPlayground';
 import Calculator from './pages/calculator';
@@ -19,21 +19,20 @@ const RouteChangeTracker = () => {
    }, [location]);
  
    return null; // This component does not render anything
- };
+};
 
 // Using HashRouter instead of BrowserRouter for GitHub Pages compatibility
 export default function App() {
-   useEffect(() => {
-     // Initialize Google Analytics
-     if (GA_MEASUREMENT_ID) {
-       ReactGA.initialize(GA_MEASUREMENT_ID);
-       console.log("GA Initialized");
-     }
-   }, []);
-}
+  // The useEffect hook for initializing GA goes INSIDE the App component
+  useEffect(() => {
+    // Initialize Google Analytics
+    if (GA_MEASUREMENT_ID) {
+      ReactGA.initialize(GA_MEASUREMENT_ID);
+      console.log("GA Initialized");
+    }
+  }, []); // The empty dependency array [] means this runs only once when the component mounts
 
-// Using HashRouter instead of BrowserRouter for GitHub Pages compatibility
-export default function App() {
+  // And the component returns the router JSX
   return (
     <Router>
       <RouteChangeTracker />
