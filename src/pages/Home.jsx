@@ -2,9 +2,9 @@ import { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Heart, ExternalLink } from "lucide-react"
 import { Link } from 'react-router-dom'
-import useThrottle from '../hooks/useThrottle.js'
+import useThrottle from "../hooks/useThrottle" // Assuming you've created this file
 
-// Simulation data for each card
+// Simulation data for each card (no changes here)
 const simulations = [
   {
     id: "quantum-playground",
@@ -15,8 +15,7 @@ const simulations = [
     path: "/atom", 
     available: true,
   },
-
-    {
+  {
     id: "physics-calculator",
     title: "Advanced Calculator",
     description: "Graphing, calculus, and linear algebra tools",
@@ -63,7 +62,7 @@ const simulations = [
   },
 ]
 
-// SimulationCard component
+// SimulationCard component (no changes here, keeping throttling)
 function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
   const { id, title, description, color, image, path, available } = simulation
   const cardRef = useRef(null)
@@ -74,21 +73,12 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
     if (!cardRef.current) return
 
     const rect = cardRef.current.getBoundingClientRect()
-
-    // Get mouse position relative to card
     const mouseX = e.clientX - rect.left
     const mouseY = e.clientY - rect.top
-
-    // Convert to center-based coordinates
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-
-    // Calculate offset from center
     const offsetX = mouseX - centerX
     const offsetY = mouseY - centerY
-
-    // Normalize to -1 to 1 range and apply sensitivity
-    // Increased from 12 to 20 for more drastic effect
     const normalizedX = (offsetX / centerX) * 20
     const normalizedY = (offsetY / centerY) * 20
 
@@ -109,14 +99,10 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
     setMousePosition({ x: 0, y: 0 })
   }
 
-  // Calculate rotation - the card should tilt AWAY from the mouse
-  // When mouse is at top (negative Y), card should tilt down (positive rotateX)
-  // When mouse is at bottom (positive Y), card should tilt up (negative rotateX)
-  const rotateX = isHovering ? mousePosition.y : 0 // Positive when mouse at top, negative when mouse at bottom
-  const rotateY = isHovering ? -mousePosition.x : 0 // Negative when mouse at right, positive when mouse at left
+  const rotateX = isHovering ? mousePosition.y : 0
+  const rotateY = isHovering ? -mousePosition.x : 0
 
-  // Calculate parallax offsets for different layers
-  const parallaxStrength = 0.8 // Increased from 0.5 for more drastic effect
+  const parallaxStrength = 0.8
   const backgroundParallax = {
     x: mousePosition.x * parallaxStrength * 0.3,
     y: mousePosition.y * parallaxStrength * 0.3,
@@ -147,7 +133,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
       transition={{ duration: 0.5 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
+      onMouseMove={throttledMouseMove}
       style={{ perspective: "1000px" }}
     >
       <Link to={available ? path : "#"} className="block h-full">
@@ -164,9 +150,9 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
           }}
           transition={{
             type: "spring",
-            stiffness: 800, // Increased from 400 for more responsiveness
-            damping: 15, // Reduced from 30 for faster response
-            mass: 0.5, // Added lower mass for quicker movement
+            stiffness: 800,
+            damping: 15,
+            mass: 0.5,
           }}
           style={{
             opacity: available ? 1 : 0.7,
@@ -187,7 +173,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
               y: backgroundParallax.y,
               scale: isActive ? 1.05 : 1,
             }}
-            transition={{ duration: 0.2 }} // Reduced from 0.3 for faster response
+            transition={{ duration: 0.2 }}
           />
 
           {/* Floating Background Elements for Depth */}
@@ -198,7 +184,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
               y: backgroundParallax.y * 1.5,
               rotate: isActive ? mousePosition.x * 0.1 : 0,
             }}
-            transition={{ duration: 0.2 }} // Reduced from 0.4 for faster response
+            transition={{ duration: 0.2 }}
           >
             <div
               className="absolute top-4 right-4 w-16 h-16 rounded-full blur-xl"
@@ -218,13 +204,13 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
               animate={{
                 scale: isActive ? 1.1 : 1,
                 filter: isActive ? `drop-shadow(0 0 8px ${color})` : "none",
-                rotateX: rotateX * 0.2, // Reduced secondary rotation
+                rotateX: rotateX * 0.2,
                 rotateY: rotateY * 0.2,
                 x: iconParallax.x,
                 y: iconParallax.y,
-                z: isActive ? 30 : 0, // Increased from 20 for more depth
+                z: isActive ? 30 : 0,
               }}
-              transition={{ duration: 0.15 }} // Reduced from 0.2 for faster response
+              transition={{ duration: 0.15 }}
               style={{ transformStyle: "preserve-3d" }}
             >
               {image}
@@ -254,9 +240,9 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
                 transformOrigin: "left",
                 x: titleParallax.x,
                 y: titleParallax.y,
-                z: isActive ? 15 : 0, // Increased from 10 for more depth
+                z: isActive ? 15 : 0,
               }}
-              transition={{ duration: 0.2 }} // Reduced from 0.3 for faster response
+              transition={{ duration: 0.2 }}
               style={{ transformStyle: "preserve-3d" }}
             >
               {title}
@@ -270,7 +256,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
                 y: contentParallax.y,
                 z: isActive ? 5 : 0,
               }}
-              transition={{ duration: 0.2 }} // Reduced from 0.3 for faster response
+              transition={{ duration: 0.2 }}
               style={{ transformStyle: "preserve-3d" }}
             >
               {description}
@@ -282,9 +268,9 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
               animate={{
                 x: progressParallax.x,
                 y: progressParallax.y,
-                z: isActive ? 20 : 0, // Increased from 15 for more depth
+                z: isActive ? 20 : 0,
               }}
-              transition={{ duration: 0.2 }} // Reduced from 0.3 for faster response
+              transition={{ duration: 0.2 }}
               style={{ transformStyle: "preserve-3d" }}
             >
               <div className={`text-sm font-medium ${available ? "text-green-400" : "text-amber-400"}`}>
@@ -301,7 +287,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
                   scaleX: isActive ? 1 : 0,
                   opacity: isActive ? 1 : 0,
                 }}
-                transition={{ duration: 0.3 }} // Reduced from 0.5 for faster response
+                transition={{ duration: 0.3 }}
               >
                 <motion.div
                   className="absolute inset-0 rounded-full"
@@ -377,6 +363,8 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
 export default function Home() {
   const [activeSim, setActiveSim] = useState(null)
   const [theme, setTheme] = useState("blue")
+  // State to manage the mobile menu's visibility
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMouseEnter = (id) => {
     setActiveSim(id)
@@ -386,7 +374,7 @@ export default function Home() {
     setActiveSim(null)
   }
 
-  // Theme variables
+  // Theme variables (no changes here)
   const themeStyles = {
     dark: {
       bg: "rgba(20, 40, 45, 1)",
@@ -434,7 +422,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen grid grid-cols-12"
+      className="min-h-screen relative"
       style={{
         backgroundColor: currentTheme.bg,
         color: currentTheme.text,
@@ -442,12 +430,19 @@ export default function Home() {
     >
       {/* Left Sidebar */}
       <motion.div
-        className="col-span-2 fixed h-full p-4 flex flex-col backdrop-blur-xl border-r border-slate-700/30"
-        initial={{ x: -100, opacity: 0 }}
+        className={`fixed top-0 left-0 z-50 h-full w-64 p-4 flex-col backdrop-blur-xl border-r border-slate-700/30 transition-transform duration-300 ease-in-out md:flex ${
+          isMenuOpen ? "translate-x-0 flex" : "-translate-x-full"
+        }`}
+        initial={{ x: -256, opacity: 0 }} // Start further left to match width
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         style={{ background: currentTheme.sidebar }}
       >
+        {/*Close button for mobile view */}
+        <button onClick={() => setIsMenuOpen(false)} className="absolute top-4 right-4 text-white md:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        
         <motion.div
           className="text-xl font-bold mb-8"
           initial={{ opacity: 0 }}
@@ -467,7 +462,7 @@ export default function Home() {
               transition={{ delay: 0.1 * index + 0.5 }}
             >
               <Link
-                href={sim.available ? sim.path : "#"}
+                to={sim.available ? sim.path : "#"}
                 className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${
                   sim.available ? "hover:bg-slate-700/30" : "opacity-50 cursor-not-allowed"
                 }`}
@@ -566,8 +561,15 @@ export default function Home() {
         </motion.div>
       </motion.div>
 
+      {/* Hamburger Menu Button (visible only on mobile) */}
+      <div className="md:hidden p-4 fixed top-0 left-0 z-40">
+        <button onClick={() => setIsMenuOpen(true)} className="p-2 rounded-md" style={{ background: currentTheme.sidebar }}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+      </div>
+
       {/* Main Content */}
-      <div className="col-span-10 col-start-3 px-8 py-16 max-w-7xl mx-auto">
+      <main className="px-4 py-16 w-full md:pl-72"> 
         <motion.header
           className="text-center mb-16"
           initial={{ opacity: 0, y: -20 }}
@@ -584,8 +586,8 @@ export default function Home() {
           </p>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto">
-          {simulations.map((sim, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto max-w-7xl">
+          {simulations.map((sim) => (
             <SimulationCard
               key={sim.id}
               simulation={sim}
@@ -611,7 +613,7 @@ export default function Home() {
             Learn more about my projects
           </motion.div>
         </motion.div>
-      </div>
+      </main>
 
       {/* Background animation */}
       <div className="fixed inset-0 -z-10 bg-animate">
