@@ -9,45 +9,50 @@ import ProblemRenderer from '../components/ProblemRenderer';
 
 // --- Utility Functions ---
 
-const isAnswerCorrect = (userAnswer, correctAnswer) => {
-  const cleanUserAnswer = userAnswer.trim();
-  const cleanCorrectAnswer = String(correctAnswer).trim();
-
-  // Helper to safely evaluate a string that might be a fraction or a number
-  const parseToNumber = (str) => {
-    // Check for a simple fraction format like "a/b" without any letters.
+const evaluateExpression = (str) => {
+  try {
+    // First, try to parse it as a simple number or fraction
     if (str.includes('/') && !str.match(/[a-zA-Z]/)) {
       const parts = str.split('/');
       if (parts.length === 2) {
         const num = parseFloat(parts[0]);
         const den = parseFloat(parts[1]);
-        if (!isNaN(num) && !isNaN(den) && den !== 0) {
-          return num / den;
-        }
+        if (!isNaN(num) && !isNaN(den) && den !== 0) return num / den;
       }
     }
-    // Fallback for decimals and integers
-    return parseFloat(str);
-  };
+    const simpleFloat = parseFloat(str);
+    // If it's a simple number and doesn't contain expression characters, return it
+    if (!isNaN(simpleFloat) && !str.match(/[a-zA-Z\^√π]/)) {
+        return simpleFloat;
+    }
 
-  const userNum = parseToNumber(cleanUserAnswer);
-  const correctNum = parseToNumber(cleanCorrectAnswer);
+    // If it's an expression, evaluate it
+    const expression = str.replace(/π/g, 'Math.PI')
+                          .replace(/√/g, 'Math.sqrt')
+                          .replace(/\^/g, '**')
+                          .replace(/e/g, 'Math.E');
+    return new Function('return ' + expression)();
+  } catch (e) {
+    return NaN; // Return NaN if evaluation fails
+  }
+};
 
-  // Primary check: Compare numerical values if both are valid numbers.
+const isAnswerCorrect = (userAnswer, correctAnswer) => {
+  const cleanUserAnswer = userAnswer.trim();
+  const cleanCorrectAnswer = String(correctAnswer).trim();
+
+  // Use the new evaluation function for both
+  const userNum = evaluateExpression(cleanUserAnswer);
+  const correctNum = evaluateExpression(cleanCorrectAnswer);
+
+  // Compare numerical values if both are valid numbers.
   if (!isNaN(userNum) && !isNaN(correctNum)) {
     return Math.abs(userNum - correctNum) < 0.001;
   }
 
-  // Fallback for symbolic answers like 'pi', 'sqrt(2)', etc.
-  try {
-    const evalCorrect = new Function('return ' + cleanCorrectAnswer.replace('π', 'Math.PI').replace('√', 'Math.sqrt').replace('^','**').replace('e', 'Math.E'));
-    if (!isNaN(userNum) && Math.abs(userNum - evalCorrect()) < 0.001) return true;
-  } catch (e) {}
-  
   // Final fallback: case-insensitive string comparison for word-based answers.
   return cleanUserAnswer.replace(/[\s()<>]/g, '').toLowerCase() === cleanCorrectAnswer.replace(/[\s()<>]/g, '').toLowerCase();
 };
-
 
 const allCategories = ["Calculus I", "Calculus II", "Calculus III", "Differential Equations", "Linear Algebra1", "Linear Algebra2", "Complex Analysis"];
 
