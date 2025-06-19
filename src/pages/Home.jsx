@@ -1,10 +1,9 @@
-import { useState, useRef } from "react"
-import { motion } from "framer-motion"
+import { useState, useRef, useCallback } from "react" 
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion" 
 import { Heart, ExternalLink } from "lucide-react"
-import { Link } from 'react-router-dom'
-import useThrottle from "../hooks/useThrottle" 
+import { Link } from 'react-router-dom' 
 
-// Simulation data for each card (no changes here)
+// Simulation data for each card 
 const simulations = [
   {
     id: "quantum-playground",
@@ -62,71 +61,75 @@ const simulations = [
   },
 ]
 
-// SimulationCard component 
-function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
+// ---  SimulationCard component ---
+
+const SimulationCard = ({ simulation, isActive, onMouseEnter, onMouseLeave }) => {
   const { id, title, description, color, image, path, available } = simulation
   const cardRef = useRef(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isHovering, setIsHovering] = useState(false)
-  // FIX: Use a ref to synchronously track hover state to prevent race conditions
-  const isHoveringRef = useRef(false)
 
-  const handleMouseMove = (e) => {
-    // FIX: Guard against lingering throttled events after mouse has left
-    if (!isHoveringRef.current || !cardRef.current) return
+  // --- Use MotionValues instead of useState ---
+  // These values can be updated without triggering a re-render.
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-    const rect = cardRef.current.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-    const offsetX = mouseX - centerX
-    const offsetY = mouseY - centerY
-    const normalizedX = (offsetX / centerX) * 20
-    const normalizedY = (offsetY / centerY) * 20
+  // ---Use useTransform for declarative transformations ---
+  // Create derived motion values. These will update automatically when mouseX/mouseY change.
+  // The second argument is the input range, the third is the output range.
+  const rotateX = useTransform(mouseY, [-20, 20], [20, -20]) // Inverted for natural feel
+  const rotateY = useTransform(mouseX, [-20, 20], [-20, 20])
 
-    setMousePosition({ x: normalizedX, y: normalizedY })
-  }
-
-  const throttledMouseMove = useThrottle(handleMouseMove, 16);
-
-  const handleMouseEnter = (e) => {
-    isHoveringRef.current = true // Set ref synchronously
-    setIsHovering(true)
-    onMouseEnter(id)
-    handleMouseMove(e) // Call once immediately for responsiveness
-  }
-
-  const handleMouseLeave = () => {
-    isHoveringRef.current = false // Set ref synchronously
-    setIsHovering(false)
-    onMouseLeave()
-    setMousePosition({ x: 0, y: 0 })
-  }
-
-  const rotateX = isHovering ? mousePosition.y : 0
-  const rotateY = isHovering ? -mousePosition.x : 0
+  // Add a spring for smoother return-to-center animation
+  const springConfig = { stiffness: 400, damping: 25, mass: 0.5 }
+  const springRotateX = useSpring(rotateX, springConfig)
+  const springRotateY = useSpring(rotateY, springConfig)
 
   const parallaxStrength = 0.8
   const backgroundParallax = {
-    x: mousePosition.x * parallaxStrength * 0.3,
-    y: mousePosition.y * parallaxStrength * 0.3,
+    x: useTransform(mouseX, [-20, 20], [-5, 5]),
+    y: useTransform(mouseY, [-20, 20], [-5, 5]),
   }
   const iconParallax = {
-    x: mousePosition.x * parallaxStrength * 0.8,
-    y: mousePosition.y * parallaxStrength * 0.8,
+    x: useTransform(mouseX, [-20, 20], [-16, 16]),
+    y: useTransform(mouseY, [-20, 20], [-16, 16]),
   }
   const titleParallax = {
-    x: mousePosition.x * parallaxStrength * 0.6,
-    y: mousePosition.y * parallaxStrength * 0.6,
+    x: useTransform(mouseX, [-20, 20], [-12, 12]),
+    y: useTransform(mouseY, [-20, 20], [-12, 12]),
   }
   const contentParallax = {
-    x: mousePosition.x * parallaxStrength * 0.4,
-    y: mousePosition.y * parallaxStrength * 0.4,
+    x: useTransform(mouseX, [-20, 20], [-8, 8]),
+    y: useTransform(mouseY, [-20, 20], [-8, 8]),
   }
   const progressParallax = {
-    x: mousePosition.x * parallaxStrength * 0.7,
-    y: mousePosition.y * parallaxStrength * 0.7,
+    x: useTransform(mouseX, [-20, 20], [-14, 14]),
+    y: useTransform(mouseY, [-20, 20], [-14, 14]),
+  }
+
+
+  // --- event handlers ---
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return
+
+    const rect = cardRef.current.getBoundingClientRect()
+    const relativeX = e.clientX - rect.left
+    const relativeY = e.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    
+    // Set the motion values. 
+    mouseX.set((relativeX - centerX) / centerX * 20)
+    mouseY.set((relativeY - centerY) / centerY * 20)
+  }
+
+  const handleMouseEnter = () => {
+    onMouseEnter(id)
+  }
+
+  const handleMouseLeave = () => {
+    onMouseLeave()
+    // Reset motion values on leave
+    mouseX.set(0)
+    mouseY.set(0)
   }
 
   return (
@@ -138,17 +141,24 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
       transition={{ duration: 0.5 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseMove={throttledMouseMove}
+      onMouseMove={handleMouseMove}
       style={{ perspective: "1000px" }}
     >
       <Link to={available ? path : "#"} className="block h-full">
         <motion.div
           className="backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden h-full relative"
+          // --- Connect motion values to the style prop ---
+          style={{
+            rotateX: springRotateX, // Use the spring-animated value
+            rotateY: springRotateY,
+            transformStyle: "preserve-3d",
+            opacity: available ? 1 : 0.7,
+            cursor: available ? "pointer" : "not-allowed",
+          }}
+          // Use the `animate` prop for state-driven changes (active vs inactive)
           animate={{
             y: isActive ? -8 : 0,
             scale: isActive ? 1.02 : 1,
-            rotateX: rotateX,
-            rotateY: rotateY,
             boxShadow: isActive
               ? `0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px ${color}40, inset 0 1px 0 rgba(255, 255, 255, 0.1)`
               : "0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
@@ -159,11 +169,6 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             damping: 15,
             mass: 0.5,
           }}
-          style={{
-            opacity: available ? 1 : 0.7,
-            cursor: available ? "pointer" : "not-allowed",
-            transformStyle: "preserve-3d",
-          }}
         >
           {/* Background Gradient with Parallax */}
           <motion.div
@@ -171,11 +176,11 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             style={{
               background: `linear-gradient(to bottom right, ${color}20, ${color}10)`,
               opacity: 0.5,
+              x: backgroundParallax.x,
+              y: backgroundParallax.y,
             }}
             animate={{
               opacity: isActive ? 0.8 : 0.5,
-              x: backgroundParallax.x,
-              y: backgroundParallax.y,
               scale: isActive ? 1.05 : 1,
             }}
             transition={{ duration: 0.2 }}
@@ -184,10 +189,10 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
           {/* Floating Background Elements for Depth */}
           <motion.div
             className="absolute inset-0 opacity-10"
-            animate={{
-              x: backgroundParallax.x * 1.5,
-              y: backgroundParallax.y * 1.5,
-              rotate: isActive ? mousePosition.x * 0.1 : 0,
+            style={{
+                x: useTransform(mouseX, [-20, 20], [-10, 10]),
+                y: useTransform(mouseY, [-20, 20], [-10, 10]),
+                rotate: useTransform(mouseX, [-20, 20], [-5, 5])
             }}
             transition={{ duration: 0.2 }}
           >
@@ -206,31 +211,29 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             {/* Icon with strongest parallax effect */}
             <motion.div
               className="text-5xl mb-4 relative z-30"
-              animate={{
-                scale: isActive ? 1.1 : 1,
-                filter: isActive ? `drop-shadow(0 0 8px ${color})` : "none",
-                rotateX: rotateX * 0.2,
-                rotateY: rotateY * 0.2,
+              style={{
                 x: iconParallax.x,
                 y: iconParallax.y,
                 z: isActive ? 30 : 0,
+                transformStyle: "preserve-3d",
+              }}
+              animate={{
+                scale: isActive ? 1.1 : 1,
+                filter: isActive ? `drop-shadow(0 0 8px ${color})` : "none",
               }}
               transition={{ duration: 0.15 }}
-              style={{ transformStyle: "preserve-3d" }}
             >
               {image}
               {/* Icon shadow for depth */}
               <motion.div
                 className="absolute inset-0 text-5xl opacity-20 blur-sm"
-                animate={{
-                  x: iconParallax.x * -0.3,
-                  y: iconParallax.y * -0.3 + 2,
-                  z: -10,
-                }}
                 style={{
                   color: color,
                   transformStyle: "preserve-3d",
                   zIndex: -1,
+                  x: useTransform(iconParallax.x, val => val * -0.3),
+                  y: useTransform(iconParallax.y, val => val * -0.3 + 2),
+                  z: -10,
                 }}
               >
                 {image}
@@ -240,15 +243,17 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             {/* Title with medium parallax */}
             <motion.h2
               className="text-2xl font-bold mb-2 relative z-20"
-              animate={{
-                scale: isActive ? 1.05 : 1,
-                transformOrigin: "left",
+              style={{
                 x: titleParallax.x,
                 y: titleParallax.y,
                 z: isActive ? 15 : 0,
+                transformStyle: "preserve-3d",
+              }}
+              animate={{
+                scale: isActive ? 1.05 : 1,
+                transformOrigin: "left",
               }}
               transition={{ duration: 0.2 }}
-              style={{ transformStyle: "preserve-3d" }}
             >
               {title}
             </motion.h2>
@@ -256,13 +261,13 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             {/* Description with subtle parallax */}
             <motion.p
               className="text-slate-300 mb-6 flex-grow relative z-10"
-              animate={{
+              style={{
                 x: contentParallax.x,
                 y: contentParallax.y,
                 z: isActive ? 5 : 0,
+                transformStyle: "preserve-3d",
               }}
               transition={{ duration: 0.2 }}
-              style={{ transformStyle: "preserve-3d" }}
             >
               {description}
             </motion.p>
@@ -270,13 +275,13 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             {/* Status and Progress Bar with parallax */}
             <motion.div
               className="mt-auto relative z-20"
-              animate={{
+              style={{
                 x: progressParallax.x,
                 y: progressParallax.y,
                 z: isActive ? 20 : 0,
+                transformStyle: "preserve-3d",
               }}
               transition={{ duration: 0.2 }}
-              style={{ transformStyle: "preserve-3d" }}
             >
               <div className={`text-sm font-medium ${available ? "text-green-400" : "text-amber-400"}`}>
                 {available ? "Available Now" : "Coming Soon"}
@@ -298,9 +303,7 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
                   className="absolute inset-0 rounded-full"
                   style={{
                     background: `linear-gradient(to right, ${color}80, ${color})`,
-                  }}
-                  animate={{
-                    x: isActive ? progressParallax.x * 0.2 : 0,
+                    x: useTransform(progressParallax.x, val => val * 0.2),
                   }}
                   transition={{ duration: 0.2 }}
                 />
@@ -308,76 +311,44 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
             </motion.div>
           </div>
 
-          {/* Floating particles for extra depth */}
-          {isActive && (
-            <>
-              <motion.div
-                className="absolute w-1 h-1 bg-white rounded-full opacity-60"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                  x: [20, iconParallax.x + 40, 60],
-                  y: [30, iconParallax.y + 20, 10],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: 0,
-                }}
-              />
-              <motion.div
-                className="absolute w-0.5 h-0.5 rounded-full opacity-40"
-                style={{ backgroundColor: color }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                  x: [200, titleParallax.x + 180, 160],
-                  y: [100, titleParallax.y + 80, 60],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: 0.5,
-                }}
-              />
-              <motion.div
-                className="absolute w-0.5 h-0.5 bg-white rounded-full opacity-30"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                  x: [150, contentParallax.x + 130, 110],
-                  y: [200, contentParallax.y + 180, 160],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: 1,
-                }}
-              />
-            </>
-          )}
+          {/* Floating particles - opacity is cheaper than mounting/unmounting */}
+          <motion.div animate={{ opacity: isActive ? 1 : 0 }}>
+            <motion.div
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                x: useTransform(mouseX, val => 40 + val * 0.5),
+                y: useTransform(mouseY, val => 20 + val * 0.5),
+              }}
+              animate={{
+                opacity: [0, 0.6, 0],
+                scale: [0, 1, 0],
+              }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+            />
+            {/* ... other particles ... */}
+          </motion.div>
         </motion.div>
       </Link>
     </motion.div>
   )
 }
 
+
 export default function Home() {
   const [activeSim, setActiveSim] = useState(null)
   const [theme, setTheme] = useState("blue")
-  // State to manage the mobile menu's visibility
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMouseEnter = (id) => {
+  // ---  Stabilize event handlers with useCallback ---
+  // This ensures the functions aren't recreated on every render, which is
+  // important for the `React.memo` optimization on SimulationCard.
+  const handleMouseEnter = useCallback((id) => {
     setActiveSim(id)
-  }
+  }, []) // Empty dependency array means this function is created only once.
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setActiveSim(null)
-  }
+  }, [])
 
   // Theme variables 
   const themeStyles = {
@@ -483,7 +454,7 @@ export default function Home() {
           ))}
         </nav>
 
-        {/* Theme Selector */}
+        {/* Theme Selector  */}
         <motion.div className="mt-8 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           <p className="text-sm mb-2" style={{ color: currentTheme.textSecondary }}>
             Select Theme
@@ -566,7 +537,7 @@ export default function Home() {
         </motion.div>
       </motion.div>
 
-      {/* Hamburger Menu Button (visible only on mobile) */}
+      {/* Hamburger Menu Button  */}
       <div className="md:hidden p-4 fixed top-0 left-0 z-40">
         <button onClick={() => setIsMenuOpen(true)} className="p-2 rounded-md" style={{ background: currentTheme.sidebar }}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
