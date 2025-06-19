@@ -2,7 +2,7 @@ import { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Heart, ExternalLink } from "lucide-react"
 import { Link } from 'react-router-dom'
-import useThrottle from "../hooks/useThrottle" // Assuming you've created this file
+import useThrottle from "../hooks/useThrottle" 
 
 // Simulation data for each card (no changes here)
 const simulations = [
@@ -62,15 +62,18 @@ const simulations = [
   },
 ]
 
-// SimulationCard component (no changes here, keeping throttling)
+// SimulationCard component 
 function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
   const { id, title, description, color, image, path, available } = simulation
   const cardRef = useRef(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
+  // FIX: Use a ref to synchronously track hover state to prevent race conditions
+  const isHoveringRef = useRef(false)
 
   const handleMouseMove = (e) => {
-    if (!cardRef.current) return
+    // FIX: Guard against lingering throttled events after mouse has left
+    if (!isHoveringRef.current || !cardRef.current) return
 
     const rect = cardRef.current.getBoundingClientRect()
     const mouseX = e.clientX - rect.left
@@ -88,12 +91,14 @@ function SimulationCard({ simulation, isActive, onMouseEnter, onMouseLeave }) {
   const throttledMouseMove = useThrottle(handleMouseMove, 16);
 
   const handleMouseEnter = (e) => {
+    isHoveringRef.current = true // Set ref synchronously
     setIsHovering(true)
     onMouseEnter(id)
-    handleMouseMove(e)
+    handleMouseMove(e) // Call once immediately for responsiveness
   }
 
   const handleMouseLeave = () => {
+    isHoveringRef.current = false // Set ref synchronously
     setIsHovering(false)
     onMouseLeave()
     setMousePosition({ x: 0, y: 0 })
@@ -374,7 +379,7 @@ export default function Home() {
     setActiveSim(null)
   }
 
-  // Theme variables (no changes here)
+  // Theme variables 
   const themeStyles = {
     dark: {
       bg: "rgba(20, 40, 45, 1)",
